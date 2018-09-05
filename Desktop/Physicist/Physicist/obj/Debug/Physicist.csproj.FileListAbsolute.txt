@@ -1,0 +1,5 @@
+C:\Users\u16191\Desktop\Desktop\Physicist\Physicist\obj\Debug\Physicist.csprojResolveAssemblyReference.cache
+C:\Users\u16191\Desktop\Desktop\Physicist\Physicist\obj\Debug\Physicist.frmPrincipal.resources
+C:\Users\u16191\Desktop\Desktop\Physicist\Physicist\obj\Debug\Physicist.Properties.Resources.resources
+C:\Users\u16191\Desktop\Desktop\Physicist\Physicist\obj\Debug\Physicist.csproj.GenerateResource.Cache
+C:\Users\u16191\Desktop\Desktop\Physicist\Physicist\obj\Debug\Physicist.csproj.CoreCompileInputs.cache
