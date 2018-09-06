@@ -10,13 +10,23 @@ namespace Physicist
 {
     class Controlador
     {
-        Peer local;
+        ConexaoP2P conexao;
+        public enum Status
+        {
+
+            Desconectado,
+            EsperandoRequisicao,
+            Escolhendo,
+            EsperandoResposta,
+            Conectado
+        }
         public Controlador() {
-           local = new Peer(getIpLocal());
+            conexao = new ConexaoP2P(getIpLocal());
 
         }
         public void tratarBroadcast()
         {
+            conexao.iniciarConexao();
 
         }
         private IPAddress getIpLocal()

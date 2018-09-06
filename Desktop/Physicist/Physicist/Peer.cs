@@ -25,11 +25,25 @@ namespace Physicist
         UdpClient servidorBroadcast;
         String nome;
         bool conectadoBroadcast;
-        private void tratarBroadcast() { }
-        private void responderPeers() { }
-        public void iniciar() {
-            servidorBroadcast = new UdpClient((AddressFamily)IP);
+        public IPEndPoint tratarBroadcast() {
+            IPEndPoint IPQuemMandou = new IPEndPoint(IPAddress.Any,portaBroadcast);
+            byte[] datagrama = servidorBroadcast.Receive(ref IPQuemMandou);
+            string requisição = Encoding.ASCII.GetString(datagrama);
+            if(requisição.Equals("Requisitando"))
+            {
+
+            }
+            else
+            {
+                //throw new SocketException("Ataque vírus!!!");
+                throw new SocketException("Esperava por requisição \" Requisitando\", porém achou \" "+requisição +" \" !");
+            }
+            return IPQuemMandou;
         }
+        public void responderPeers() {
+            var infoResp = Encoding.ASCII.GetBytes("Respondendo");
+        }
+        
         public void finalizar()
         {
 
@@ -40,7 +54,12 @@ namespace Physicist
                 this.IP = meuIP;
             else
                 throw new ArgumentNullException("IP nulo");
+            servidorBroadcast = new UdpClient(new IPEndPoint(IPAddress.Any, portaBroadcast));
+            servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
+            servidorBroadcast.MulticastLoopback = true;
+            //uma mensagem será enviada para o dispositivo que fez um multicast
+
         }
-        
+
     }
 }
