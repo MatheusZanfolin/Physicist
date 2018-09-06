@@ -11,14 +11,7 @@ namespace Physicist
 {
     public class Peer
     {
-        private enum Status
-        {
-
-            peerDesconectado,
-            peerDisponivel,
-            peerRequisitandoConexao,
-            peerConectado
-        }
+        
         const int portaBroadcast = 1729;
         const double intervaloSinal = 1000;
         
