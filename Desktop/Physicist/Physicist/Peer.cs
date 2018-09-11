@@ -20,16 +20,13 @@ namespace Physicist
         bool conectadoBroadcast;
         public IPEndPoint tratarBroadcast() {
             IPEndPoint IPQuemMandou = new IPEndPoint(IPAddress.Any,portaBroadcast);
-            byte[] datagrama = servidorBroadcast.Receive(ref IPQuemMandou);
+            //byte[] datagrama = servidorBroadcast.ReceiveAsync(/*ref IPQuemMandou*/);
             string requisição = Encoding.ASCII.GetString(datagrama);
-            if(requisição.Equals("Requisitando"))
-            {
-
-            }
-            else
+            
+            if (!requisição.Equals("Requisitando"))
             {
                 //throw new SocketException("Ataque vírus!!!");
-                throw new SocketException("Esperava por requisição \" Requisitando\", porém achou \" "+requisição +" \" !");
+                throw new Exception("Esperava por requisição \" Requisitando\", porém achou \" "+ requisição +" \" !");
             }
             return IPQuemMandou;
         }
@@ -37,7 +34,7 @@ namespace Physicist
             var infoResp = Encoding.ASCII.GetBytes("Respondendo");
         }
         
-        public void finalizar()
+        public void finalizarBroadcasting()
         {
 
         }

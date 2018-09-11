@@ -11,6 +11,7 @@ namespace Physicist
     class Controlador
     {
         ConexaoP2P conexao;
+        Task broadcasting;
         public enum Status
         {
 
@@ -22,12 +23,27 @@ namespace Physicist
         }
         public Controlador() {
             conexao = new ConexaoP2P(getIpLocal());
-
+           
         }
-        public void tratarBroadcast()
+        public void finalizarConexao()
         {
-            conexao.iniciarConexao();
+            
+        }
+        public void finalizarBroadcasting()
+        {
 
+            broadcasting.Dispose();
+            conexao.finalizarBroadcasting();
+        }
+        public async void tratarBroadcast()
+        {
+            //cuidado, lança exceção
+           
+            broadcasting = Task.Run(() => conexao.tratarBroadcast());
+                
+            await broadcasting;
+
+            
         }
         private IPAddress getIpLocal()
         {

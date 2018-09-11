@@ -16,10 +16,17 @@ namespace Physicist
         TcpClient emissorP2P;
         bool conectadoP2P;
         IPAddress meuIP;
-        public void iniciarConexao() {
-
+        public void tratarBroadcast() {
+            peers[0].tratarBroadcast();
         }
         public void finalizarConexao() {
+
+        }
+        public void finalizarBroadcasting()
+        {
+            this.peers[0].finalizarBroadcasting();
+            this.receptorP2P.Stop();
+            
         }
         public ConexaoP2P(IPAddress meuIP)
         {

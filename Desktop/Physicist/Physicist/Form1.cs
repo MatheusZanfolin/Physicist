@@ -21,12 +21,22 @@ namespace Physicist
         private void btnListar_Click(object sender, EventArgs e)
         {
             meuControlador = new Controlador();
-            meuControlador.tratarBroadcast();
+            procurarDispositivos
         }
 
         private void btnConectar_Click(object sender, EventArgs e)
         {
 
+        }
+        private void procurarDispositivos()
+        {
+
+            meuControlador.tratarBroadcast();
+        }
+
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+            meuControlador.finalizarBroadcasting()
         }
     }
 }
