@@ -10,14 +10,14 @@ namespace Physicist
 {
     class ConexaoP2P
     {
-        private Peer[] peers;
+        private List<Peer> peers;
         public const int portaP2P = 1337;
         TcpListener receptorP2P;
         TcpClient emissorP2P;
         bool conectadoP2P;
         IPAddress meuIP;
-        public void tratarBroadcast() {
-            peers[0].tratarBroadcast();
+        public async void testarBroadcasting() {
+            peers[0].receber();
         }
         public void finalizarConexao() {
 
@@ -28,13 +28,23 @@ namespace Physicist
             this.receptorP2P.Stop();
             
         }
+        public void tratarBroadcast()
+        {
+            IPEndPoint ipAchado =  this.peers[0].tratarBroadcast();
+            Peer novoPeer = new Peer(ipAchado);
+            peers.Add(novoPeer);
+        } 
+        public TaskStatus estadoBroadcasting()
+        {
+            return this.peers[0].estadoBroadcasting();
+        }
         public ConexaoP2P(IPAddress meuIP)
         {
             if (meuIP == null)
                 throw new ArgumentNullException("ConexãoP2P: IP nulo");
             this.meuIP = meuIP;
-            this.peers = new Peer[2];
-            this.peers[0] = new Peer(meuIP);
+            this.peers = new List<Peer>();
+            this.peers.Insert(0, new Peer(meuIP));
             this.receptorP2P = new TcpListener(IPAddress.Any, ConexaoP2P.portaP2P);
             this.conectadoP2P = false;
 

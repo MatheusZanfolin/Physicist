@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Physicist
@@ -11,10 +12,9 @@ namespace Physicist
     class Controlador
     {
         ConexaoP2P conexao;
-        Task broadcasting;
+        Timer timer = new Timer()
         public enum Status
         {
-
             Desconectado,
             EsperandoRequisicao,
             Escolhendo,
@@ -31,17 +31,18 @@ namespace Physicist
         }
         public void finalizarBroadcasting()
         {
-
-            broadcasting.Dispose();
             conexao.finalizarBroadcasting();
         }
-        public async void tratarBroadcast()
+        public async void testarBroadcasting()
+        {
+            conexao.testarBroadcasting();
+        }
+        public void tratarBroadcast()
         {
             //cuidado, lança exceção
-           
-            broadcasting = Task.Run(() => conexao.tratarBroadcast());
-                
-            await broadcasting;
+            conexao.tratarBroadcast();
+            
+            
 
             
         }
