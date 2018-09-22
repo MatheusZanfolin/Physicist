@@ -12,7 +12,9 @@ namespace Physicist
 {
     public partial class frmPrincipal : Form
     {
+        bool ehPossivelCancelar = false;
         private static Controlador meuControlador;
+        List<Peer> listaDispositivos = new List<Peer>();
         public frmPrincipal()
         {
             InitializeComponent();
@@ -20,23 +22,30 @@ namespace Physicist
 
         private void btnListar_Click(object sender, EventArgs e)
         {
-            meuControlador = new Controlador();
-            procurarDispositivos
+            if (ehPossivelCancelar)
+            {
+                meuControlador.finalizarBroadcasting();
+                ehPossivelCancelar = false;
+                btnListar.Text = "BuscarDispositivos";
+            }
+            else {
+                meuControlador = new Controlador();
+                ehPossivelCancelar = true;
+                btnListar.Text = "Cancelar";
+                procurarDispositivos();
+                //procurarDispositivos é async
+            }
         }
 
         private void btnConectar_Click(object sender, EventArgs e)
         {
 
         }
-        private void procurarDispositivos()
+        private async void procurarDispositivos()
         {
+            meuControlador.testarBroadcasting();
 
-            meuControlador.tratarBroadcast();
         }
-
-        private void btnCancelar_Click(object sender, EventArgs e)
-        {
-            meuControlador.finalizarBroadcasting()
-        }
+        
     }
 }

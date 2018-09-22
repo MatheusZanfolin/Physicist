@@ -6,13 +6,14 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 namespace Physicist
 {
     class Controlador
     {
         ConexaoP2P conexao;
-        Timer timer = new Timer()
+        
+        Peer peerAchado;
+        //tempo máximo = 2min 30 seg
         public enum Status
         {
             Desconectado,
@@ -23,11 +24,11 @@ namespace Physicist
         }
         public Controlador() {
             conexao = new ConexaoP2P(getIpLocal());
-           
         }
+        
         public void finalizarConexao()
         {
-            
+
         }
         public void finalizarBroadcasting()
         {
@@ -37,14 +38,15 @@ namespace Physicist
         {
             conexao.testarBroadcasting();
         }
-        public void tratarBroadcast()
+        public Peer PeerAchado {
+            get{
+                return this.peerAchado;
+            }
+        }
+        public async void tratarBroadcast()
         {
             //cuidado, lança exceção
-            conexao.tratarBroadcast();
-            
-            
-
-            
+            peerAchado = conexao.tratarBroadcast();    
         }
         private IPAddress getIpLocal()
         {
@@ -59,4 +61,6 @@ namespace Physicist
             throw new Exception("Não há adaptadores de rede com um endereço IPv4 compatível no sistema");
         }
     }
+
+    
 }

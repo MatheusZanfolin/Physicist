@@ -11,15 +11,39 @@ namespace Physicist
 {
     public class Peer
     {
-        Task<UdpReceiveResult> broadcasting;
+        const int intervaloTimer = 3000;
+        private static System.Threading.Timer timer;
+        public static Task<UdpReceiveResult> broadcasting;
         const int portaBroadcast = 1729;
-        const double intervaloSinal = 1000;
-        
+        private IPAddress IP;
         UdpClient servidorBroadcast;
         String nome;
         bool conectadoBroadcast;
-        
-        public IPEndPoint tratarBroadcast() {
+        private IPEndPoint iPConectando;
+        public String ToString()
+        {
+            return this.IP.ToString();
+        }
+        public IPEndPoint IPConectando{
+            get
+            {
+                return this.iPConectando;
+            }
+            
+        }
+        private void inicializarTimer()
+        {
+            //estado inicial falso, ficará true caso chegar no estado callback
+            var autoEvento = new AutoResetEvent(false);
+            var checador = new ChecadorStatus();
+            timer = new Timer(checador.checarStatus, autoEvento, intervaloTimer, intervaloTimer);
+            autoEvento.WaitOne();
+            //liberar e reiniciar o timer
+            //"flag" autoevento foi alterada
+            timer.Dispose();
+        }
+
+        public async void tratarBroadcast() {
             IPEndPoint IPQuemMandou;
             UdpReceiveResult req;
             //CancellationToken token = new CancellationToken(true);
@@ -34,7 +58,7 @@ namespace Physicist
                 //throw new SocketException("Ataque vírus!!!");
                 throw new Exception("Esperava por requisição \" Requisitando\", porém achou \" "+ requisição +" \" !");
             }
-            return IPQuemMandou;
+            this.iPConectando = IPQuemMandou;
         }
         public async void receber()
         {
@@ -65,13 +89,14 @@ namespace Physicist
             }
             catch {}
         }
-        private IPAddress IP;
+        //construtor para peers remotos
         public Peer(IPEndPoint ipRemoto)
         {
             if (ipRemoto == null)
                 throw new ArgumentNullException("IP remoto nulo");
             this.IP = ipRemoto.Address;
         }
+        //construtor para próprio peer(localhost)
         public Peer(IPAddress meuIP) {
             if (meuIP != null)
                 this.IP = meuIP;
@@ -84,5 +109,42 @@ namespace Physicist
 
         }
 
+    }
+    class ChecadorStatus
+    {
+        //Task<UdpReceiveResult> tarefaAnalisar;
+        public ChecadorStatus(/*Task<UdpReceiveResult> tarefa*/)
+        {
+          //  this.tarefaAnalisar = tarefa;
+        }
+        public void checarStatus(Object infoStatus)
+        {
+            AutoResetEvent autoEvento = (AutoResetEvent)infoStatus;
+            if (ehParaParar(Peer.broadcasting.Status))
+            {
+                autoEvento.Set();
+            }
+
+        }
+        private bool ehParaParar(TaskStatus status)
+        {
+            switch (status)
+            {
+                case TaskStatus.Canceled:
+                    return true;
+                    break;
+                case TaskStatus.Faulted:
+                    return true;
+                    break;
+                case TaskStatus.RanToCompletion:
+                    return true;
+                    break;
+                case TaskStatus.WaitingForChildrenToComplete:
+                    return true;
+                    break;
+                default:
+                    return false;
+            }
+        }
     }
 }

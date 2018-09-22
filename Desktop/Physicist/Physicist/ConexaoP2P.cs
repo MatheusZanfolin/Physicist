@@ -28,11 +28,12 @@ namespace Physicist
             this.receptorP2P.Stop();
             
         }
-        public void tratarBroadcast()
+        public async Peer tratarBroadcast()
         {
             IPEndPoint ipAchado =  this.peers[0].tratarBroadcast();
             Peer novoPeer = new Peer(ipAchado);
             peers.Add(novoPeer);
+            return novoPeer;
         } 
         public TaskStatus estadoBroadcasting()
         {
@@ -48,6 +49,11 @@ namespace Physicist
             this.receptorP2P = new TcpListener(IPAddress.Any, ConexaoP2P.portaP2P);
             this.conectadoP2P = false;
 
+        }
+        public int acharIndicePeer(String ip)
+        {
+
+            IPAddress esseIp = new IPEndPoint()
         }
     }
 }
