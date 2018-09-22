@@ -33,8 +33,8 @@ namespace Physicist
                 ehPossivelCancelar = true;
                 btnListar.Text = "Cancelar";
                 procurarDispositivos();
-                //procurarDispositivos é async
-            }
+                	//procurarDispositivos é async
+		  }
         }
 
         private void btnConectar_Click(object sender, EventArgs e)
@@ -43,7 +43,19 @@ namespace Physicist
         }
         private async void procurarDispositivos()
         {
-            meuControlador.testarBroadcasting();
+		try{
+            		meuControlador.testarBroadcasting();
+		}
+		catch(Exception ex){
+			if(ex.Message == "B"){
+				Peer achado = this.meuControlador.PeerAchado;
+				listaDispositivos.Add(achado);
+				lsbDispositivos.Items.Add(listaDispositivos.Last.ToString());
+			}
+			else{
+				MessageBox.Show("Ocorreu um erro ao procurar dispositivos. Verifique sua rede e tente novamente!");
+			}	
+		}
 
         }
         

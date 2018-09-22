@@ -41,6 +41,7 @@ namespace Physicist
             //liberar e reiniciar o timer
             //"flag" autoevento foi alterada
             timer.Dispose();
+	    throw new Exception("Timer acabou!");
         }
 
         public async void tratarBroadcast() {
@@ -59,16 +60,44 @@ namespace Physicist
                 throw new Exception("Esperava por requisição \" Requisitando\", porém achou \" "+ requisição +" \" !");
             }
             this.iPConectando = IPQuemMandou;
+	    throw new Exception("B");
+	    this.finalizarBroadcasting();
         }
         public async void receber()
         {
             try
             {
                 broadcasting = (servidorBroadcast.ReceiveAsync());
+		inicializarTimer();
             }
             catch (ObjectDisposedException obDispEx)
             {
-                broadcasting.Dispose();
+		switch(estadoBroadcasting){
+                	case TaskStatus.Faulted:
+				this.finalizarBroadcasting();
+				throw new Exception("Caso aparentemente impossível!");
+			break;
+			case TaskStatus.RanToCompletion:
+				//deu tudo certo!!!
+				//não dar dispose!!
+				//tratarBroadcast!!
+				throw new Exception("A");
+			break;
+			case TaskStatus.WaitingForChildrenToComplete:
+				this.finalizarBroadcasting();
+				throw new Exception("Comportamento inesperado da Task");
+			break;
+			case TaskStatus.Canceled:
+				
+				this.finalizarBroadcasting();
+				throw new Excepion("Task mal inicializada!");
+			break;
+			default:
+				this.finalizarBroadcasting();
+				throw new Exception("Comportamento insesperado do Timer");
+				
+		}
+
             }
         }
         public TaskStatus estadoBroadcasting()
@@ -86,6 +115,8 @@ namespace Physicist
                 broadcasting.Dispose();
                 servidorBroadcast.Close();
                 servidorBroadcast.Dispose();
+		if(this.timer != null)
+			timer.Dispose();
             }
             catch {}
         }
@@ -137,6 +168,7 @@ namespace Physicist
                     return true;
                     break;
                 case TaskStatus.RanToCompletion:
+		    
                     return true;
                     break;
                 case TaskStatus.WaitingForChildrenToComplete:

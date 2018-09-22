@@ -36,14 +36,36 @@ namespace Physicist
         }
         public async void testarBroadcasting()
         {
-            conexao.testarBroadcasting();
-        }
+		try{
+            		conexao.testarBroadcasting();
+        	}
+		catch(Exception ex){
+			if(ex.Message == "A"){
+				try{
+					this.tratarBroadcast();
+				}
+				catch(Exception e){
+					if(e.Message == "B"){
+						Peer ultimo = this.conexao.ultimoPeer();
+						this.peerAchado = ultimo;
+						throw new Exception("B");
+					}
+					else{
+						throw new Exception("Caso esperado de ser impossível!");	
+					}
+				}
+			}
+			else{
+				throw new Exception("Busca por dispositivos não deu certo!");
+			}
+		}
+	}
         public Peer PeerAchado {
             get{
                 return this.peerAchado;
             }
         }
-        public async void tratarBroadcast()
+        private async void tratarBroadcast()
         {
             //cuidado, lança exceção
             peerAchado = conexao.tratarBroadcast();    

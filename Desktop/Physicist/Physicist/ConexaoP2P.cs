@@ -17,8 +17,19 @@ namespace Physicist
         bool conectadoP2P;
         IPAddress meuIP;
         public async void testarBroadcasting() {
-            peers[0].receber();
-        }
+            	try{
+			peers[0].receber();
+        	}
+		catch(Exception ex){
+			if(ex.Message == "A")
+				throw new Exception("A");
+			else
+				throw new Exception("Broadcasting falhou!");	
+		}
+	}
+	public Peer ultimoPeer(){
+		return this.peers.Last();
+	}
         public void finalizarConexao() {
 
         }
@@ -30,10 +41,10 @@ namespace Physicist
         }
         public async Peer tratarBroadcast()
         {
-            IPEndPoint ipAchado =  this.peers[0].tratarBroadcast();
+	    this.peers[0].tratarBroadcast()
+            IPEndPoint ipAchado = this.peers[0].IPConectando;
             Peer novoPeer = new Peer(ipAchado);
             peers.Add(novoPeer);
-            return novoPeer;
         } 
         public TaskStatus estadoBroadcasting()
         {
