@@ -28,7 +28,10 @@ namespace Physicist
 		}
 	}
 	public Peer ultimoPeer(){
-		return this.peers.Last();
+		if(this.peers.Count != 0)
+			return this.peers.Last;
+		else
+			throw new Exception("Não foi achado nenhum outro peer ainda!");
 	}
         public void finalizarConexao() {
 
