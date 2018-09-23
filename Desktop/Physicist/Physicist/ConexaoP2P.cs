@@ -17,37 +17,53 @@ namespace Physicist
         bool conectadoP2P;
         IPAddress meuIP;
         public async void testarBroadcasting() {
-            	try{
-			peers[0].receber();
+            try{
+			    peers[0].receber();
         	}
-		catch(Exception ex){
-			if(ex.Message == "A")
-				throw new Exception("A");
-			else
-				throw new Exception("Broadcasting falhou!");	
-		}
-	}
-	public Peer ultimoPeer(){
-		if(this.peers.Count != 0)
-			return this.peers.Last;
-		else
-			throw new Exception("Não foi achado nenhum outro peer ainda!");
-	}
+		    catch(Exception ex){
+			    if(ex.Message == "A")
+				    throw new Exception("A");
+			    else
+				    throw new Exception("Broadcasting falhou!");	
+		    }
+	    }
+	    public Peer ultimoPeer(){
+		    if(this.peers.Count != 0)
+			    return this.peers.Last();
+		    else
+			    throw new Exception("Não foi achado nenhum outro peer ainda!");
+	    }
         public void finalizarConexao() {
 
         }
         public void finalizarBroadcasting()
         {
             this.peers[0].finalizarBroadcasting();
-            this.receptorP2P.Stop();
+           // this.receptorP2P.Stop();
             
         }
-        public async Peer tratarBroadcast()
+        public void inicializarBroadcasting()
         {
-	    this.peers[0].tratarBroadcast()
-            IPEndPoint ipAchado = this.peers[0].IPConectando;
-            Peer novoPeer = new Peer(ipAchado);
-            peers.Add(novoPeer);
+            this.peers[0].inicializarBroadcasting();
+        }
+        public async void tratarBroadcast()
+        {
+            try
+            {
+                this.peers[0].tratarBroadcast();
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "B")
+                {
+                    IPEndPoint ipAchado = this.peers[0].IPConectando;
+                    Peer novoPeer = new Peer(ipAchado);
+                    peers.Add(novoPeer);
+                }
+                else
+                    throw new Exception("Caso aparentemente impossível!");
+                    //caso aparentemente impossível
+            }
         } 
         public TaskStatus estadoBroadcasting()
         {
@@ -64,10 +80,10 @@ namespace Physicist
             this.conectadoP2P = false;
 
         }
-        public int acharIndicePeer(String ip)
+        /*public int acharIndicePeer(String ip)
         {
 
             IPAddress esseIp = new IPEndPoint()
-        }
+        }*/
     }
 }

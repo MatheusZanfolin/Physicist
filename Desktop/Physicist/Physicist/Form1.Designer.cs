@@ -57,9 +57,9 @@
             // 
             this.btnConectar.Location = new System.Drawing.Point(15, 267);
             this.btnConectar.Name = "btnConectar";
-            this.btnConectar.Size = new System.Drawing.Size(75, 23);
+            this.btnConectar.Size = new System.Drawing.Size(160, 23);
             this.btnConectar.TabIndex = 2;
-            this.btnConectar.Text = "Conectar";
+            this.btnConectar.Text = "Conectar com esse dispositivo";
             this.btnConectar.UseVisualStyleBackColor = true;
             this.btnConectar.Click += new System.EventHandler(this.btnConectar_Click);
             // 
@@ -93,6 +93,7 @@
             this.Controls.Add(this.btnListar);
             this.Name = "frmPrincipal";
             this.Text = "Physicist";
+            this.Load += new System.EventHandler(this.frmPrincipal_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

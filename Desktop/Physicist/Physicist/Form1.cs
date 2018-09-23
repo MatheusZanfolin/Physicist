@@ -26,38 +26,57 @@ namespace Physicist
             {
                 meuControlador.finalizarBroadcasting();
                 ehPossivelCancelar = false;
-                btnListar.Text = "BuscarDispositivos";
+                btnListar.Text = "Buscar Dispositivos";
             }
             else {
-                meuControlador = new Controlador();
                 ehPossivelCancelar = true;
                 btnListar.Text = "Cancelar";
+                meuControlador.inicializarBroadcasting();
                 procurarDispositivos();
-                	//procurarDispositivos é async
-		  }
+                //procurarDispositivos é async
+		    }
         }
 
         private void btnConectar_Click(object sender, EventArgs e)
         {
+            responderPeer(lsbDispositivos.SelectedIndex);
 
+        }
+        private async void responderPeer(int indice)
+        {
+            try
+            {
+
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
         private async void procurarDispositivos()
         {
-		try{
-            		meuControlador.testarBroadcasting();
-		}
-		catch(Exception ex){
-			if(ex.Message == "B"){
-				Peer achado = this.meuControlador.PeerAchado;
-				listaDispositivos.Add(achado);
-				lsbDispositivos.Items.Add(listaDispositivos.Last.ToString());
-			}
-			else{
-				MessageBox.Show("Ocorreu um erro ao procurar dispositivos. Verifique sua rede e tente novamente!");
-			}	
-		}
+		    try{
+                meuControlador.testarBroadcasting();
+		    }
+		    catch(Exception ex){
+			    if(ex.Message == "B"){
+				    Peer achado = meuControlador.PeerAchado;
+				    listaDispositivos.Add(achado);
+				    lsbDispositivos.Items.Add(listaDispositivos.Last().ToString());
+
+                    procurarDispositivos();
+			    }
+			    else{
+				    MessageBox.Show("Busca cancelada!");
+			    }	
+		    }
 
         }
-        
+
+        private void frmPrincipal_Load(object sender, EventArgs e)
+        {
+            meuControlador = new Controlador();
+
+        }
     }
 }

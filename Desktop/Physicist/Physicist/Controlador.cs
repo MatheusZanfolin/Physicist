@@ -34,32 +34,36 @@ namespace Physicist
         {
             conexao.finalizarBroadcasting();
         }
+        public void inicializarBroadcasting()
+        {
+            conexao.inicializarBroadcasting();
+        }
         public async void testarBroadcasting()
         {
-		try{
-            		conexao.testarBroadcasting();
+		    try{
+                conexao.testarBroadcasting();
         	}
-		catch(Exception ex){
-			if(ex.Message == "A"){
-				try{
-					this.tratarBroadcast();
-				}
-				catch(Exception e){
-					if(e.Message == "B"){
-						Peer ultimo = this.conexao.ultimoPeer();
-						this.peerAchado = ultimo;
-						throw new Exception("B");
-					}
-					else{
-						throw new Exception("Caso esperado de ser impossível!");	
-					}
-				}
-			}
-			else{
-				throw new Exception("Busca por dispositivos não deu certo!");
-			}
-		}
-	}
+		    catch(Exception ex){
+			    if(ex.Message == "A"){
+				    try{
+					    this.tratarBroadcast();
+				    }
+				    catch(Exception e){
+					    if(e.Message == "B"){
+						    Peer ultimo = this.conexao.ultimoPeer();
+						    this.peerAchado = ultimo;
+						    throw new Exception("B");
+					    }
+					    else{
+						    throw new Exception("Caso esperado de ser impossível!");	
+					    }
+				    }
+			    }
+			    else{
+				    throw new Exception("Busca por dispositivos não deu certo!");
+			    }
+		    }
+	    }
         public Peer PeerAchado {
             get{
                 return this.peerAchado;
@@ -67,8 +71,9 @@ namespace Physicist
         }
         private async void tratarBroadcast()
         {
+            conexao.tratarBroadcast();
             //cuidado, lança exceção
-            peerAchado = conexao.tratarBroadcast();    
+            peerAchado = conexao.ultimoPeer();
         }
         private IPAddress getIpLocal()
         {

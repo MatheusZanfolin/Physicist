@@ -54,49 +54,50 @@ namespace Physicist
             req = broadcasting.Result;
             string requisição = Encoding.ASCII.GetString(req.Buffer);
             IPQuemMandou = req.RemoteEndPoint;
+
+            this.finalizarBroadcasting();
             if (!requisição.Equals("Requisitando"))
             {
                 //throw new SocketException("Ataque vírus!!!");
                 throw new Exception("Esperava por requisição \" Requisitando\", porém achou \" "+ requisição +" \" !");
             }
             this.iPConectando = IPQuemMandou;
-	    throw new Exception("B");
-	    this.finalizarBroadcasting();
+	        throw new Exception("B");
         }
         public async void receber()
         {
             try
             {
                 broadcasting = (servidorBroadcast.ReceiveAsync());
-		inicializarTimer();
+		        inicializarTimer();
             }
-            catch (ObjectDisposedException obDispEx)
+            catch (Exception ex)//ObjectDisposedException pode ser tbm
             {
-		switch(estadoBroadcasting){
-                	case TaskStatus.Faulted:
-				this.finalizarBroadcasting();
-				throw new Exception("Caso aparentemente impossível!");
-			break;
-			case TaskStatus.RanToCompletion:
-				//deu tudo certo!!!
-				//não dar dispose!!
-				//tratarBroadcast!!
-				throw new Exception("A");
-			break;
-			case TaskStatus.WaitingForChildrenToComplete:
-				this.finalizarBroadcasting();
-				throw new Exception("Comportamento inesperado da Task");
-			break;
-			case TaskStatus.Canceled:
+		            switch(estadoBroadcasting()){
+                	    case TaskStatus.Faulted:
+				            this.finalizarBroadcasting();
+				            throw new Exception("Caso aparentemente impossível!");
+			            break;
+			            case TaskStatus.RanToCompletion:
+				            //deu tudo certo!!!
+				            //não dar dispose!!
+				            //tratarBroadcast!!
+				            throw new Exception("A");
+			            break;
+			            case TaskStatus.WaitingForChildrenToComplete:
+				            this.finalizarBroadcasting();
+				            throw new Exception("Comportamento inesperado da Task");
+			            break;
+			            case TaskStatus.Canceled:
 				
-				this.finalizarBroadcasting();
-				throw new Excepion("Task mal inicializada!");
-			break;
-			default:
-				this.finalizarBroadcasting();
-				throw new Exception("Comportamento insesperado do Timer");
+				            this.finalizarBroadcasting();
+				            throw new Exception("Task mal inicializada!");
+			            break;
+			            default:
+				            this.finalizarBroadcasting();
+				            throw new Exception("Comportamento insesperado do Timer");
 				
-		}
+		            }
 
             }
         }
@@ -106,18 +107,31 @@ namespace Physicist
         }
         public void responderPeers() {
             var infoResp = Encoding.ASCII.GetBytes("Respondendo");
+            //Não sei se vou usar Send ou SendAsync
+
         }
-        
+        public void inicializarBroadcasting()
+        {
+            servidorBroadcast = new UdpClient(new IPEndPoint(IPAddress.Any, portaBroadcast));
+            servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
+            servidorBroadcast.MulticastLoopback = true;
+            //uma mensagem será enviada para o dispositivo que fez um multicast
+
+        }
         public void finalizarBroadcasting()
         {
             try
             {
-                broadcasting.Dispose();
-                servidorBroadcast.Close();
-                servidorBroadcast.Dispose();
-		if(this.timer != null)
-			timer.Dispose();
-            }
+                if(broadcasting!=null)
+                    broadcasting.Dispose();
+                if (servidorBroadcast != null)
+                {
+                    servidorBroadcast.Close();
+                    servidorBroadcast.Dispose();
+                }
+		        if(timer != null)
+			        timer.Dispose();
+                 }
             catch {}
         }
         //construtor para peers remotos
@@ -133,11 +147,7 @@ namespace Physicist
                 this.IP = meuIP;
             else
                 throw new ArgumentNullException("IP local nulo");
-            servidorBroadcast = new UdpClient(new IPEndPoint(IPAddress.Any, portaBroadcast));
-            servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
-            servidorBroadcast.MulticastLoopback = true;
-            //uma mensagem será enviada para o dispositivo que fez um multicast
-
+            
         }
 
     }
