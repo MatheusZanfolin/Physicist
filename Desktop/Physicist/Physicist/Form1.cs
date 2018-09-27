@@ -16,6 +16,7 @@ namespace Physicist
         bool ehPossivelCancelarBroadcasting = false;
         private static Controlador meuControlador;
         List<Peer> listaDispositivos = new List<Peer>();
+        byte[] buffer;
         public frmPrincipal()
         {
             InitializeComponent();
@@ -31,7 +32,7 @@ namespace Physicist
             }
             else {
                 ehPossivelCancelar = true;
-                btnListar.Text = "Cancelar";
+                btnListar.Text = "Cancelar Busca";
                 meuControlador.inicializarBroadcasting();
                 procurarDispositivos();
                 //procurarDispositivos é async
@@ -42,15 +43,17 @@ namespace Physicist
         {
             if (ehPossivelCancelarBroadcasting)
             {
-                meuControlador.finalizarBroadcasting();
-                btnConectar.Text = "Conectar com esse dispositivo\";
+                meuControlador.finalizarRespostaBroadcasting();
+                ehPossivelCancelar = false;
+                btnConectar.Text = "Conectar com esse dispositivo";
             }
             else
             {
                 ehPossivelCancelar = true;
                 btnConectar.Text = "Cancelar";
-                meuControlador.inicializarBroadcasting();
+                meuControlador.inicializarRespostaBroadcasting();
                 responderPeer(lsbDispositivos.SelectedIndex);
+                //responder peer é async
             }
 
         }
@@ -62,8 +65,16 @@ namespace Physicist
             }
             catch(Exception ex)
             {
-
+                if(ex.Message == "D")
+                {
+                    this.interpretarBuffer(meuControlador.Buffer);
+                    //interpretar o buffer
+                }
             }
+        }
+        private void interpretarBuffer(byte[] buffer)
+        {
+            // enfileirar dados
         }
         private async void procurarDispositivos()
         {

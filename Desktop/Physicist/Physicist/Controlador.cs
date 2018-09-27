@@ -11,7 +11,14 @@ namespace Physicist
     class Controlador
     {
         ConexaoP2P conexao;
-        
+        byte[] buffer;
+        public byte[] Buffer
+        {
+            get
+            {
+                return this.buffer;
+            }
+        }
         Peer peerAchado;
         //tempo máximo = 2min 30 seg
         public enum Status
@@ -58,9 +65,8 @@ namespace Physicist
 				    }
 				    catch(Exception e){
 					    if(e.Message == "B"){
-						    Peer ultimo = this.conexao.ultimoPeer();
-						    this.peerAchado = ultimo;
-						    throw new Exception("B");
+						    this.peerAchado = this.conexao.ultimoPeer();
+                            throw new Exception("B");
 					    }
 					    else{
 						    throw new Exception("Caso esperado de ser impossível!");	
@@ -78,20 +84,31 @@ namespace Physicist
             {
                 conexao.responderBroadcasting();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                if (ex.Message == "C")
+                if (e.Message == "C")
                 {
                     try
                     {
                         //ainda não programei, aqui significa que a resposta foi enviada 
                         // devo programar para esperar outra requisição com os dados
+                        conexao.aceitarPeer();
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        if (e.Message == "D")
+                        if (ex.Message == "D")
                         {
                             //aqui devo programar para tratar os dados recebidos
+                            try
+                            {
+                                conexao.tratarDados();
+                                this.buffer = conexao.Buffer;
+                                throw new Exception("D");
+                            }
+                            catch(Exception exc)
+                            {
+                               throw new Exception("Erro de conversão de dados!");
+                            }
                         }
                         else
                         {

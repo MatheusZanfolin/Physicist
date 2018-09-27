@@ -11,7 +11,7 @@ namespace Physicist
 {
     public class Peer
     {
-        const int intervaloTimer = 3000;
+        const int intervaloTimer = 1000;
         private static System.Threading.Timer timer;
         public static Task<UdpReceiveResult> broadcasting;
         public static Task<int> respostaBroadcasting;
@@ -22,7 +22,6 @@ namespace Physicist
         private IPAddress IP;
         UdpClient servidorBroadcast;
         String nome;
-        bool conectadoBroadcast;
         private IPEndPoint iPConectando;
         public String ToString()
         {
@@ -36,21 +35,22 @@ namespace Physicist
             
         }
         private void inicializarTimer(int indTarefa)
-        {
+        {//não tenho ctz se ele é async ou não
             //indTarefa = 0 => broadcasting
             //indTarefa = 1 => respostaBroadcasting
             //estado inicial falso, ficará true caso chegar no estado callback
             var autoEvento = new AutoResetEvent(false);
             var checador = new ChecadorStatus(indTarefa);
-            timer = new Timer(checador.checarStatus, autoEvento, intervaloTimer, intervaloTimer);
+            timer = new Timer(checador.checarStatus, autoEvento, 0, intervaloTimer);
             autoEvento.WaitOne();
             //liberar e reiniciar o timer
             //"flag" autoevento foi alterada
             timer.Dispose();
-	        throw new Exception("Timer acabou!");
+	        throw new Exception("Timer Peer acabou!");
         }
 
         public async void tratarBroadcast() {
+            //não sei se isso deve ser realmente assíncrono
             IPEndPoint IPQuemMandou;
             UdpReceiveResult req;
             //CancellationToken token = new CancellationToken(true);
@@ -120,7 +120,7 @@ namespace Physicist
                 switch (estadoRespostaBroadcasting())
                 {
                     case TaskStatus.Faulted:
-                        this.finalizarBroadcasting();
+                        this.finalizarRespostaBroadcasting();
                         throw new Exception("Caso aparentemente impossível!");
                         break;
                     case TaskStatus.RanToCompletion:
@@ -130,16 +130,16 @@ namespace Physicist
                         throw new Exception("C");
                         break;
                     case TaskStatus.WaitingForChildrenToComplete:
-                        this.finalizarBroadcasting();
+                        this.finalizarRespostaBroadcasting();
                         throw new Exception("Comportamento inesperado da Task");
                         break;
                     case TaskStatus.Canceled:
 
-                        this.finalizarBroadcasting();
+                        this.finalizarRespostaBroadcasting();
                         throw new Exception("Task mal inicializada!");
                         break;
                     default:
-                        this.finalizarBroadcasting();
+                        this.finalizarRespostaBroadcasting();
                         throw new Exception("Comportamento insesperado do Timer");
 
                 }
@@ -230,48 +230,5 @@ namespace Physicist
         }
 
     }
-    class ChecadorStatus
-    {
-        int indTarefa;
-        Task<UdpReceiveResult> tarefaAnalisar;
-        /*0 -   broadcasting
-          1 -   respostaBroadcasting */
-        public ChecadorStatus(int indTarefa)
-        {
-            if(indTarefa == 0)
-                this.tarefaAnalisar = Peer.broadcasting;
-            else
-                this.tarefaAnalisar = Peer.respostaBroadcasting;
-        }
-        public void checarStatus(Object infoStatus)
-        {
-            AutoResetEvent autoEvento = (AutoResetEvent)infoStatus;
-            if (ehParaParar(tarefaAnalisar.Status))
-            {
-                autoEvento.Set();
-            }
-
-        }
-        private bool ehParaParar(TaskStatus status)
-        {
-            switch (status)
-            {
-                case TaskStatus.Canceled:
-                    return true;
-                    break;
-                case TaskStatus.Faulted:
-                    return true;
-                    break;
-                case TaskStatus.RanToCompletion:
-		    
-                    return true;
-                    break;
-                case TaskStatus.WaitingForChildrenToComplete:
-                    return true;
-                    break;
-                default:
-                    return false;
-            }
-        }
-    }
+    
 }
