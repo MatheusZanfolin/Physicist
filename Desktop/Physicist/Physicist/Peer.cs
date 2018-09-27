@@ -14,6 +14,7 @@ namespace Physicist
         const int intervaloTimer = 3000;
         private static System.Threading.Timer timer;
         public static Task<UdpReceiveResult> broadcasting;
+        public static Task<int> respostaBroadcasting;
         const int portaBroadcast = 1729;
         private IPAddress IP;
         UdpClient servidorBroadcast;
@@ -31,17 +32,19 @@ namespace Physicist
             }
             
         }
-        private void inicializarTimer()
+        private void inicializarTimer(int indTarefa)
         {
+            //indTarefa = 0 => broadcasting
+            //indTarefa = 1 => respostaBroadcasting
             //estado inicial falso, ficará true caso chegar no estado callback
             var autoEvento = new AutoResetEvent(false);
-            var checador = new ChecadorStatus();
+            var checador = new ChecadorStatus(indTarefa);
             timer = new Timer(checador.checarStatus, autoEvento, intervaloTimer, intervaloTimer);
             autoEvento.WaitOne();
             //liberar e reiniciar o timer
             //"flag" autoevento foi alterada
             timer.Dispose();
-	    throw new Exception("Timer acabou!");
+	        throw new Exception("Timer acabou!");
         }
 
         public async void tratarBroadcast() {
@@ -64,16 +67,37 @@ namespace Physicist
             this.iPConectando = IPQuemMandou;
 	        throw new Exception("B");
         }
+        public async void tratarBroadcast()
+        {
+            IPEndPoint IPQuemMandou;
+            UdpReceiveResult req;
+            //CancellationToken token = new CancellationToken(true);
+
+            //receber();
+            //byte[] datagrama = servidorBroadcast.ReceiveAsync(/*ref IPQuemMandou*/);
+            req = broadcasting.Result;
+            string requisição = Encoding.ASCII.GetString(req.Buffer);
+            IPQuemMandou = req.RemoteEndPoint;
+
+            this.finalizarBroadcasting();
+            if (!requisição.Equals("Requisitando"))
+            {
+                //throw new SocketException("Ataque vírus!!!");
+                throw new Exception("Esperava por requisição \" Requisitando\", porém achou \" " + requisição + " \" !");
+            }
+            this.iPConectando = IPQuemMandou;
+            throw new Exception("B");
+        }
         public async void receber()
         {
             try
             {
                 broadcasting = (servidorBroadcast.ReceiveAsync());
-		        inicializarTimer();
+		        inicializarTimer(0);
             }
             catch (Exception ex)//ObjectDisposedException pode ser tbm
             {
-		            switch(estadoBroadcasting()){
+		            switch(estadoRespostaBroadcasting()){
                 	    case TaskStatus.Faulted:
 				            this.finalizarBroadcasting();
 				            throw new Exception("Caso aparentemente impossível!");
@@ -81,7 +105,7 @@ namespace Physicist
 			            case TaskStatus.RanToCompletion:
 				            //deu tudo certo!!!
 				            //não dar dispose!!
-				            //tratarBroadcast!!
+                            //tratar Broadcasting!
 				            throw new Exception("A");
 			            break;
 			            case TaskStatus.WaitingForChildrenToComplete:
@@ -95,15 +119,57 @@ namespace Physicist
 			            break;
 			            default:
 				            this.finalizarBroadcasting();
-				            throw new Exception("Comportamento insesperado do Timer");
+				            throw new Exception("Comportamento inesperado do Timer");
 				
 		            }
+
+            }
+        }
+        public async void enviar(byte[] mensagem, int tamBytes)
+        {
+            try
+            {
+                respostaBroadcasting = (servidorBroadcast.SendAsync(mensagem, tamBytes));
+                inicializarTimer(1);
+            }
+            catch (Exception ex)//ObjectDisposedException pode ser tbm
+            {
+                switch (estadoBroadcasting())
+                {
+                    case TaskStatus.Faulted:
+                        this.finalizarBroadcasting();
+                        throw new Exception("Caso aparentemente impossível!");
+                        break;
+                    case TaskStatus.RanToCompletion:
+                        //deu tudo certo!!!
+                        //não dar dispose!!
+                        //esperar resposta de conexão!
+                        throw new Exception("C");
+                        break;
+                    case TaskStatus.WaitingForChildrenToComplete:
+                        this.finalizarBroadcasting();
+                        throw new Exception("Comportamento inesperado da Task");
+                        break;
+                    case TaskStatus.Canceled:
+
+                        this.finalizarBroadcasting();
+                        throw new Exception("Task mal inicializada!");
+                        break;
+                    default:
+                        this.finalizarBroadcasting();
+                        throw new Exception("Comportamento insesperado do Timer");
+
+                }
 
             }
         }
         public TaskStatus estadoBroadcasting()
         {
             return broadcasting.Status;
+        }
+        public TaskStatus estadoRespostaBroadcasting()
+        {
+            return respostaBroadcasting.Status;
         }
         public void responderPeers() {
             var infoResp = Encoding.ASCII.GetBytes("Respondendo");
@@ -153,15 +219,21 @@ namespace Physicist
     }
     class ChecadorStatus
     {
-        //Task<UdpReceiveResult> tarefaAnalisar;
-        public ChecadorStatus(/*Task<UdpReceiveResult> tarefa*/)
+        int indTarefa;
+        Task<UdpReceiveResult> tarefaAnalisar;
+        /*0 -   broadcasting
+          1 -   respostaBroadcasting */
+        public ChecadorStatus(int indTarefa)
         {
-          //  this.tarefaAnalisar = tarefa;
+            if(indTarefa == 0)
+                this.tarefaAnalisar = Peer.broadcasting;
+            else
+                this.tarefaAnalisar = Peer.respostaBroadcasting;
         }
         public void checarStatus(Object infoStatus)
         {
             AutoResetEvent autoEvento = (AutoResetEvent)infoStatus;
-            if (ehParaParar(Peer.broadcasting.Status))
+            if (ehParaParar(tarefaAnalisar.Status))
             {
                 autoEvento.Set();
             }
