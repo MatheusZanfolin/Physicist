@@ -38,6 +38,14 @@ namespace Physicist
         {
             conexao.inicializarBroadcasting();
         }
+        public void finalizarRespostaBroadcasting()
+        {
+            conexao.finalizarRespostaBroadcasting();
+        }
+        public void inicializarRespostaBroadcasting()
+        {
+            conexao.inicializarRespostaBroadcasting();
+        }
         public async void testarBroadcasting()
         {
 		    try{
@@ -64,6 +72,39 @@ namespace Physicist
 			    }
 		    }
 	    }
+        public async void responderBroadcasting()
+        {
+            try
+            {
+                conexao.responderBroadcasting();
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "C")
+                {
+                    try
+                    {
+                        //ainda não programei, aqui significa que a resposta foi enviada 
+                        // devo programar para esperar outra requisição com os dados
+                    }
+                    catch (Exception e)
+                    {
+                        if (e.Message == "D")
+                        {
+                            //aqui devo programar para tratar os dados recebidos
+                        }
+                        else
+                        {
+                            throw new Exception("Caso esperado de ser impossível!");
+                        }
+                    }
+                }
+                else
+                {
+                    throw new Exception("Mensagem não foi enviada pro dispositivo!");
+                }
+            }
+        }
         public Peer PeerAchado {
             get{
                 return this.peerAchado;

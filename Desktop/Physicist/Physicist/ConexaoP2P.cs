@@ -27,6 +27,20 @@ namespace Physicist
 				    throw new Exception("Broadcasting falhou!");	
 		    }
 	    }
+        public async void responderBroadcasting()
+        {
+            try
+            {
+                peers[0].enviar();
+            }
+            catch(Exception ex)
+            {
+                if (ex.Message == "C")
+                    throw new Exception("C");
+                else
+                    throw new Exception("Resposta ao Broadcasting falhou!");
+            }
+        }
 	    public Peer ultimoPeer(){
 		    if(this.peers.Count != 0)
 			    return this.peers.Last();
@@ -45,6 +59,16 @@ namespace Physicist
         public void inicializarBroadcasting()
         {
             this.peers[0].inicializarBroadcasting();
+        }
+        public void finalizarRespostaBroadcasting()
+        {
+            this.peers[0].finalizarRespostaBroadcasting();
+            // this.receptorP2P.Stop();
+
+        }
+        public void inicializarRespostaBroadcasting()
+        {
+            this.peers[0].inicializarRespostaBroadcasting();
         }
         public async void tratarBroadcast()
         {
@@ -68,6 +92,10 @@ namespace Physicist
         public TaskStatus estadoBroadcasting()
         {
             return this.peers[0].estadoBroadcasting();
+        }
+        public TaskStatus estadoRespostaBroadcasting()
+        {
+            return this.peers[0].estadoRespostaBroadcasting();
         }
         public ConexaoP2P(IPAddress meuIP)
         {

@@ -13,6 +13,7 @@ namespace Physicist
     public partial class frmPrincipal : Form
     {
         bool ehPossivelCancelar = false;
+        bool ehPossivelCancelarBroadcasting = false;
         private static Controlador meuControlador;
         List<Peer> listaDispositivos = new List<Peer>();
         public frmPrincipal()
@@ -39,14 +40,25 @@ namespace Physicist
 
         private void btnConectar_Click(object sender, EventArgs e)
         {
-            responderPeer(lsbDispositivos.SelectedIndex);
+            if (ehPossivelCancelarBroadcasting)
+            {
+                meuControlador.finalizarBroadcasting();
+                btnConectar.Text = "Conectar com esse dispositivo\";
+            }
+            else
+            {
+                ehPossivelCancelar = true;
+                btnConectar.Text = "Cancelar";
+                meuControlador.inicializarBroadcasting();
+                responderPeer(lsbDispositivos.SelectedIndex);
+            }
 
         }
         private async void responderPeer(int indice)
         {
             try
             {
-
+                meuControlador.responderBroadcasting();
             }
             catch(Exception ex)
             {

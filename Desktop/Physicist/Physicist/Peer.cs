@@ -15,7 +15,10 @@ namespace Physicist
         private static System.Threading.Timer timer;
         public static Task<UdpReceiveResult> broadcasting;
         public static Task<int> respostaBroadcasting;
-        const int portaBroadcast = 1729;
+        private const int portaBroadcast = 1729;
+        private const string msgReq = "Requisitando";
+        private const string msgResp = "Respondendo";
+        private static byte[] msgRespBytes = (byte[])Encoding.ASCII.GetBytes(msgResp);
         private IPAddress IP;
         UdpClient servidorBroadcast;
         String nome;
@@ -67,27 +70,7 @@ namespace Physicist
             this.iPConectando = IPQuemMandou;
 	        throw new Exception("B");
         }
-        public async void tratarBroadcast()
-        {
-            IPEndPoint IPQuemMandou;
-            UdpReceiveResult req;
-            //CancellationToken token = new CancellationToken(true);
-
-            //receber();
-            //byte[] datagrama = servidorBroadcast.ReceiveAsync(/*ref IPQuemMandou*/);
-            req = broadcasting.Result;
-            string requisição = Encoding.ASCII.GetString(req.Buffer);
-            IPQuemMandou = req.RemoteEndPoint;
-
-            this.finalizarBroadcasting();
-            if (!requisição.Equals("Requisitando"))
-            {
-                //throw new SocketException("Ataque vírus!!!");
-                throw new Exception("Esperava por requisição \" Requisitando\", porém achou \" " + requisição + " \" !");
-            }
-            this.iPConectando = IPQuemMandou;
-            throw new Exception("B");
-        }
+        
         public async void receber()
         {
             try
@@ -125,16 +108,16 @@ namespace Physicist
 
             }
         }
-        public async void enviar(byte[] mensagem, int tamBytes)
+        public async void enviar()
         {
             try
             {
-                respostaBroadcasting = (servidorBroadcast.SendAsync(mensagem, tamBytes));
+                respostaBroadcasting = (servidorBroadcast.SendAsync(Peer.msgRespBytes, Peer.msgRespBytes.Length));
                 inicializarTimer(1);
             }
             catch (Exception ex)//ObjectDisposedException pode ser tbm
             {
-                switch (estadoBroadcasting())
+                switch (estadoRespostaBroadcasting())
                 {
                     case TaskStatus.Faulted:
                         this.finalizarBroadcasting();
@@ -171,17 +154,19 @@ namespace Physicist
         {
             return respostaBroadcasting.Status;
         }
-        public void responderPeers() {
+       /* public void responderPeers() {
             var infoResp = Encoding.ASCII.GetBytes("Respondendo");
             //Não sei se vou usar Send ou SendAsync
 
-        }
+        }*/
         public void inicializarBroadcasting()
         {
             servidorBroadcast = new UdpClient(new IPEndPoint(IPAddress.Any, portaBroadcast));
             servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
             servidorBroadcast.MulticastLoopback = true;
             //uma mensagem será enviada para o dispositivo que fez um multicast
+
+            servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
 
         }
         public void finalizarBroadcasting()
@@ -200,7 +185,35 @@ namespace Physicist
                  }
             catch {}
         }
+        public void inicializarRespostaBroadcasting()
+        {
+            servidorBroadcast = new UdpClient(IPConectando);
+            servidorBroadcast.DontFragment = true;
+            servidorBroadcast.Connect(IPConectando);
+            servidorBroadcast.EnableBroadcast = false;//pode enviar e/ou receber broadcast
+            //servidorBroadcast.MulticastLoopback = true;
+            //uma mensagem será enviada para o dispositivo que fez um multicast
+
+        }
+        public void finalizarRespostaBroadcasting()
+        {
+            try
+            {
+                if (respostaBroadcasting != null)
+                    respostaBroadcasting.Dispose();
+                if (servidorBroadcast != null)
+                {
+                    servidorBroadcast.Close();
+                    servidorBroadcast.Dispose();
+                }
+                if (timer != null)
+                    timer.Dispose();
+            }
+            catch { }
+        }
+
         //construtor para peers remotos
+
         public Peer(IPEndPoint ipRemoto)
         {
             if (ipRemoto == null)
@@ -213,7 +226,7 @@ namespace Physicist
                 this.IP = meuIP;
             else
                 throw new ArgumentNullException("IP local nulo");
-            
+
         }
 
     }
