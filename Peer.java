@@ -1,6 +1,6 @@
 public class Peer{
 	private MulticastSocket emissor;
-
+	private Timer temporizador;
 	private static final int portaAppBroadcasting = 1729;
 	private static final int portaDesktopBroadcasting = 1639;
 	private static final String msgReq = "Requisitando";
@@ -14,7 +14,7 @@ public class Peer{
 	private static final int ttlEnviar = 1000;//1 seg
 	private static final int ttlReceber = 10000;//10 seg
 	private int ttlPadrao;
-	
+	public ReceberUDPThread escuta;
 	/*
 	alguns métodos necessários
 	inicializarTimer
@@ -91,15 +91,18 @@ public class Peer{
 		mcastSocket.joinGroup(endBroadcast);
 		this.ttlPadrao= mcastSocket.getTimeToLive();
 		mcastSocket.setTimeToLive(Peer.ttlReceber);
-		ReceberUDPThread escuta = new ReceberUDPThread(pacoteBroadcast, mcastSocket);
+		escuta = new ReceberUDPThread(
+		"escutaUDP",pacoteBroadcast, mcastSocket);
 		/*
 		int ttl = mcastSocket.getTimeToLive(); mcastSocket.setTimeToLive(newttl); mcastSocket.send(p); mcastSocket.setTimeToLive(ttl);
 		*/
 	}
 	public void receber(){
+		//código rodando assincronamente
 		escuta.run();
-
+		this.temporizador = new Timer("escutaUDP", false);
 	}
+	public void timerFinalizou
 	public finalizarEscuta(){
 		try{
 			if(mcastSocket != null){
