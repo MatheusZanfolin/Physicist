@@ -160,8 +160,8 @@ namespace Physicist
 
         }*/
         public void inicializarBroadcasting()
-        {
-            servidorBroadcast = new UdpClient(new IPEndPoint(IPAddress.Any, portaBroadcast));
+        {//                                                                 236.0.0.0
+            servidorBroadcast = new UdpClient(new IPEndPoint(new IPAddress(0xEC000000), portaBroadcast));
             servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
             servidorBroadcast.MulticastLoopback = true;
             //uma mensagem será enviada para o dispositivo que fez um multicast

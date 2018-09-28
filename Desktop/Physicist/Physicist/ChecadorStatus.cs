@@ -14,7 +14,7 @@ namespace Physicist
         /*0 -   broadcasting
           1 -   respostaBroadcasting
           2 -   escutarPeer
-          3 -   lerStream
+         // 3 -   lerStream
              */
         public ChecadorStatus(int indTarefa)
         {
@@ -29,9 +29,9 @@ namespace Physicist
                 case 2:
                     this.tarefaAnalisar = ConexaoP2P.escutarPeer;
                     break;
-                case 3:
+               /* case 3:
                     this.tarefaAnalisar = ConexaoP2P.lerStream;
-                    break;
+                    break;*/
             }   
         }
         public void checarStatus(Object infoStatus)
