@@ -41,7 +41,7 @@ namespace Physicist
             //estado inicial falso, ficará true caso chegar no estado callback
             var autoEvento = new AutoResetEvent(false);
             var checador = new ChecadorStatus(indTarefa);
-            timer = new Timer(checador.checarStatus, autoEvento, 0, intervaloTimer);
+            timer = new Timer(checador.CheckStatus, autoEvento, 0, intervaloTimer);
             autoEvento.WaitOne();
             //liberar e reiniciar o timer
             //"flag" autoevento foi alterada

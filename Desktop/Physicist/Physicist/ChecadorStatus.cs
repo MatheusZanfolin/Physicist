@@ -34,7 +34,8 @@ namespace Physicist
                     break;*/
             }   
         }
-        public void checarStatus(Object infoStatus)
+        //esse método é chamado pelo delegado do timer
+        public void CheckStatus(Object infoStatus)
         {
             AutoResetEvent autoEvento = (AutoResetEvent)infoStatus;
             if (ehParaParar(tarefaAnalisar.Status))
