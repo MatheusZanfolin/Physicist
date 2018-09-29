@@ -15,6 +15,12 @@ public class Peer{
 	private static final int ttlReceber = 10000;//10 seg
 	private int ttlPadrao;
 	public ReceberUDPThread escuta;
+	public EnviarUDPThread broadcasting;
+	private ChecadorStatus checador;
+	private InetAddress iPConectando;
+	public InetAddress getIPConectando(){
+		return this.iPConectando;
+	}
 	/*
 	alguns métodos necessários
 	inicializarTimer
@@ -24,6 +30,8 @@ public class Peer{
 	estadoBroadcasting
 	construtor
 	*/
+	/*
+https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDeprecation.html*/
 	public Peer(InetAddress meuIP)throws Exception{
 		if(meuIP != null)
 			this.meuIP = meuIP;
@@ -52,20 +60,49 @@ public class Peer{
 		this.mcastSocket.joinGroup(endBroadcast);
 		this.ttlPadrao= mcastSocket.getTimeToLive();
 		this.mcastSocket.setTimeToLive(Peer.ttlEnviar);
+		this.broadcasting = new EnviarUDPThread(
+		"broadcasting",pacoteBroadcast, mcastSocket);
+
+		this.temporizador = new Timer("broadcasting", false);
+		//não é uma task daemon, por isso é false
+		this.temporizador.schedule()
 	}
 	public void enviar(){
-		//por enquanto vou deixar síncrono
-		mcastSocket.send(pacoteBroadcast);
+		/*//por enquanto vou deixar síncrono
+		mcastSocket.send(pacoteBroadcast);*/
+		this.broadcasting.start();
+		this.temporizador.schedule(this.checador, 0, 1000);
+	}
+	public void depoisEnviar(){
+		Thread.Status comoAcabou = this.checador.getStatus();
+		if(comoAcabou != Thread.State.TERMINATED){
+			
+			this.finalizarBroadcasting();
+			throw new Exception("Conexão com o dispositivo mal estabelecida! Verifique se estão na mesma rede e tente novamente!");
+		}
+		else{
+			
+			//deu certo!
+		}		
 	}
 	public finalizarBroadcasting(){
 		try{
-			if(mcastSocket != null){
+			if(this.mcastSocket != null){
 				this.mcastSocket.setTimeToLive(ttlPadrao);
 				this.mcastSocket.leaveGroup(endBroadcast);
 				this.mcastSocket.close();
 				this.mcastSocket.disconnect();
 				this.mcastSocket = null;
 			}
+			
+			if(this.temporizador!=null){
+				this.temporizador.purge();
+				this.temporizador.cancel();
+				this.temporizador = null;
+
+			}
+			this.checador=null;
+			this.broadcasting=null;
 		}
 		catch(Exception ex){}
 	}
@@ -91,27 +128,69 @@ public class Peer{
 		mcastSocket.joinGroup(endBroadcast);
 		this.ttlPadrao= mcastSocket.getTimeToLive();
 		mcastSocket.setTimeToLive(Peer.ttlReceber);
-		escuta = new ReceberUDPThread(
+		this.escuta = new ReceberUDPThread(
 		"escutaUDP",pacoteBroadcast, mcastSocket);
+
+		this.temporizador = new Timer("escutaUDP", false);
+		this.checador = null;
+		this.checador = new ChecadorStatus(this.escuta);
 		/*
 		int ttl = mcastSocket.getTimeToLive(); mcastSocket.setTimeToLive(newttl); mcastSocket.send(p); mcastSocket.setTimeToLive(ttl);
 		*/
 	}
 	public void receber(){
 		//código rodando assincronamente
-		escuta.run();
-		this.temporizador = new Timer("escutaUDP", false);
+		this.escuta.start();
+		this.temporizador.schedule(this.checador, 0, 1000);
 	}
-	public void timerFinalizou
+	public void depoisEscuta(){
+		Thread.Status comoAcabou = this.checador.getStatus();
+		if(comoAcabou != Thread.State.TERMINATED){
+			
+			this.finalizarEscuta();
+			throw new Exception("Conexão com o dispositivo mal estabelecida! Verifique se estão na mesma rede e tente novamente!");
+		}
+		else{
+			//deu certo!
+			byte[] buffer = this.escuta.getDados();
+			InetAddress ipQuemEnviou = this.escuta.getIPQuemEnviou();
+			byte[] requerido = this.Peer.msgResp.getBytes(Charset.forName("UTF-8"));
+			boolean iguais = true;
+			if(buffer.length == requerido.length){
+				for(int i=0;i<buffer.length;i++){
+					if(buffer[i] != requerido[i])
+						iguais = false;
+				}
+			}
+			if(buffer.length!=requerido.length || !iguais){
+				//ataque vírus!!!
+			}
+			else{
+				this.iPConectando = ipQuemEnviou;
+			}
+
+
+	
+		}
+	}
 	public finalizarEscuta(){
 		try{
-			if(mcastSocket != null){
-				mcastSocket.setTimeToLive(ttlPadrao);
+			if(this.mcastSocket != null){
+				this.mcastSocket.setTimeToLive(ttlPadrao);
 				this.mcastSocket.leaveGroup(endBroadcast);
 				this.mcastSocket.close();
 				this.mcastSocket.disconnect();
 				this.mcastSocket = null;
 			}
+			
+			if(this.temporizador!=null){
+				this.temporizador.purge();
+				this.temporizador.cancel();
+				this.temporizador = null;
+
+			}
+			this.checador=null;
+			this.escuta=null;
 		}
 		catch(Exception ex){}
 	}

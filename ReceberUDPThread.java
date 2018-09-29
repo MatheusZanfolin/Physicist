@@ -7,9 +7,12 @@ public class ReceberUDPThread extends Thread{
 		this.mcastSocket = mcastSocket;
 	}
 	public void run(){
-		this.mcastSocket.receive(this.pacoteBroadcast);
+		this.mcastSocket.receive(this.pacote);
 	}
-	public DatagramPacket getDados(){
-		return this.pacote;
+	public byte[] getDados(){
+		return this.pacote.getData();
+	}
+	public InetAddress getIPQuemEnviou(){
+		return this.pacote.getAddress();
 	}
 }
