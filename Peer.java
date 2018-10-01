@@ -38,7 +38,7 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		else
 			throw new Exception("IP local nulo");
 	}
-	public inicializarBroadcasting(){
+	public void inicializarBroadcasting(){
 		//endereço do grupo multicast(quem espera a requisição)
 		//escolher um endereço aleatório de 225.0.0.0 a 238.255.255.255
 		/*Endereços multicast de link-local começam com 224.0.0
@@ -65,13 +65,16 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 
 		this.temporizador = new Timer("broadcasting", false);
 		//não é uma task daemon, por isso é false
-		this.temporizador.schedule()
+		this.checador = new ChecadorStatus(this.broadcasting);
+		
+		
 	}
 	public void enviar(){
 		/*//por enquanto vou deixar síncrono
 		mcastSocket.send(pacoteBroadcast);*/
 		this.broadcasting.start();
 		this.temporizador.schedule(this.checador, 0, 1000);
+		//      							 delay periodo
 	}
 	public void depoisEnviar(){
 		Thread.Status comoAcabou = this.checador.getStatus();
