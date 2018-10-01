@@ -6,10 +6,12 @@ public class Peer{
 	private static final String msgReq = "Requisitando";
 	private static final String msgResp = "Respondendo";
 	private static final String endGrupo = "236.0.0.0";
-	private MulticastSocket mcastSocket;
+	private MulticastSocket mcastEnviar;
+	private MulticastSocket mcastReceber;
 	private InetAddress meuIP;
 	private InetAddress endBroadcast;
-	private DatagramPacket pacoteBroadcast;
+	private DatagramPacket pacoteEnviar;
+	private DatagramPacket pacoteReceber;
 	private static final byte[] msgReqBytes = msgReq.getBytes(Charset.forName("UTF-8"));
 	private static final int ttlEnviar = 1000;//1 seg
 	private static final int ttlReceber = 10000;//10 seg
@@ -37,6 +39,21 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 			this.meuIP = meuIP;
 		else
 			throw new Exception("IP local nulo");
+
+		this.endBroadcast = InetAddress.getByName(endGrupo);
+		//constrói o socket com os dados de quem envia
+		//nesse caso, ele envia por uma porta aleatória
+		//pois não pus nada no parâmetro
+		this.mcastEnviar = new MulticastSocket();
+		
+		this.mcastReceber = new MulticastSocket();
+		
+		//monta o pacote com os dados de quem irá receber
+		this.pacoteEnviar = new DatagramPacket(
+		Peer.msgReqBytes,Peer.msgReqBytes.length, endBroadcast, Peer.portaAppBroadcasting);
+		byte[] buffer = new byte[1024];
+		this.pacoteReceber = new DatagramPacket(buffer, buffer.length);
+		
 	}
 	public void inicializarBroadcasting(){
 		//endereço do grupo multicast(quem espera a requisição)
@@ -49,19 +66,11 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		e relatórios de participação em grupo*/
 		//Roteadores multicast nunca encaminham
 		//datagramas com destinos nesse intervalo.
-		this.endBroadcast = InetAddress.getByName(endGrupo);
-		//monta o pacote com os dados de quem irá receber
-		this.pacoteBroadcast = new DatagramPacket(
-		Peer.msgReqBytes,Peer.msgReqBytes.length, endBroadcast, Peer.portaAppBroadcasting);
-		//constrói o socket com os dados de quem envia
-		//nesse caso, ele envia por uma porta aleatória
-		//pois não pus nada no parâmetro
-		this.mcastSocket = new MulticastSocket();
-		this.mcastSocket.joinGroup(endBroadcast);
-		this.ttlPadrao= mcastSocket.getTimeToLive();
+		this.mcastEnviar.joinGroup(endBroadcast);
+		this.ttlPadrao= mcastEnviar.getTimeToLive();
 		this.mcastSocket.setTimeToLive(Peer.ttlEnviar);
 		this.broadcasting = new EnviarUDPThread(
-		"broadcasting",pacoteBroadcast, mcastSocket);
+		"broadcasting",pacoteEnviar, mcastEnviar);
 
 		this.temporizador = new Timer("broadcasting", false);
 		//não é uma task daemon, por isso é false
@@ -71,13 +80,14 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 	}
 	public void enviar(){
 		/*//por enquanto vou deixar síncrono
-		mcastSocket.send(pacoteBroadcast);*/
+		mcastEnviar.send(pacoteBroadcast);*/
 		this.broadcasting.start();
 		this.temporizador.schedule(this.checador, 0, 1000);
-		//      							 delay periodo
+		//      		     			inicial delay periodo
 	}
 	public void depoisEnviar(){
 		Thread.Status comoAcabou = this.checador.getStatus();
+		this.mcastEnviar.setTimeToLive(this.ttlPadrao);
 		if(comoAcabou != Thread.State.TERMINATED){
 			
 			this.finalizarBroadcasting();
@@ -90,12 +100,11 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 	}
 	public finalizarBroadcasting(){
 		try{
-			if(this.mcastSocket != null){
-				this.mcastSocket.setTimeToLive(ttlPadrao);
-				this.mcastSocket.leaveGroup(endBroadcast);
-				this.mcastSocket.close();
-				this.mcastSocket.disconnect();
-				this.mcastSocket = null;
+			if(this.mcastEnviar != null){
+				this.mcastEnviar.leaveGroup(endBroadcast);
+				this.mcastEnviar.close();
+				this.mcastEnviar.disconnect();
+				this.mcastEnviar = null;
 			}
 			
 			if(this.temporizador!=null){
@@ -120,19 +129,17 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		e relatórios de participação em grupo*/
 		//Roteadores multicast nunca encaminham
 		//datagramas com destinos nesse intervalo.
-		this.endBroadcast = InetAddress.getByName(endGrupo);
 		//monta o pacote com os dados de quem irá receber
-		byte[] buffer = new byte[1024];
-		this.pacoteBroadcast = new DatagramPacket(buffer, buffer.length);
 		//constrói o socket com os dados de quem envia
 		//nesse caso, ele envia por uma porta aleatória
 		//pois não pus nada no parâmetro
-		mcastSocket = new MulticastSocket(portaAppBroadcasting);
-		mcastSocket.joinGroup(endBroadcast);
-		this.ttlPadrao= mcastSocket.getTimeToLive();
-		mcastSocket.setTimeToLive(Peer.ttlReceber);
+		this.mcastReceber.joinGroup(endBroadcast);
+		mcastReceber = new MulticastSocket(portaAppBroadcasting);
+		mcastReceber.joinGroup(endBroadcast);
+		this.ttlPadrao= mcastReceber.getTimeToLive();
+		mcastReceber.setTimeToLive(Peer.ttlReceber);
 		this.escuta = new ReceberUDPThread(
-		"escutaUDP",pacoteBroadcast, mcastSocket);
+		"escutaUDP",pacoteReceber, mcastReceber);
 
 		this.temporizador = new Timer("escutaUDP", false);
 		this.checador = null;
@@ -148,6 +155,7 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 	}
 	public void depoisEscuta(){
 		Thread.Status comoAcabou = this.checador.getStatus();
+		this.mcastEnviar.setTimeToLive(this.ttlPadrao);
 		if(comoAcabou != Thread.State.TERMINATED){
 			
 			this.finalizarEscuta();
@@ -167,23 +175,24 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 			}
 			if(buffer.length!=requerido.length || !iguais){
 				//ataque vírus!!!
+				throw new Exception("Ataque vírus!!");
 			}
 			else{
 				this.iPConectando = ipQuemEnviou;
-			}
 
+				ConexaoP2P.depoisEscuta();
+			}
 
 	
 		}
 	}
 	public finalizarEscuta(){
 		try{
-			if(this.mcastSocket != null){
-				this.mcastSocket.setTimeToLive(ttlPadrao);
-				this.mcastSocket.leaveGroup(endBroadcast);
-				this.mcastSocket.close();
-				this.mcastSocket.disconnect();
-				this.mcastSocket = null;
+			if(this.mcastReceber != null){
+				this.mcastReceber.leaveGroup(endBroadcast);
+				this.mcastReceber.close();
+				this.mcastReceber.disconnect();
+				this.mcastReceber = null;
 			}
 			
 			if(this.temporizador!=null){

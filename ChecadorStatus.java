@@ -28,7 +28,7 @@
 			break;
 			case Thread.State.BLOCKED:
 			//está bloqueada esperando por um "monitor lock "
-				return true;
+				return false;
 			break;
 			case Thread.State.WAITING:
 			//esperando indefinitivamente por outra thread que está fazendo uma ação determinada

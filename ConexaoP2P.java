@@ -5,7 +5,7 @@ public class ConexaoP2P{
 	public ConexaoP2P(InetAddress ipLocal){
 		this.ipLocal = ipLocal;
 		this.listaPeers = new ArrayList<Peer>();
-		this.listaPeers[0] = new Peer(this.ipLocal);
+		this.listaPeers.add(new Peer(this.ipLocal));
 	}
 	public void inicializarBroadcasting(){
 		this.listaPeers[0].inicializarBroadcasting();
@@ -21,6 +21,12 @@ public class ConexaoP2P{
 	}
 	public void receber(){
 		this.listaPeers[0].receber();
+	}
+	public static void depoisEscuta(){
+		//aqui temos certeza que a thread
+		//de escutar acabou
+		InetAddress IPQuemMandouMsg = this.listaPeers[0].getIPConectando();
+		this.listaPeers.add(new Peer(IPQuemMandouMsg));
 	}
 	public void finalizarEscuta(){
 		this.listaPeers[0].finalizarEscuta();
