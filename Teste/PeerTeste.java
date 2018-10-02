@@ -1,10 +1,10 @@
-public class Peer{
+public class PeerTeste{
 	private MulticastSocket emissor;
 	private Timer temporizador;
-	private static final int portaAppBroadcasting = 1729;
-	private static final int portaDesktopBroadcasting = 1639;
-	private static final String msgReq = "Requisitando";
-	private static final String msgResp = "Respondendo";
+	private static final int portaDesktopBroadcasting = 1729;
+	private static final int portaAppBroadcasting = 1639;
+	private static final String msgReq = "Respondendo";
+	private static final String msgResp = "Requisitando";
 	private static final String endGrupo = "236.0.0.0";
 	private MulticastSocket mcastEnviar;
 	private MulticastSocket mcastReceber;
@@ -37,7 +37,7 @@ public class Peer{
 	*/
 	/*
 https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDeprecation.html*/
-	public Peer(InetAddress meuIP)throws Exception{
+	public PeerTeste(InetAddress meuIP)throws Exception{
 		if(meuIP != null)
 			this.meuIP = meuIP;
 		else
@@ -49,11 +49,11 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		//pois não pus nada no parâmetro
 		this.mcastEnviar = new MulticastSocket();
 		
-		this.mcastReceber = new MulticastSocket(Peer.portaAppBroadcasting);
+		this.mcastReceber = new MulticastSocket();
 		
 		//monta o pacote com os dados de quem irá receber
 		this.pacoteEnviar = new DatagramPacket(
-		Peer.msgReqBytes,Peer.msgReqBytes.length, endBroadcast, Peer.portaDesktopBroadcasting);
+		PeerTeste.msgReqBytes,PeerTeste.msgReqBytes.length, endBroadcast, PeerTeste.portaAppBroadcasting);
 		byte[] buffer = new byte[1024];
 		this.pacoteReceber = new DatagramPacket(buffer, buffer.length);
 		
@@ -71,7 +71,7 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		//datagramas com destinos nesse intervalo.
 		this.mcastEnviar.joinGroup(endBroadcast);
 		this.ttlPadrao= mcastEnviar.getTimeToLive();
-		this.mcastSocket.setTimeToLive(Peer.ttlEnviar);
+		this.mcastSocket.setTimeToLive(PeerTeste.ttlEnviar);
 		this.broadcasting = new EnviarUDPThread(
 		"broadcasting",pacoteEnviar, mcastEnviar);
 
@@ -138,9 +138,11 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		//constrói o socket com os dados de quem envia
 		//nesse caso, ele envia por uma porta aleatória
 		//pois não pus nada no parâmetro
+		this.mcastReceber.joinGroup(endBroadcast);
+		mcastReceber = new MulticastSocket(portaAppBroadcasting);
 		mcastReceber.joinGroup(endBroadcast);
 		this.ttlPadrao= mcastReceber.getTimeToLive();
-		mcastReceber.setTimeToLive(Peer.ttlReceber);
+		mcastReceber.setTimeToLive(PeerTeste.ttlReceber);
 		this.escuta = new ReceberUDPThread(
 		"escutaUDP",pacoteReceber, mcastReceber);
 
@@ -168,7 +170,7 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 			//deu certo!
 			byte[] buffer = this.escuta.getDados();
 			InetAddress ipQuemEnviou = this.escuta.getIPQuemEnviou();
-			byte[] requerido = this.Peer.msgResp.getBytes(Charset.forName("UTF-8"));
+			byte[] requerido = this.PeerTeste.msgResp.getBytes(Charset.forName("UTF-8"));
 			boolean iguais = true;
 			if(buffer.length == requerido.length){
 				for(int i=0;i<buffer.length;i++){

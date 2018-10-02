@@ -14,7 +14,7 @@ public class Controlador(){
 	public static void depoisEnviar(){
 		//enviado!!
 		//dentro daqui vc chamará um método que acontecerá depois de	enviar dados
-		Main.depoisEnviar();
+		MainTeste.depoisEnviar();
 	}
 	public void finalizarBroascasting(){
 		this.conexao.finalizarBroadcasting();	
@@ -28,7 +28,7 @@ public class Controlador(){
 	public static void depoisEscuta(){
 		this.peerAchado = this.conexao.getUltimoPeer();
 		//dentro daqui vc chamará um método que acontecerá depois de receber dados
-		Main.depoisEscuta();
+		MainTeste.depoisEscuta();
 	}
 	public void finalizarEscuta(){
 		this.conexao.finalizarEscuta();

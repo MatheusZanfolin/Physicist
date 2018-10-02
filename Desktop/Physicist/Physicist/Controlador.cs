@@ -21,14 +21,14 @@ namespace Physicist
         }
         Peer peerAchado;
         //tempo máximo = 2min 30 seg
-        public enum Status
+        /*public enum Status
         {
             Desconectado,
             EsperandoRequisicao,
             Escolhendo,
             EsperandoResposta,
             Conectado
-        }
+        }*/
         public Controlador() {
             conexao = new ConexaoP2P(getIpLocal());
         }
