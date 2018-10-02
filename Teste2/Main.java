@@ -1,4 +1,4 @@
-public class MainTeste{
+public class Main{
 	private static Controlador meuControlador;
 	public static void main(String[] args){
 	meuControlador = new Controlador();
