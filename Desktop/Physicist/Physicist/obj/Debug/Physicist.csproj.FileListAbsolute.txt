@@ -3,3 +3,13 @@ C:\Users\u16191\Desktop\Desktop\Physicist\Physicist\obj\Debug\Physicist.frmPrinc
 C:\Users\u16191\Desktop\Desktop\Physicist\Physicist\obj\Debug\Physicist.Properties.Resources.resources
 C:\Users\u16191\Desktop\Desktop\Physicist\Physicist\obj\Debug\Physicist.csproj.GenerateResource.Cache
 C:\Users\u16191\Desktop\Desktop\Physicist\Physicist\obj\Debug\Physicist.csproj.CoreCompileInputs.cache
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.csprojResolveAssemblyReference.cache
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.frmPrincipal.resources
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.Properties.Resources.resources
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.csproj.GenerateResource.Cache
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.csproj.CoreCompileInputs.cache
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\bin\Debug\Physicist.exe.config
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\bin\Debug\Physicist.exe
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\bin\Debug\Physicist.pdb
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.exe
+C:\Users\u16191\Downloads\Physicist-master\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.pdb

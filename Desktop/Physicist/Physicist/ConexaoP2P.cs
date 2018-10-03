@@ -35,7 +35,7 @@ namespace Physicist
         {//não tenho ctz se ele é async ou não
             var autoEvento = new AutoResetEvent(false);
             var checador = new ChecadorStatus(indTarefa);
-            timerP2P = new Timer(checador.checarStatus, autoEvento, 0, intervaloTimer);
+            timerP2P = new Timer(checador.CheckStatus, autoEvento, 0, intervaloTimer);
             autoEvento.WaitOne();
             //liberar e reiniciar o timer
             //"flag" autoevento foi alterada

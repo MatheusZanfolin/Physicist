@@ -18,8 +18,10 @@ namespace Physicist
         private const int portaBroadcast = 1729;
         private const string msgReq = "Requisitando";
         private const string msgResp = "Respondendo";
+        private static IPAddress endMulticast = IPAddress.Parse("236.0.0.0");
         private static byte[] msgRespBytes = (byte[])Encoding.ASCII.GetBytes(msgResp);
         private IPAddress IP;
+        private IPEndPoint meuEnd;
         UdpClient servidorBroadcast;
         String nome;
         private IPEndPoint iPConectando;
@@ -161,12 +163,18 @@ namespace Physicist
         }*/
         public void inicializarBroadcasting()
         {//                                                                 236.0.0.0
-            servidorBroadcast = new UdpClient(new IPEndPoint(new IPAddress(0xEC000000), portaBroadcast));
-            servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
-            servidorBroadcast.MulticastLoopback = true;
+            servidorBroadcast = new UdpClient(/*new IPEndPoint(new IPAddress(0xEC000000), portaBroadcast)*/);
+            //servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
+            //servidorBroadcast.MulticastLoopback = true;
+            servidorBroadcast.ExclusiveAddressUse = true;
+
             //uma mensagem será enviada para o dispositivo que fez um multicast
 
             servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
+            this.meuEnd = new IPEndPoint(IPAddress.Any, portaBroadcast);
+            servidorBroadcast.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            servidorBroadcast.Client.Bind(meuEnd);
+            servidorBroadcast.JoinMulticastGroup(endMulticast);
 
         }
         public void finalizarBroadcasting()
