@@ -1,10 +1,15 @@
 import java.net.*;
 public class Controlador{
 	private static ConexaoP2P conexao;
-	private static PeerTeste peerAchado;
+	private static Peer peerAchado;
 	private byte[] buffer;
 	public Controlador(){
-		this.conexao = new ConexaoP2P(InetAddress.getByName(InetAddress.getLocalHost().getHostAddress()));
+		try{
+			this.conexao = new ConexaoP2P(InetAddress.getByName(InetAddress.getLocalHost().getHostAddress()));
+		}
+		catch(Exception ex){
+			System.out.println("Placa de rede do próprio dispositivo desconhecida");
+		}
 	}
 	public void inicializarBroadcasting(){
 		this.conexao.inicializarBroadcasting();
@@ -34,7 +39,7 @@ public class Controlador{
 	public void finalizarEscuta(){
 		this.conexao.finalizarEscuta();
 	}
-	public PeerTeste getPeerAchado(){
+	public Peer getPeerAchado(){
 		return this.peerAchado;
 	}
 

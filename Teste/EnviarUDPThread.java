@@ -14,7 +14,12 @@ public class EnviarUDPThread extends Thread{
 		blinker.start();
 	}*/
 	public void run(){
-		this.mcastSocket.send(this.pacote);
+		try{
+			this.mcastSocket.send(this.pacote);
+		}
+		catch(Exception ex){
+			System.out.println("Erro ao enviar");
+		}
 	}
 
 }

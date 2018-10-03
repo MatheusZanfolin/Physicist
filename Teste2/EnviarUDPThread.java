@@ -9,12 +9,22 @@ public class EnviarUDPThread extends Thread{
 		this.pacote = pacote;
 		this.mcastSocket = mcastSocket;
 	}
+	public byte[] getDados(){
+		return this.pacote.getData();
+	}
 	/*public void start(){
 		blinker = new Thread(this);
 		blinker.start();
 	}*/
 	public void run(){
-		this.mcastSocket.send(this.pacote);
+		try{
+
+			this.mcastSocket.send(this.pacote);
+
+		}
+		catch(Exception ex){
+			System.out.println("Erro ao enviar pacote");
+		}
 	}
 
 }

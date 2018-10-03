@@ -4,7 +4,12 @@ public class Controlador{
 	private static PeerTeste peerAchado;
 	private byte[] buffer;
 	public Controlador(){
-		this.conexao = new ConexaoP2P(InetAddress.getByName(InetAddress.getLocalHost().getHostAddress()));
+		try{
+			this.conexao = new ConexaoP2P(InetAddress.getByName(InetAddress.getLocalHost().getHostAddress()));
+		}
+		catch(Exception ex){
+			System.out.println("Placa de rede do próprio dispositivo desconhecida");
+		}
 	}
 	public void inicializarBroadcasting(){
 		this.conexao.inicializarBroadcasting();

@@ -2,23 +2,35 @@ import java.util.*;
 import java.lang.Thread.State;
 public class ChecadorStatus extends TimerTask{
 	private Thread threadControlada;
-	private Thread.State status;
+	private static Thread.State status;
 	public Thread.State getStatus(){
-		return this.status;
+		return status;
 	}
 	public ChecadorStatus(Thread threadControlada){
 		this.threadControlada = threadControlada;
 	}
 	public void run(){
 		if(ehParaParar(threadControlada.getState())){
-			if(threadControlada.equals(PeerTeste.escuta))
-				PeerTeste.depoisEscuta();
-			if(threadControlada.equals(PeerTeste.broadcasting))
-				PeerTeste.depoisEnviar();
+			if(threadControlada.equals(Peer.escuta)){
+				try{
+					Peer.depoisEscuta();
+				}
+				catch(Exception ex){
+					System.out.println("Erro depois de escutar");
+				}
+			}
+			if(threadControlada.equals(Peer.broadcasting)){
+				try{
+					Peer.depoisEnviar();
+				}
+				catch(Exception ex){
+					System.out.println("Erro depois de enviar");
+				}
+			}
 		}
 	}
-	private boolean ehParaParar(Thread.State estadoAtual){
-		this.status = estadoAtual;
+	public static boolean ehParaParar(Thread.State estadoAtual){
+		status = estadoAtual;
 		switch(estadoAtual){
 			case NEW:
 			//A thread não começou ainda

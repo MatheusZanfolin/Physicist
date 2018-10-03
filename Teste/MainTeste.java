@@ -9,13 +9,19 @@ public class MainTeste{
 	}
 	public static void depoisEnviar(){
 		System.out.println("Enviado!!");
-		meuControlador.finalizarBroadcasting();
+		//meuControlador.finalizarBroadcasting();
 	}
 	public static void depoisEscuta(){
 		PeerTeste achado = meuControlador.getPeerAchado();
 		System.out.println(achado.getIP());
 		System.out.println("Recebido!!");
-		meuControlador.finalizarEscuta();
+		//meuControlador.finalizarEscuta();
+		try{
+			Thread.sleep(1000);
+		}
+		catch(Exception ex){
+			System.out.println("Erro ao fazer a Thread dormir");
+		}
 		System.out.println("Enviando resposta!");
 		meuControlador.inicializarBroadcasting();
 		System.out.println("Enviando....");

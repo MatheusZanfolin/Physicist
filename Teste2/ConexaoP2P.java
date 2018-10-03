@@ -2,14 +2,14 @@ import java.util.*;
 import java.net.*;
 
 public class ConexaoP2P{
-	private static ArrayList<PeerTeste> listaPeers;
+	private static ArrayList<Peer> listaPeers;
 	private final int portaP2PDesktop = 1337;
 	private InetAddress ipLocal;
 	public ConexaoP2P(InetAddress ipLocal){
 		ipLocal = ipLocal;
-		listaPeers = new ArrayList<PeerTeste>();
+		listaPeers = new ArrayList<Peer>();
 		try{
-			listaPeers.add(new PeerTeste(ipLocal));
+			listaPeers.add(new Peer(ipLocal));
 		}
 		catch(Exception ex){}
 	}
@@ -36,7 +36,7 @@ public class ConexaoP2P{
 		//de escutar acabou
 		InetAddress IPQuemMandouMsg = listaPeers.get(0).getIPConectando();
 		try{
-			listaPeers.add(new PeerTeste(IPQuemMandouMsg));
+			listaPeers.add(new Peer(IPQuemMandouMsg));
 		}
 		catch(Exception ex){}
 		Controlador.depoisEscuta();
@@ -44,7 +44,7 @@ public class ConexaoP2P{
 	public void finalizarEscuta(){
 		listaPeers.get(0).finalizarEscuta();
 	}
-	public PeerTeste getUltimoPeer(){
+	public Peer getUltimoPeer(){
 		return listaPeers.get(listaPeers.size()-1);
 	}
 }
