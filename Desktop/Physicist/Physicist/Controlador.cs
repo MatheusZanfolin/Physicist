@@ -55,13 +55,13 @@ namespace Physicist
         }
         public async void testarBroadcasting()
         {
-		    try{
+		    //try{
                 conexao.testarBroadcasting();
-        	}
-		    catch(Exception ex){
+        	/*}
+		   catch(Exception ex){
 			    if(ex.Message == "A"){
 				    try{
-					    this.tratarBroadcast();
+					//    this.tratarBroadcast();
 				    }
 				    catch(Exception e){
 					    if(e.Message == "B"){
@@ -76,7 +76,7 @@ namespace Physicist
 			    else{
 				    throw new Exception("Busca por dispositivos não deu certo!");
 			    }
-		    }
+		    }*/
 	    }
         public async void responderBroadcasting()
         {
@@ -127,11 +127,10 @@ namespace Physicist
                 return this.peerAchado;
             }
         }
-        private async void tratarBroadcast()
-        {
-            conexao.tratarBroadcast();
+        public static void tratarBroadcast() {
+            //conexao.tratarBroadcast();
             //cuidado, lança exceção
-            peerAchado = conexao.ultimoPeer();
+            frmPrincipal.listarDispositivos();
         }
         private IPAddress getIpLocal()
         {

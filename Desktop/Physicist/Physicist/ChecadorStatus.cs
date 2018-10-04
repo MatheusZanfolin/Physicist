@@ -40,7 +40,7 @@ namespace Physicist
             AutoResetEvent autoEvento = (AutoResetEvent)infoStatus;
             if (ehParaParar(tarefaAnalisar.Status))
             {
-                autoEvento.Set();
+                Peer.finalizarTimer();
             }
 
         }

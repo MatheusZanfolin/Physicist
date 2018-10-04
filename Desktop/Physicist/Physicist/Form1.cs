@@ -15,7 +15,7 @@ namespace Physicist
         bool ehPossivelCancelar = false;
         bool ehPossivelCancelarBroadcasting = false;
         private static Controlador meuControlador;
-        List<Peer> listaDispositivos = new List<Peer>();
+        private static List<Peer> listaDispositivos = new List<Peer>();
         byte[] buffer;
         public frmPrincipal()
         {
@@ -33,10 +33,15 @@ namespace Physicist
             else {
                 ehPossivelCancelar = true;
                 btnListar.Text = "Cancelar Busca";
-                meuControlador.inicializarBroadcasting();
-                procurarDispositivos();
-                //procurarDispositivos é async
-		    }
+                while (true)
+                {
+                    meuControlador.inicializarBroadcasting();
+                    procurarDispositivos();
+                    //procurarDispositivos é async
+                    inserirNaLista();
+                }
+
+            }
         }
 
         private void btnConectar_Click(object sender, EventArgs e)
@@ -78,22 +83,33 @@ namespace Physicist
         }
         private async void procurarDispositivos()
         {
-		    try{
+		    //try{
                 meuControlador.testarBroadcasting();
-		    }
+		    /*}
 		    catch(Exception ex){
 			    if(ex.Message == "B"){
-				    Peer achado = meuControlador.PeerAchado;
-				    listaDispositivos.Add(achado);
-				    lsbDispositivos.Items.Add(listaDispositivos.Last().ToString());
-
-                    procurarDispositivos();
+				    
 			    }
 			    else{
 				    MessageBox.Show("Busca cancelada!");
 			    }	
-		    }
+		    }*/
 
+        }
+        private void inserirNaLista()
+        {
+            if (listaDispositivos.Count < 1)
+            {
+                MessageBox.Show("Busca cancelada!");
+            }
+            else
+            {
+                lsbDispositivos.Items.Add(listaDispositivos.Last().ToString());
+            }
+        }
+        public static void listarDispositivos() {
+            Peer achado = meuControlador.PeerAchado;
+            listaDispositivos.Add(achado);
         }
 
         private void frmPrincipal_Load(object sender, EventArgs e)

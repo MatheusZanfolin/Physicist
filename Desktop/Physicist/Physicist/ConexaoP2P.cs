@@ -13,7 +13,7 @@ namespace Physicist
     {
         const int intervaloTimer = 1000;
 
-        private List<Peer> peers;
+        private static List<Peer> peers;
         public const int portaP2P = 1337;
         TcpListener receptorP2P;
         TcpClient emissorP2P;
@@ -28,8 +28,8 @@ namespace Physicist
         //precisamos fazer um "protocolo" para interpretar os dados recebidos
         public void inicializarPeer()
         {
-            this.receptorP2P = new TcpListener(meuIP, portaP2P);
-            this.receptorP2P.Start();
+            receptorP2P = new TcpListener(meuIP, portaP2P);
+            receptorP2P.Start();
         }
         private void inicializarTimer(/*int indTarefa*/)
         {//não tenho ctz se ele é async ou não
@@ -41,13 +41,14 @@ namespace Physicist
             //"flag" autoevento foi alterada
             timerP2P.Dispose();
             throw new Exception("Timer Peer to Peer acabou!");
+            
         }
 
         public async void aceitarPeer()
         {
             try
             {
-                escutarPeer = this.receptorP2P.AcceptTcpClientAsync();
+                escutarPeer = receptorP2P.AcceptTcpClientAsync();
                 inicializarTimer();
             }
             catch(Exception ex)
@@ -55,7 +56,7 @@ namespace Physicist
                 switch (estadoEscutaPeer())
                 {
                     case TaskStatus.Faulted:
-                        this.finalizarConexao();
+                        finalizarConexao();
                         throw new Exception("Caso aparentemente impossível!");
                         break;
                     case TaskStatus.RanToCompletion:
@@ -65,16 +66,16 @@ namespace Physicist
                         throw new Exception("D");
                         break;
                     case TaskStatus.WaitingForChildrenToComplete:
-                        this.finalizarConexao();
+                        finalizarConexao();
                         throw new Exception("Comportamento inesperado da Task");
                         break;
                     case TaskStatus.Canceled:
 
-                        this.finalizarConexao();
+                        finalizarConexao();
                         throw new Exception("Task mal inicializada!");
                         break;
                     default:
-                        this.finalizarConexao();
+                        finalizarConexao();
                         throw new Exception("Comportamento inesperado do Timer");
                 }
             }
@@ -82,7 +83,7 @@ namespace Physicist
         public async void tratarDados()
         {
             //sla como faço isso por enquanto
-            this.emissorP2P = escutarPeer.Result;
+            emissorP2P = escutarPeer.Result;
             NetworkStream stream = emissorP2P.GetStream();
             byte[] meuBuffer = new byte[2048];
             int res = await stream.ReadAsync(meuBuffer, 0, 2048);
@@ -97,21 +98,22 @@ namespace Physicist
         {
             get
             {
-                return this.buffer;
+                return buffer;
             }
         }
 
         public async void testarBroadcasting() {
-            try{
+            //try{
 			    peers[0].receber();
-        	}
+        	/*}
 		    catch(Exception ex){
 			    if(ex.Message == "A")
 				    throw new Exception("A");
 			    else
 				    throw new Exception("Broadcasting falhou!");	
-		    }
+		    }*/
 	    }
+       // public static void depois
         public async void responderBroadcasting()
         {
             try
@@ -127,8 +129,8 @@ namespace Physicist
             }
         }
 	    public Peer ultimoPeer(){
-		    if(this.peers.Count != 0)
-			    return this.peers.Last();
+		    if(peers.Count != 0)
+			    return peers.Last();
 		    else
 			    throw new Exception("Não foi achado nenhum outro peer ainda!");
 	    }
@@ -154,64 +156,58 @@ namespace Physicist
         }
         public void finalizarBroadcasting()
         {
-            this.peers[0].finalizarBroadcasting();
-           // this.receptorP2P.Stop();
+            
+           // receptorP2P.Stop();
             
         }
         public void inicializarBroadcasting()
         {
-            this.peers[0].inicializarBroadcasting();
+            peers[0].inicializarBroadcasting();
         }
         public void finalizarRespostaBroadcasting()
         {
-            this.peers[0].finalizarRespostaBroadcasting();
-            // this.receptorP2P.Stop();
+            peers[0].finalizarRespostaBroadcasting();
+            // receptorP2P.Stop();
 
         }
         public void inicializarRespostaBroadcasting()
         {
-            this.peers[0].inicializarRespostaBroadcasting();
+            peers[0].inicializarRespostaBroadcasting();
         }
-        public async void tratarBroadcast()
+        public static async void tratarBroadcast()
         {
-            try
-            {
-                this.peers[0].tratarBroadcast();
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message == "B")
-                {
-                    IPEndPoint ipAchado = this.peers[0].IPConectando;
-                    Peer novoPeer = new Peer(ipAchado);
-                    peers.Add(novoPeer);
-                }
-                else
-                    throw new Exception("Caso aparentemente impossível!");
+           
+                
+            IPEndPoint ipAchado = peers[0].IPConectando;
+            Peer novoPeer = new Peer(ipAchado);
+            peers.Add(novoPeer);
+            Controlador.tratarBroadcast();
+               
+                   // throw new Exception("Caso aparentemente impossível!");
                     //caso aparentemente impossível
-            }
+            
         } 
         public TaskStatus estadoBroadcasting()
         {
-            return this.peers[0].estadoBroadcasting();
+            return Peer.estadoBroadcasting();
         }
         public TaskStatus estadoRespostaBroadcasting()
         {
-            return this.peers[0].estadoRespostaBroadcasting();
+            return Peer.estadoRespostaBroadcasting();
         }
         public TaskStatus estadoEscutaPeer()
         {
             return ConexaoP2P.escutarPeer.Status;
         }
-        public ConexaoP2P(IPAddress meuIP)
+        public ConexaoP2P(IPAddress IP)
         {
-            if (meuIP == null)
+            if (IP == null)
                 throw new ArgumentNullException("ConexãoP2P: IP nulo");
-            this.meuIP = meuIP;
-            this.peers = new List<Peer>();
-            this.peers.Insert(0, new Peer(meuIP));
-            //this.receptorP2P = new TcpListener(IPAddress.Any, ConexaoP2P.portaP2P);
-            this.conectadoP2P = false;
+            meuIP = IP;
+            peers = new List<Peer>();
+            peers.Insert(0, new Peer(meuIP));
+            //receptorP2P = new TcpListener(IPAddress.Any, ConexaoP2P.portaP2P);
+            conectadoP2P = false;
 
         }
         /*public int acharIndicePeer(String ip)

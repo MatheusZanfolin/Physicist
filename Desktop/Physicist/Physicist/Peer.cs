@@ -22,9 +22,9 @@ namespace Physicist
         private static byte[] msgRespBytes = (byte[])Encoding.ASCII.GetBytes(msgResp);
         private IPAddress IP;
         private IPEndPoint meuEnd;
-        UdpClient servidorBroadcast;
+        static UdpClient servidorBroadcast;
         String nome;
-        private IPEndPoint iPConectando;
+        private static IPEndPoint iPConectando;
         public String ToString()
         {
             return this.IP.ToString();
@@ -32,7 +32,7 @@ namespace Physicist
         public IPEndPoint IPConectando{
             get
             {
-                return this.iPConectando;
+                return iPConectando;
             }
             
         }
@@ -44,14 +44,45 @@ namespace Physicist
             var autoEvento = new AutoResetEvent(false);
             var checador = new ChecadorStatus(indTarefa);
             timer = new Timer(checador.CheckStatus, autoEvento, 0, intervaloTimer);
-            autoEvento.WaitOne();
+            //autoEvento.WaitOne();
             //liberar e reiniciar o timer
             //"flag" autoevento foi alterada
-            timer.Dispose();
-	        throw new Exception("Timer Peer acabou!");
+
+            /*timer.Dispose();
+	        throw new Exception("Timer Peer acabou!");*/
+        }
+        public static void finalizarTimer() {
+            switch (estadoRespostaBroadcasting())
+            {
+                case TaskStatus.Faulted:
+                    finalizarBroadcasting();
+                    //throw new Exception("Caso aparentemente impossível!");
+                    break;
+                case TaskStatus.RanToCompletion:
+                    //deu tudo certo!!!
+                    //não dar dispose!!
+                    //tratar Broadcasting!
+                    //throw new Exception("A");
+                    tratarBroadcast();
+                    break;
+                case TaskStatus.WaitingForChildrenToComplete:
+                    finalizarBroadcasting();
+                    //throw new Exception("Comportamento inesperado da Task");
+                    break;
+                case TaskStatus.Canceled:
+
+                    finalizarBroadcasting();
+                    //throw new Exception("Task mal inicializada!");
+                    break;
+                default:
+                    finalizarBroadcasting();
+                    //throw new Exception("Comportamento inesperado do Timer");
+                    break;
+            }
+
         }
 
-        public async void tratarBroadcast() {
+        private static void tratarBroadcast() {
             //não sei se isso deve ser realmente assíncrono
             IPEndPoint IPQuemMandou;
             UdpReceiveResult req;
@@ -63,52 +94,29 @@ namespace Physicist
             string requisição = Encoding.ASCII.GetString(req.Buffer);
             IPQuemMandou = req.RemoteEndPoint;
 
-            this.finalizarBroadcasting();
+            finalizarBroadcasting();
             if (!requisição.Equals("Requisitando"))
             {
                 //throw new SocketException("Ataque vírus!!!");
                 throw new Exception("Esperava por requisição \" Requisitando\", porém achou \" "+ requisição +" \" !");
             }
-            this.iPConectando = IPQuemMandou;
-	        throw new Exception("B");
+            iPConectando = IPQuemMandou;
+            ConexaoP2P.tratarBroadcast();
+	        //throw new Exception("B");
         }
         
         public async void receber()
         {
-            try
-            {
+            /*try
+            {*/
                 broadcasting = (servidorBroadcast.ReceiveAsync());
-		        inicializarTimer(0);
-            }
+                inicializarTimer(0);
+            /*}
             catch (Exception ex)//ObjectDisposedException pode ser tbm
             {
-		            switch(estadoRespostaBroadcasting()){
-                	    case TaskStatus.Faulted:
-				            this.finalizarBroadcasting();
-				            throw new Exception("Caso aparentemente impossível!");
-			            break;
-			            case TaskStatus.RanToCompletion:
-				            //deu tudo certo!!!
-				            //não dar dispose!!
-                            //tratar Broadcasting!
-				            throw new Exception("A");
-			            break;
-			            case TaskStatus.WaitingForChildrenToComplete:
-				            this.finalizarBroadcasting();
-				            throw new Exception("Comportamento inesperado da Task");
-			            break;
-			            case TaskStatus.Canceled:
-				
-				            this.finalizarBroadcasting();
-				            throw new Exception("Task mal inicializada!");
-			            break;
-			            default:
-				            this.finalizarBroadcasting();
-				            throw new Exception("Comportamento inesperado do Timer");
-				
-		            }
+		            
 
-            }
+            }*/
         }
         public async void enviar()
         {
@@ -148,11 +156,11 @@ namespace Physicist
 
             }
         }
-        public TaskStatus estadoBroadcasting()
+        public static TaskStatus estadoBroadcasting()
         {
             return broadcasting.Status;
         }
-        public TaskStatus estadoRespostaBroadcasting()
+        public static TaskStatus estadoRespostaBroadcasting()
         {
             return respostaBroadcasting.Status;
         }
@@ -172,12 +180,12 @@ namespace Physicist
 
             servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
             this.meuEnd = new IPEndPoint(IPAddress.Any, portaBroadcast);
-            servidorBroadcast.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            //servidorBroadcast.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             servidorBroadcast.Client.Bind(meuEnd);
             servidorBroadcast.JoinMulticastGroup(endMulticast);
 
         }
-        public void finalizarBroadcasting()
+        public static void finalizarBroadcasting()
         {
             try
             {
@@ -187,6 +195,7 @@ namespace Physicist
                 {
                     servidorBroadcast.Close();
                     servidorBroadcast.Dispose();
+                    servidorBroadcast = null;
                 }
 		        if(timer != null)
 			        timer.Dispose();
