@@ -19,7 +19,7 @@ namespace Physicist
                 return this.buffer;
             }
         }
-        Peer peerAchado;
+        public static Peer peerAchado;
         //tempo máximo = 2min 30 seg
         /*public enum Status
         {
@@ -124,12 +124,13 @@ namespace Physicist
         }
         public Peer PeerAchado {
             get{
-                return this.peerAchado;
+                return peerAchado;
             }
         }
         public static void tratarBroadcast() {
             //conexao.tratarBroadcast();
             //cuidado, lança exceção
+            peerAchado = con
             frmPrincipal.listarDispositivos();
         }
         private IPAddress getIpLocal()

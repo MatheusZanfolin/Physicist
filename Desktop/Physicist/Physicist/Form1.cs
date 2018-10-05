@@ -33,13 +33,14 @@ namespace Physicist
             else {
                 ehPossivelCancelar = true;
                 btnListar.Text = "Cancelar Busca";
-                while (true)
-                {
+                /*while (true)
+                {*/
                     meuControlador.inicializarBroadcasting();
                     procurarDispositivos();
+                    meuControlador.finalizarBroadcasting();
                     //procurarDispositivos é async
                     inserirNaLista();
-                }
+                //}
 
             }
         }
@@ -100,7 +101,7 @@ namespace Physicist
         {
             if (listaDispositivos.Count < 1)
             {
-                MessageBox.Show("Busca cancelada!");
+               // MessageBox.Show("Busca cancelada!");
             }
             else
             {

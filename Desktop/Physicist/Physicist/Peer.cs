@@ -15,10 +15,11 @@ namespace Physicist
         private static System.Threading.Timer timer;
         public static Task<UdpReceiveResult> broadcasting;
         public static Task<int> respostaBroadcasting;
-        private const int portaBroadcast = 1729;
+        private const int portaBroadcast = 1639;
         private const string msgReq = "Requisitando";
         private const string msgResp = "Respondendo";
         private static IPAddress endMulticast = IPAddress.Parse("236.0.0.0");
+        private bool receptorAtribuido = false;
         private static byte[] msgRespBytes = (byte[])Encoding.ASCII.GetBytes(msgResp);
         private IPAddress IP;
         private IPEndPoint meuEnd;
@@ -43,7 +44,7 @@ namespace Physicist
             //estado inicial falso, ficará true caso chegar no estado callback
             var autoEvento = new AutoResetEvent(false);
             var checador = new ChecadorStatus(indTarefa);
-            timer = new Timer(checador.CheckStatus, autoEvento, 0, intervaloTimer);
+            timer = new Timer(checador.CheckStatus, autoEvento, intervaloTimer, intervaloTimer);
             //autoEvento.WaitOne();
             //liberar e reiniciar o timer
             //"flag" autoevento foi alterada
@@ -52,7 +53,7 @@ namespace Physicist
 	        throw new Exception("Timer Peer acabou!");*/
         }
         public static void finalizarTimer() {
-            switch (estadoRespostaBroadcasting())
+            switch (estadoBroadcasting())
             {
                 case TaskStatus.Faulted:
                     finalizarBroadcasting();
@@ -111,6 +112,7 @@ namespace Physicist
             {*/
                 broadcasting = (servidorBroadcast.ReceiveAsync());
                 inicializarTimer(0);
+            
             /*}
             catch (Exception ex)//ObjectDisposedException pode ser tbm
             {
@@ -170,19 +172,26 @@ namespace Physicist
 
         }*/
         public void inicializarBroadcasting()
-        {//                                                                 236.0.0.0
-            servidorBroadcast = new UdpClient(/*new IPEndPoint(new IPAddress(0xEC000000), portaBroadcast)*/);
-            //servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
-            //servidorBroadcast.MulticastLoopback = true;
-            servidorBroadcast.ExclusiveAddressUse = true;
+        {//   236.0.0.0
+            if (this.receptorAtribuido)
+                return;
+            
+                servidorBroadcast = new UdpClient(/*new IPEndPoint(new IPAddress(0xEC000000), portaBroadcast)*/);
+                //servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
+                //servidorBroadcast.MulticastLoopback = true;
+                servidorBroadcast.ExclusiveAddressUse = true;
 
-            //uma mensagem será enviada para o dispositivo que fez um multicast
+                //uma mensagem será enviada para o dispositivo que fez um multicast
 
-            servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
-            this.meuEnd = new IPEndPoint(IPAddress.Any, portaBroadcast);
-            //servidorBroadcast.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            servidorBroadcast.Client.Bind(meuEnd);
-            servidorBroadcast.JoinMulticastGroup(endMulticast);
+                servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
+                this.meuEnd = new IPEndPoint(IPAddress.Any, portaBroadcast);
+                //servidorBroadcast.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                servidorBroadcast.Client.Bind(meuEnd);
+                //servidorBroadcast.
+                servidorBroadcast.JoinMulticastGroup(endMulticast);
+                this.receptorAtribuido = true;
+            
+           
 
         }
         public static void finalizarBroadcasting()
@@ -194,10 +203,10 @@ namespace Physicist
                 if (servidorBroadcast != null)
                 {
                     servidorBroadcast.Close();
-                    servidorBroadcast.Dispose();
-                    servidorBroadcast = null;
+                    //servidorBroadcast.DropMulticastGroup(endMulticast);
+                    // servidorBroadcast.Dispose();
                 }
-		        if(timer != null)
+                if (timer != null)
 			        timer.Dispose();
                  }
             catch {}
@@ -221,7 +230,8 @@ namespace Physicist
                 if (servidorBroadcast != null)
                 {
                     servidorBroadcast.Close();
-                    servidorBroadcast.Dispose();
+                    //servidorBroadcast.DropMulticastGroup(endMulticast);
+                   // servidorBroadcast.Dispose();
                 }
                 if (timer != null)
                     timer.Dispose();
@@ -230,6 +240,15 @@ namespace Physicist
         }
 
         //construtor para peers remotos
+        public void Dispose()
+        {
+            respostaBroadcasting.Dispose();
+            broadcasting.Dispose();
+            timer.Dispose();
+            servidorBroadcast.DropMulticastGroup(endMulticast);
+            servidorBroadcast.Dispose();
+            
+        }
 
         public Peer(IPEndPoint ipRemoto)
         {
