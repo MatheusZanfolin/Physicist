@@ -16,9 +16,10 @@ namespace Physicist
           2 -   escutarPeer
          // 3 -   lerStream
              */
-        public ChecadorStatus(int indTarefa)
+        public ChecadorStatus(int ind)
         {
-            switch (indTarefa)
+            this.indTarefa = ind;
+            switch (ind)
             {
                 case 0:
                     this.tarefaAnalisar = Peer.broadcasting;
@@ -40,7 +41,10 @@ namespace Physicist
             AutoResetEvent autoEvento = (AutoResetEvent)infoStatus;
             if (ehParaParar(tarefaAnalisar.Status))
             {
-                Peer.finalizarTimer();
+                if (indTarefa != 2)
+                    Peer.finalizarTimer();
+                else
+                    ConexaoP2P.finalizarTimer();
             }
 
         }

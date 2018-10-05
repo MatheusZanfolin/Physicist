@@ -13,10 +13,10 @@ namespace Physicist
     public partial class frmPrincipal : Form
     {
         bool ehPossivelCancelar = false;
-        bool ehPossivelCancelarBroadcasting = false;
+        bool ehPossivelCancelarResposta= false;
         private static Controlador meuControlador;
         private static List<Peer> listaDispositivos = new List<Peer>();
-        byte[] buffer;
+        private static byte[] buffer;
         public frmPrincipal()
         {
             InitializeComponent();
@@ -47,7 +47,7 @@ namespace Physicist
 
         private void btnConectar_Click(object sender, EventArgs e)
         {
-            if (ehPossivelCancelarBroadcasting)
+            if (ehPossivelCancelarResposta)
             {
                 meuControlador.finalizarRespostaBroadcasting();
                 ehPossivelCancelar = false;
@@ -58,17 +58,21 @@ namespace Physicist
                 ehPossivelCancelar = true;
                 btnConectar.Text = "Cancelar";
                 meuControlador.inicializarRespostaBroadcasting();
+
                 responderPeer(lsbDispositivos.SelectedIndex);
+                meuControlador.finalizarRespostaBroadcasting();
+                //.. esperar a resposta
                 //responder peer é async
+                atualizarForm();
             }
 
         }
         private async void responderPeer(int indice)
         {
-            try
-            {
+           /* try
+            {*/
                 meuControlador.responderBroadcasting();
-            }
+            /*}
             catch(Exception ex)
             {
                 if(ex.Message == "D")
@@ -76,11 +80,13 @@ namespace Physicist
                     this.interpretarBuffer(meuControlador.Buffer);
                     //interpretar o buffer
                 }
-            }
+            }*/
         }
-        private void interpretarBuffer(byte[] buffer)
+        public static void interpretarBuffer(byte[] buf)
         {
             // enfileirar dados
+            for (int i = 0; i < buf.Length; i++)
+                buffer[i] = buf[i];
         }
         private async void procurarDispositivos()
         {
@@ -97,6 +103,10 @@ namespace Physicist
 		    }*/
 
         }
+        private void atualizarForm()
+        {
+
+        }
         private void inserirNaLista()
         {
             if (listaDispositivos.Count < 1)
@@ -109,7 +119,7 @@ namespace Physicist
             }
         }
         public static void listarDispositivos() {
-            Peer achado = meuControlador.PeerAchado;
+            Peer achado = Controlador.PeerAchado;
             listaDispositivos.Add(achado);
         }
 

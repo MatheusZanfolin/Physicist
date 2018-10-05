@@ -53,34 +53,32 @@ namespace Physicist
 	        throw new Exception("Timer Peer acabou!");*/
         }
         public static void finalizarTimer() {
-            switch (estadoBroadcasting())
+            if (broadcasting != null && respostaBroadcasting == null)
             {
-                case TaskStatus.Faulted:
-                    finalizarBroadcasting();
-                    //throw new Exception("Caso aparentemente impossível!");
-                    break;
-                case TaskStatus.RanToCompletion:
-                    //deu tudo certo!!!
-                    //não dar dispose!!
-                    //tratar Broadcasting!
-                    //throw new Exception("A");
+                if (estadoBroadcasting() == TaskStatus.RanToCompletion)
+                {
                     tratarBroadcast();
-                    break;
-                case TaskStatus.WaitingForChildrenToComplete:
+                }
+                else
+                {
                     finalizarBroadcasting();
-                    //throw new Exception("Comportamento inesperado da Task");
-                    break;
-                case TaskStatus.Canceled:
-
-                    finalizarBroadcasting();
-                    //throw new Exception("Task mal inicializada!");
-                    break;
-                default:
-                    finalizarBroadcasting();
-                    //throw new Exception("Comportamento inesperado do Timer");
-                    break;
+                }
+                        
             }
+            if(broadcasting == null && respostaBroadcasting != null)
+            {
+                if (estadoRespostaBroadcasting() == TaskStatus.RanToCompletion)
+                {
+                    finalizarRespostaBroadcasting();
 
+                    ConexaoP2P.inicializarPeer();
+                }
+                else
+                {
+                
+                        finalizarRespostaBroadcasting();
+                }
+            }
         }
 
         private static void tratarBroadcast() {
@@ -122,11 +120,11 @@ namespace Physicist
         }
         public async void enviar()
         {
-            try
-            {
+            /*try
+            {*/
                 respostaBroadcasting = (servidorBroadcast.SendAsync(Peer.msgRespBytes, Peer.msgRespBytes.Length));
                 inicializarTimer(1);
-            }
+            /*}
             catch (Exception ex)//ObjectDisposedException pode ser tbm
             {
                 switch (estadoRespostaBroadcasting())
@@ -156,7 +154,7 @@ namespace Physicist
 
                 }
 
-            }
+            }*/
         }
         public static TaskStatus estadoBroadcasting()
         {
@@ -221,7 +219,7 @@ namespace Physicist
             //uma mensagem será enviada para o dispositivo que fez um multicast
 
         }
-        public void finalizarRespostaBroadcasting()
+        public static void finalizarRespostaBroadcasting()
         {
             try
             {

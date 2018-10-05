@@ -19,7 +19,7 @@ namespace Physicist
                 return this.buffer;
             }
         }
-        public static Peer peerAchado;
+        private static Peer peerAchado;
         //tempo máximo = 2min 30 seg
         /*public enum Status
         {
@@ -80,10 +80,10 @@ namespace Physicist
 	    }
         public async void responderBroadcasting()
         {
-            try
-            {
+            /*try
+            {*/
                 conexao.responderBroadcasting();
-            }
+            /*}
             catch (Exception e)
             {
                 if (e.Message == "C")
@@ -120,9 +120,9 @@ namespace Physicist
                 {
                     throw new Exception("Mensagem não foi enviada pro dispositivo!");
                 }
-            }
+            }*/
         }
-        public Peer PeerAchado {
+        public static Peer PeerAchado {
             get{
                 return peerAchado;
             }
@@ -130,8 +130,13 @@ namespace Physicist
         public static void tratarBroadcast() {
             //conexao.tratarBroadcast();
             //cuidado, lança exceção
-            peerAchado = con
+            peerAchado = ConexaoP2P.ultimoPeer();
             frmPrincipal.listarDispositivos();
+        }
+        public static void tratarDados()
+        {
+            //byte[] buffer = ;
+            frmPrincipal.interpretarBuffer(ConexaoP2P.Buffer);
         }
         private IPAddress getIpLocal()
         {
