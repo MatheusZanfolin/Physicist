@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,30 +18,63 @@ namespace Physicist
         private static Controlador meuControlador;
         private static List<Peer> listaDispositivos = new List<Peer>();
         private static byte[] buffer;
+        private static int numElementosListaForm = 0;
+        private static System.Windows.Forms.Timer timerLista;
+        private static bool flagSairTimer;
         public frmPrincipal()
         {
             InitializeComponent();
+            
         }
+        private static void TimerEventProcessor(Object myObject,
+                                            EventArgs myEventArgs)
+        {
+            timerLista.Stop();
 
+            // Displays a message box asking whether to continue running the timer.
+            if (listaDispositivos.Count != numElementosListaForm)
+            {
+                // Restarts the timer and increments the counter.
+                
+                timerLista.Enabled = true;
+            }
+            else
+            {
+                // Stops the timer.
+                flagSairTimer = true;
+            }
+        }
+        private void inicializarTimer()
+        {
+            timerLista = new System.Windows.Forms.Timer();
+            timerLista.Tick += new EventHandler(TimerEventProcessor);
+            timerLista.Interval = 1000;
+            timerLista.Start();
+        }
         private void btnListar_Click(object sender, EventArgs e)
         {
             if (ehPossivelCancelar)
             {
+                inserirNaLista();
                 meuControlador.finalizarBroadcasting();
                 ehPossivelCancelar = false;
                 btnListar.Text = "Buscar Dispositivos";
             }
             else {
                 ehPossivelCancelar = true;
-                btnListar.Text = "Cancelar Busca";
-                /*while (true)
-                {*/
-                    meuControlador.inicializarBroadcasting();
-                    procurarDispositivos();
-                    meuControlador.finalizarBroadcasting();
-                    //procurarDispositivos é async
-                    inserirNaLista();
-                //}
+                btnListar.Text = "Verificar Busca";
+                meuControlador.inicializarBroadcasting();
+                procurarDispositivos();
+                meuControlador.finalizarBroadcasting();
+                /*inicializarTimer();
+                while (!flagSairTimer)
+                    Application.DoEvents();
+                if (flagSairTimer)
+                    inserirNaLista();*/
+                //procurarDispositivos é async
+                //inserirNaLista();
+                //Thread.Sleep(1000);
+                
 
             }
         }
@@ -61,6 +95,7 @@ namespace Physicist
 
                 responderPeer(lsbDispositivos.SelectedIndex);
                 meuControlador.finalizarRespostaBroadcasting();
+
                 //.. esperar a resposta
                 //responder peer é async
                 atualizarForm();
@@ -72,6 +107,7 @@ namespace Physicist
            /* try
             {*/
                 meuControlador.responderBroadcasting();
+           
             /*}
             catch(Exception ex)
             {
@@ -109,22 +145,22 @@ namespace Physicist
         }
         private void inserirNaLista()
         {
-            if (listaDispositivos.Count < 1)
-            {
-               // MessageBox.Show("Busca cancelada!");
-            }
-            else
+            if (numElementosListaForm != listaDispositivos.Count)
+            
             {
                 lsbDispositivos.Items.Add(listaDispositivos.Last().ToString());
+                numElementosListaForm++;
             }
         }
         public static void listarDispositivos() {
             Peer achado = Controlador.PeerAchado;
             listaDispositivos.Add(achado);
+            
         }
 
         private void frmPrincipal_Load(object sender, EventArgs e)
         {
+            
             meuControlador = new Controlador();
 
         }

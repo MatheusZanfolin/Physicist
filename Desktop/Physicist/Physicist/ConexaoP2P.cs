@@ -46,6 +46,8 @@ namespace Physicist
         }
         public static void finalizarTimer()
         {
+            timerP2P.Dispose();
+            timerP2P = null;
             if(ConexaoP2P.estadoEscutaPeer() == TaskStatus.RanToCompletion)
             {
                 ConexaoP2P.tratarDados();

@@ -53,6 +53,8 @@ namespace Physicist
 	        throw new Exception("Timer Peer acabou!");*/
         }
         public static void finalizarTimer() {
+            timer.Dispose();
+            timer = null;
             if (broadcasting != null && respostaBroadcasting == null)
             {
                 if (estadoBroadcasting() == TaskStatus.RanToCompletion)
@@ -76,12 +78,13 @@ namespace Physicist
                 else
                 {
                 
-                        finalizarRespostaBroadcasting();
+                    finalizarRespostaBroadcasting();
                 }
             }
         }
 
         private static void tratarBroadcast() {
+            //timer.Dispose();
             //não sei se isso deve ser realmente assíncrono
             IPEndPoint IPQuemMandou;
             UdpReceiveResult req;
@@ -215,7 +218,7 @@ namespace Physicist
             servidorBroadcast.DontFragment = true;
             servidorBroadcast.Connect(IPConectando);
             servidorBroadcast.EnableBroadcast = false;//pode enviar e/ou receber broadcast
-            //servidorBroadcast.MulticastLoopback = true;
+            servidorBroadcast.MulticastLoopback = true;
             //uma mensagem será enviada para o dispositivo que fez um multicast
 
         }
