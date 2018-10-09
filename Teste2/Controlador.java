@@ -42,5 +42,14 @@ public class Controlador{
 	public Peer getPeerAchado(){
 		return this.peerAchado;
 	}
+	public void inicializarTCP(){
+		ConexaoP2P.inicializarPeer();
+	}
+	public void enviarTCP(){
+		this.conexao.enviarTCP();
+	}
+	public static void depoisEnviarTCP(){
+		Main.depoisEnviarTCP();
+	}
 
 }

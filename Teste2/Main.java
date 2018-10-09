@@ -20,6 +20,12 @@ public class Main{
 		System.out.println(achado.getIP());
 		System.out.println("Recebido!!");
 		//meuControlador.finalizarEscuta();
+		meuContolador.inicializarTCP();
+		System.out.println("Enviando TCP!!");
+		meuControlador.enviarTCP();
 
+	}
+	public static void depoisEnviarTCP(){
+		System.out.println("Enviado TCP!!");
 	}
 }

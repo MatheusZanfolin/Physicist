@@ -27,6 +27,14 @@ public class ChecadorStatus extends TimerTask{
 					System.out.println("Erro depois de enviar");
 				}
 			}
+			if(threadControlada.equals(ConexaoP2P.emissao)){
+				try{
+					ConexaoP2P.depoisEnviarTCP():
+				}
+				catch(Exception ex){
+					System.out.println("Erro depois de enviar TCP");
+				}
+			}
 		}
 	}
 	public static boolean ehParaParar(Thread.State estadoAtual){
