@@ -14,7 +14,7 @@ namespace Physicist
         const int intervaloTimer = 1000;
 
         private static List<Peer> peers;
-        public const int portaP2P = 1337;
+        public const int portaP2PDesktop = 1337;
         private static TcpListener receptorP2P;
         private static TcpClient emissorP2P;
         bool conectadoP2P;
@@ -28,7 +28,7 @@ namespace Physicist
         //precisamos fazer um "protocolo" para interpretar os dados recebidos
         public static void inicializarPeer()
         {
-            receptorP2P = new TcpListener(meuIP, portaP2P);
+            receptorP2P = new TcpListener(meuIP, portaP2PDesktop);
             receptorP2P.Start();
             aceitarPeer();
         }
@@ -219,7 +219,7 @@ namespace Physicist
             meuIP = IP;
             peers = new List<Peer>();
             peers.Insert(0, new Peer(meuIP));
-            //receptorP2P = new TcpListener(IPAddress.Any, ConexaoP2P.portaP2P);
+            //receptorP2P = new TcpListener(IPAddress.Any, ConexaoP2P.portaP2PDesktop);
             conectadoP2P = false;
 
         }

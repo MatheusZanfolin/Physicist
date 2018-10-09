@@ -83,6 +83,7 @@ namespace Physicist
         {
             if (ehPossivelCancelarResposta)
             {
+                atualizarForm();
                 meuControlador.finalizarRespostaBroadcasting();
                 ehPossivelCancelar = false;
                 btnConectar.Text = "Conectar com esse dispositivo";
@@ -90,15 +91,13 @@ namespace Physicist
             else
             {
                 ehPossivelCancelar = true;
-                btnConectar.Text = "Cancelar";
+                btnConectar.Text = "Verificar resposta";
                 meuControlador.inicializarRespostaBroadcasting();
-
                 responderPeer(lsbDispositivos.SelectedIndex);
                 meuControlador.finalizarRespostaBroadcasting();
-
                 //.. esperar a resposta
                 //responder peer é async
-                atualizarForm();
+                
             }
 
         }

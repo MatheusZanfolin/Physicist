@@ -16,6 +16,7 @@ namespace Physicist
         public static Task<UdpReceiveResult> broadcasting;
         public static Task<int> respostaBroadcasting;
         private const int portaBroadcast = 1639;
+        private const int portaEnviar = 1729;
         private const string msgReq = "Requisitando";
         private const string msgResp = "Respondendo";
         private static IPAddress endMulticast = IPAddress.Parse("236.0.0.0");
@@ -24,6 +25,7 @@ namespace Physicist
         private IPAddress IP;
         private IPEndPoint meuEnd;
         static UdpClient servidorBroadcast;
+        static UdpClient emissorResposta;
         String nome;
         private static IPEndPoint iPConectando;
         public String ToString()
@@ -125,7 +127,7 @@ namespace Physicist
         {
             /*try
             {*/
-                respostaBroadcasting = (servidorBroadcast.SendAsync(Peer.msgRespBytes, Peer.msgRespBytes.Length));
+                respostaBroadcasting = (emissorResposta.SendAsync(Peer.msgRespBytes, Peer.msgRespBytes.Length));
                 inicializarTimer(1);
             /*}
             catch (Exception ex)//ObjectDisposedException pode ser tbm
@@ -180,7 +182,7 @@ namespace Physicist
                 servidorBroadcast = new UdpClient(/*new IPEndPoint(new IPAddress(0xEC000000), portaBroadcast)*/);
                 //servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
                 //servidorBroadcast.MulticastLoopback = true;
-                servidorBroadcast.ExclusiveAddressUse = true;
+                //servidorBroadcast.ExclusiveAddressUse = true;
 
                 //uma mensagem será enviada para o dispositivo que fez um multicast
 
@@ -214,11 +216,14 @@ namespace Physicist
         }
         public void inicializarRespostaBroadcasting()
         {
-            servidorBroadcast = new UdpClient(IPConectando);
-            servidorBroadcast.DontFragment = true;
-            servidorBroadcast.Connect(IPConectando);
-            servidorBroadcast.EnableBroadcast = false;//pode enviar e/ou receber broadcast
-            servidorBroadcast.MulticastLoopback = true;
+           /* servidorBroadcast.Dispose();
+            servidorBroadcast = null;*/
+            this.IPConectando.Port = portaEnviar;
+            emissorResposta = new UdpClient();
+            emissorResposta.DontFragment = true;
+            emissorResposta.Connect(IPConectando);
+            emissorResposta.EnableBroadcast = false;//pode enviar e/ou receber broadcast
+            emissorResposta.MulticastLoopback = true;
             //uma mensagem será enviada para o dispositivo que fez um multicast
 
         }
@@ -228,9 +233,9 @@ namespace Physicist
             {
                 if (respostaBroadcasting != null)
                     respostaBroadcasting.Dispose();
-                if (servidorBroadcast != null)
+                if (emissorResposta != null)
                 {
-                    servidorBroadcast.Close();
+                    emissorResposta.Close();
                     //servidorBroadcast.DropMulticastGroup(endMulticast);
                    // servidorBroadcast.Dispose();
                 }
@@ -248,6 +253,7 @@ namespace Physicist
             timer.Dispose();
             servidorBroadcast.DropMulticastGroup(endMulticast);
             servidorBroadcast.Dispose();
+            emissorResposta.Dispose();
             
         }
 
