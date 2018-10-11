@@ -1,4 +1,5 @@
 import java.net.*;
+import java.io.*;
 public class EnviarTCPThread extends Thread{
 	private DataOutputStream streamEnvio;
 	private byte[] dados;

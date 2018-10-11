@@ -34,6 +34,7 @@ namespace Physicist
         }
         public static void inicializarTimer(/*int indTarefa*/)
         {//não tenho ctz se ele é async ou não
+
             var autoEvento = new AutoResetEvent(false);
             var checador = new ChecadorStatus(indTarefa);
             timerP2P = new Timer(checador.CheckStatus, autoEvento, 0, intervaloTimer);
@@ -60,8 +61,9 @@ namespace Physicist
 
         public static async void aceitarPeer()
         {
-           /* try
-            {*/
+            /* try
+             {*/
+                 
                 escutarPeer = receptorP2P.AcceptTcpClientAsync();
                 inicializarTimer();
             /*}

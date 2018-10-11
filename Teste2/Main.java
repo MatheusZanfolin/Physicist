@@ -1,3 +1,4 @@
+import java.lang.Thread;
 public class Main{
 	private static Controlador meuControlador;
 	public static void main(String[] args){
@@ -20,7 +21,13 @@ public class Main{
 		System.out.println(achado.getIP());
 		System.out.println("Recebido!!");
 		//meuControlador.finalizarEscuta();
-		meuContolador.inicializarTCP();
+		try{
+			Thread.sleep(600000);
+		}
+		catch(InterruptedException e){
+			System.out.println("O sono da thread foi interrompido");
+		}
+		meuControlador.inicializarTCP();
 		System.out.println("Enviando TCP!!");
 		meuControlador.enviarTCP();
 

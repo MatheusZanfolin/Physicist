@@ -43,7 +43,7 @@ public class Controlador{
 		return this.peerAchado;
 	}
 	public void inicializarTCP(){
-		ConexaoP2P.inicializarPeer();
+		this.conexao.inicializarPeer();
 	}
 	public void enviarTCP(){
 		this.conexao.enviarTCP();

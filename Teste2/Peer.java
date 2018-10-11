@@ -84,7 +84,7 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		"broadcasting",pacoteEnviar, mcastEnviar);
 
 		temporizador = new Timer("broadcasting", false);
-		//não é uma task daemon, por isso é false
+		//não é uma thread daemon, por isso é false
 		checador = new ChecadorStatus(broadcasting);
 
 

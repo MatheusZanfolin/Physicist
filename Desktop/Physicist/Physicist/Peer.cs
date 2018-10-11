@@ -69,7 +69,7 @@ namespace Physicist
                 }
                         
             }
-            if(broadcasting == null && respostaBroadcasting != null)
+            if(respostaBroadcasting != null)
             {
                 if (estadoRespostaBroadcasting() == TaskStatus.RanToCompletion)
                 {
