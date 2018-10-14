@@ -1,14 +1,20 @@
-package main;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mainteste;
+
 import java.net.*;
 import java.util.*;
 import java.lang.Thread.State;
-public class Peer{
+public class PeerTeste{
 	//private MulticastSocket emissor;
 	private static Timer temporizador;
-	private static final int portaAppBroadcasting = 1729;
-	private static final int portaDesktopBroadcasting = 1639;
-	private static final String msgReq = "Requisitando";
-	private static final String msgResp = "Respondendo";
+	private static final int portaDesktopBroadcasting = 1729;
+	private static final int portaAppBroadcasting = 1639;
+	private static final String msgReq = "Respondendo";
+	private static final String msgResp = "Requisitando";
 	private static final String endGrupo = "236.0.0.0";
 	private static MulticastSocket mcastEnviar;
 	private static MulticastSocket mcastReceber;
@@ -41,7 +47,7 @@ public class Peer{
 	*/
 	/*
 https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDeprecation.html*/
-	public Peer(InetAddress ip)throws Exception{
+	public PeerTeste(InetAddress ip)throws Exception{
 		if(ip != null)
 			meuIP = ip;
 		else
@@ -53,11 +59,11 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		//pois não pus nada no parâmetro
 		mcastEnviar = new MulticastSocket();
 
-		mcastReceber = new MulticastSocket(Peer.portaAppBroadcasting);
+		mcastReceber = new MulticastSocket(PeerTeste.portaAppBroadcasting);
 
 		//monta o pacote com os dados de quem irá receber
 		pacoteEnviar = new DatagramPacket(
-		Peer.msgReqBytes,Peer.msgReqBytes.length, endBroadcast, Peer.portaDesktopBroadcasting);
+		PeerTeste.msgReqBytes,PeerTeste.msgReqBytes.length, endBroadcast, PeerTeste.portaDesktopBroadcasting);
 		byte[] buffer = new byte[1024];
 		pacoteReceber = new DatagramPacket(buffer, buffer.length);
 
@@ -75,8 +81,8 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		//datagramas com destinos nesse intervalo.
 		try{
 			mcastEnviar.joinGroup(endBroadcast);
-			Peer.ttlPadrao= mcastEnviar.getTimeToLive();
-			mcastEnviar.setTimeToLive(Peer.ttlEnviar);
+			PeerTeste.ttlPadrao= mcastEnviar.getTimeToLive();
+			mcastEnviar.setTimeToLive(PeerTeste.ttlEnviar);
 		}
 		catch(Exception ex){
 			System.out.println("Erro ao conectar no grupo para enviar");
@@ -93,32 +99,33 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 	public void enviar(){
 		/*//por enquanto vou deixar síncrono
 		mcastEnviar.send(pacoteBroadcast);*/
+		System.out.println("Thread de enviar começando");
+		System.out.println(""+new String(this.pacoteEnviar.getData()));
+
+		System.out.println("IP: "+this.pacoteEnviar.getAddress());
+		System.out.println("Porta: "+this.pacoteEnviar.getPort());
 		broadcasting.start();
 		temporizador.schedule(checador, 0, 1000);
-		//      		    inicial delay periodo
+		//      		     			inicial delay periodo
 	}
 	public static void depoisEnviar()throws Exception{
 	//aqui temos certeza que a thread de enviar acabou
 		State comoAcabou = checador.getStatus();
-		System.out.println(new String(broadcasting.getDados()));
 		try{
-			if(ttlPadrao>0 && ttlPadrao<255)
-				mcastEnviar.setTimeToLive(Peer.ttlPadrao);
+			mcastEnviar.setTimeToLive(PeerTeste.ttlPadrao);
 		}
 		catch(Exception ex){
-				System.out.println("Erro no ttl: " + ex.getMessage() );
-				ex.printStackTrace();
+					System.out.println("Erro no ttl");
 		}
-
 		if(!ChecadorStatus.ehParaParar(comoAcabou)){
 
 			finalizarBroadcasting();
 			throw new Exception("Conexão com o dispositivo mal estabelecida! Verifique se estão na mesma rede e tente novamente!");
 		}
 		else{
-			Peer.finalizarBroadcasting();
 
 			//deu certo!
+			PeerTeste.finalizarBroadcasting();
 			ConexaoP2P.depoisEnviar();
 		}
 	}
@@ -129,8 +136,6 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 				mcastEnviar.close();
 				mcastEnviar.disconnect();
 				mcastEnviar = null;
-				mcastEnviar = new MulticastSocket();
-
 			}
 
 			if(temporizador!=null){
@@ -161,8 +166,8 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		//pois não pus nada no parâmetro
 		try{
 			mcastReceber.joinGroup(endBroadcast);
-			ttlPadrao= mcastReceber.getTimeToLive();
-			mcastReceber.setTimeToLive(Peer.ttlReceber);
+			PeerTeste.ttlPadrao= mcastReceber.getTimeToLive();
+			mcastReceber.setTimeToLive(PeerTeste.ttlReceber);
 		}
 		catch(Exception ex){
 			System.out.println("Erro ao conectar no grupo para receber" + ex.getMessage());
@@ -182,8 +187,7 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 		escuta.start();
 		temporizador.schedule(checador, 0, 1000);
 	}
-		public static boolean ehParaParar(Thread.State estadoAtual){
-			//status = estadoAtual;
+	public static boolean ehParaParar(Thread.State estadoAtual){
 			switch(estadoAtual){
 				case NEW:
 				//A thread não começou ainda
@@ -206,21 +210,18 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 					return true;
 				default:
 					return true;
-			}
+		}
 	}
 	public static void depoisEscuta()throws Exception{
 		State comoAcabou = checador.getStatus();
+		System.out.println(comoAcabou.toString());
 		try{
-			if(ttlPadrao>0 && ttlPadrao<255 && mcastEnviar!=null)
-				mcastReceber.setTimeToLive(ttlPadrao);
+			mcastReceber.setTimeToLive(PeerTeste.ttlPadrao);
 		}
 		catch(Exception ex){
-				System.out.println("Erro no ttl: " + ex.getMessage());
-
-				ex.printStackTrace();
+			System.out.println("Erro no ttl");
 		}
 		if(!ehParaParar(comoAcabou)){
-
 			finalizarEscuta();
 			throw new Exception("Conexão com o dispositivo mal estabelecida! Verifique se estão na mesma rede e tente novamente!");
 		}
@@ -229,22 +230,24 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 			String buffer = new String(escuta.getDados());
 			buffer = buffer.trim();
 			InetAddress ipQuemEnviou = escuta.getIPQuemEnviou();
-			//byte[] requerido = Peer.msgResp.getBytes(/*Charset.forName("UTF-8")*/);
+			//byte[] requerido = PeerTeste.msgResp.getBytes(/*Charset.forName("UTF-8")*/);
 			boolean iguais = true;
-			if(buffer.length() == Peer.msgResp.length()){
+			if(buffer.length() == PeerTeste.msgResp.length()){
 				for(int i=0;i<buffer.length();i++){
-					if(buffer.charAt(i) != Peer.msgResp.charAt(i))
+					if(buffer.charAt(i) != PeerTeste.msgResp.charAt(i))
 						iguais = false;
 				}
 			}
-			if(buffer.length()!=Peer.msgResp.length() || !iguais){
+			if(buffer.length()!=PeerTeste.msgResp.length() || !iguais){
 				//ataque vírus!!!
+				System.out.println("Buffer recebido: "+ new String(buffer));
+				System.out.println("O que era requerido: "+ new String(PeerTeste.msgResp));
 				throw new Exception("Ataque vírus!!");
 			}
 			else{
-				//InetAddress ipQuemEnviou = escuta.getIPQuemEnviou();
+
 				iPConectando = ipQuemEnviou;
-				Peer.finalizarEscuta();
+				PeerTeste.finalizarEscuta();
 				ConexaoP2P.depoisEscuta();
 			}
 
@@ -258,9 +261,7 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 				mcastReceber.close();
 				mcastReceber.disconnect();
 				mcastReceber = null;
-				mcastReceber = new MulticastSocket(Peer.portaAppBroadcasting);
 			}
-
 
 			if(temporizador!=null){
 				temporizador.purge();

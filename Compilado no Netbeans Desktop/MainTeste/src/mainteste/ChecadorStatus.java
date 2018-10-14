@@ -1,4 +1,9 @@
-package main;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mainteste;
 import java.util.*;
 import java.lang.Thread.State;
 public class ChecadorStatus extends TimerTask{
@@ -12,17 +17,17 @@ public class ChecadorStatus extends TimerTask{
 	}
 	public void run(){
 		if(ehParaParar(threadControlada.getState())){
-			if(threadControlada.equals(Peer.escuta)){
+			if(threadControlada.equals(PeerTeste.escuta)){
 				try{
-					Peer.depoisEscuta();
+					PeerTeste.depoisEscuta();
 				}
 				catch(Exception ex){
 					System.out.println("Erro depois de escutar");
 				}
 			}
-			if(threadControlada.equals(Peer.broadcasting)){
+			if(threadControlada.equals(PeerTeste.broadcasting)){
 				try{
-					Peer.depoisEnviar();
+					PeerTeste.depoisEnviar();
 				}
 				catch(Exception ex){
 					System.out.println("Erro depois de enviar");

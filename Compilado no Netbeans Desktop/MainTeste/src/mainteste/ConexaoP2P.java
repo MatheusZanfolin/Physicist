@@ -1,16 +1,25 @@
-package main;
-import java.util.*;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mainteste;
+
+/**
+ *
+ * @author rafae
+ */import java.util.*;
 import java.net.*;
 
 public class ConexaoP2P{
-	private static ArrayList<Peer> listaPeers;
+	private static ArrayList<PeerTeste> listaPeers;
 	private final int portaP2PDesktop = 1337;
 	private InetAddress ipLocal;
 	public ConexaoP2P(InetAddress ipLocal){
 		ipLocal = ipLocal;
-		listaPeers = new ArrayList<Peer>();
+		listaPeers = new ArrayList<PeerTeste>();
 		try{
-			listaPeers.add(new Peer(ipLocal));
+			listaPeers.add(new PeerTeste(ipLocal));
 		}
 		catch(Exception ex){}
 	}
@@ -37,7 +46,7 @@ public class ConexaoP2P{
 		//de escutar acabou
 		InetAddress IPQuemMandouMsg = listaPeers.get(0).getIPConectando();
 		try{
-			listaPeers.add(new Peer(IPQuemMandouMsg));
+			listaPeers.add(new PeerTeste(IPQuemMandouMsg));
 		}
 		catch(Exception ex){}
 		Controlador.depoisEscuta();
@@ -45,7 +54,7 @@ public class ConexaoP2P{
 	public void finalizarEscuta(){
 		listaPeers.get(0).finalizarEscuta();
 	}
-	public Peer getUltimoPeer(){
+	public PeerTeste getUltimoPeer(){
 		return listaPeers.get(listaPeers.size()-1);
 	}
 }

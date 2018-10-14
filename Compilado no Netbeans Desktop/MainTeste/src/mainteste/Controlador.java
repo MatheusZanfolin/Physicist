@@ -1,8 +1,17 @@
-package main;
-import java.net.*;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mainteste;
+
+/**
+ *
+ * @author rafae
+ */import java.net.*;
 public class Controlador{
 	private static ConexaoP2P conexao;
-	private static Peer peerAchado;
+	private static PeerTeste peerAchado;
 	private byte[] buffer;
 	public Controlador(){
 		try{
@@ -21,7 +30,7 @@ public class Controlador{
 	public static void depoisEnviar(){
 		//enviado!!
 		//dentro daqui vc chamará um método que acontecerá depois de	enviar dados
-		Main.depoisEnviar();
+		MainTeste.depoisEnviar();
 	}
 	public void finalizarBroadcasting(){
 		this.conexao.finalizarBroadcasting();
@@ -35,12 +44,12 @@ public class Controlador{
 	public static void depoisEscuta(){
 		peerAchado = conexao.getUltimoPeer();
 		//dentro daqui vc chamará um método que acontecerá depois de receber dados
-		Main.depoisEscuta();
+		MainTeste.depoisEscuta();
 	}
 	public void finalizarEscuta(){
 		this.conexao.finalizarEscuta();
 	}
-	public Peer getPeerAchado(){
+	public PeerTeste getPeerAchado(){
 		return this.peerAchado;
 	}
 

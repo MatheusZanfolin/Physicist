@@ -1,4 +1,9 @@
-package main;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mainteste;
 import java.net.*;
 public class EnviarUDPThread extends Thread{
 	private MulticastSocket mcastSocket;
@@ -10,21 +15,16 @@ public class EnviarUDPThread extends Thread{
 		this.pacote = pacote;
 		this.mcastSocket = mcastSocket;
 	}
-	public byte[] getDados(){
-		return this.pacote.getData();
-	}
 	/*public void start(){
 		blinker = new Thread(this);
 		blinker.start();
 	}*/
 	public void run(){
 		try{
-
 			this.mcastSocket.send(this.pacote);
-
 		}
 		catch(Exception ex){
-			System.out.println("Erro ao enviar pacote");
+			System.out.println("Erro ao enviar");
 		}
 	}
 
