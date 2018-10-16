@@ -124,6 +124,7 @@ namespace Physicist
             for (int i = 0; i < buf.Length; i++)
                 buffer[i] = buf[i];
             MessageBox.Show("Tratando dados");
+            
         }
         private async void procurarDispositivos()
         {

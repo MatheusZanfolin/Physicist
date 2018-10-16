@@ -23,3 +23,4 @@ C:\Users\u16191\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug
 C:\Users\u16191\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.csproj.CoreCompileInputs.cache
 C:\Users\u16191\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.exe
 C:\Users\u16191\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.pdb
+C:\Users\u16191\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.Form2.resources
