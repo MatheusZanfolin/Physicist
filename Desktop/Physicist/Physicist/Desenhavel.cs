@@ -13,7 +13,6 @@ namespace Physicist
 taxa de proporção altura
 taxa de proporção largura
 //largura e altura da tela do pc
-largura e altura da tela do celular
 
 dados de cada imagem
 flagReta	(1 byte)

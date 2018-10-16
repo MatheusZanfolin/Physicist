@@ -21,6 +21,7 @@ namespace Physicist
         private static int numElementosListaForm = 0;
         private static System.Windows.Forms.Timer timerLista;
         private static bool flagSairTimer;
+        private static List<Desenhavel> listaDesenhaveis;
         public frmPrincipal()
         {
             InitializeComponent();
@@ -124,6 +125,45 @@ namespace Physicist
             for (int i = 0; i < buf.Length; i++)
                 buffer[i] = buf[i];
             MessageBox.Show("Tratando dados");
+            //pegar conjuntos de 33 em 33 bytes
+            listaDesenhaveis = new List<Desenhavel>();
+            for(int i=0; i< buf.length; i = i = i+33){
+                Desenhavel itemBuffer;
+                /*byte[] xRel        = new byte[8];
+                for(i=1;i<xRel.Length;i++){
+                    xRel[i] = buf[i];
+                }
+                byte[] yRel        = new byte[8];
+                for(;i<yRel.Length;i++){
+                    yRel[i] = buf[i];
+                }
+                byte[] larguraRel  = new byte[8];
+                for(;i<larguraRel.Length;i++){
+                    larguraRel[i] = buf[i];
+                }
+                byte[] alturaRel   = new byte[8];
+                for(;i<alturaRel.Length;i++){
+                    alturaRel[i] = buf[i];
+                }
+                i = 0;*/
+                double xRel = BitConverter.ToDouble(buf, 1);
+                double yRel = BitConverter.ToDouble(buf, 9);
+                double larguraRel = BitConverter.ToDouble(buf, 17);
+                double alturaRel = BitConverter.ToDouble(buf, 25);
+                if(buf[i] == 0x00){
+                    //flag para imagem = 00
+                    itemBuffer = new Imagem(xRel, yRel, larguraRel, alturaRel);
+                }
+                if(buf[i] == 0xFF){
+                    //flag para FIM = 255
+                    return;
+                }
+                if(buf[i] == 0x7F){
+                    //flag para reta = 127
+                    itemBuffer = new Reta(xRel, yRel, larguraRel, alturaRel);
+                }
+                listaDesenhaveis.add(itemBuffer);
+            }
             
         }
         private async void procurarDispositivos()
