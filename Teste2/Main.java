@@ -1,6 +1,8 @@
 import java.lang.Thread;
+import java.io.*;
 public class Main{
 	private static Controlador meuControlador;
+	private static BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in));
 	public static void main(String[] args){
 		meuControlador = new Controlador();
 		System.out.println("Começando a tratar broadcasting..");
@@ -20,12 +22,13 @@ public class Main{
 		Peer achado = meuControlador.getPeerAchado();
 		System.out.println(achado.getIP());
 		System.out.println("Recebido!!");
-		//meuControlador.finalizarEscuta();
+
 		try{
-			Thread.sleep(600000);
+
+			String x = teclado.readLine();
 		}
-		catch(InterruptedException e){
-			System.out.println("O sono da thread foi interrompido");
+		catch(Exception e){
+			System.out.println(e.getMessage());
 		}
 		meuControlador.inicializarTCP();
 		System.out.println("Enviando TCP!!");
