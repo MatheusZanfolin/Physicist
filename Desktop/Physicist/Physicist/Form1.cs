@@ -120,8 +120,10 @@ namespace Physicist
         public static void interpretarBuffer(byte[] buf)
         {
             // enfileirar dados
+            buffer = new byte[buf.Length];
             for (int i = 0; i < buf.Length; i++)
                 buffer[i] = buf[i];
+            MessageBox.Show("Tratando dados");
         }
         private async void procurarDispositivos()
         {

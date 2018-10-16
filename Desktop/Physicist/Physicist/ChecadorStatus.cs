@@ -14,7 +14,7 @@ namespace Physicist
         /*0 -   broadcasting
           1 -   respostaBroadcasting
           2 -   escutarPeer
-         // 3 -   lerStream
+          3 -   escutarCon
              */
         public ChecadorStatus(int ind)
         {
@@ -30,18 +30,19 @@ namespace Physicist
                 case 2:
                     this.tarefaAnalisar = ConexaoP2P.escutarPeer;
                     break;
-               /* case 3:
-                    this.tarefaAnalisar = ConexaoP2P.lerStream;
-                    break;*/
+                case 3:
+                    this.tarefaAnalisar = ConexaoP2P.escutarConexao;
+                    break;
             }   
         }
         //esse método é chamado pelo delegado do timer
         public void CheckStatus(Object infoStatus)
         {
             AutoResetEvent autoEvento = (AutoResetEvent)infoStatus;
+            
             if (ehParaParar(tarefaAnalisar.Status))
             {
-                if (indTarefa != 2)
+                if (indTarefa < 2)
                     Peer.finalizarTimer();
                 else
                     ConexaoP2P.finalizarTimer();

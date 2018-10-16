@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Physicist
 {
@@ -20,24 +21,47 @@ namespace Physicist
         bool conectadoP2P;
         private static IPAddress meuIP;
         public static Task<TcpClient> escutarPeer;
+        public static Task escutarConexao;
         //public static Task<int> lerStream;
-        const int indTarefa = 2;
+        //const int indTarefa = 2;
         private static System.Threading.Timer timerP2P;
         private static byte[] buffer;
         //private const string msgReq = "Requisitando";
         //precisamos fazer um "protocolo" para interpretar os dados recebidos
         public static void inicializarPeer()
         {
+
             receptorP2P = new TcpListener(meuIP, portaP2PDesktop);
-            receptorP2P.Start();
-            aceitarPeer();
+
+            //criar Thread para start
+            Action<object> action = (object obj) =>
+            {
+                bool achouCon = false;
+                while (!achouCon)
+                {
+                    try
+                    {
+                        receptorP2P.Start();
+                        achouCon = true;
+                    }
+                    catch(Exception ex)
+                    {
+                        achouCon = false;
+                    }
+                }
+                 
+            };
+            escutarConexao = new Task(action, "escutarConexao");
+            escutarConexao.Start();
+            inicializarTimer(3);
+            // aceitarPeer();
         }
-        public static void inicializarTimer(/*int indTarefa*/)
+        public static void inicializarTimer(int indTarefa)
         {//não tenho ctz se ele é async ou não
 
             var autoEvento = new AutoResetEvent(false);
             var checador = new ChecadorStatus(indTarefa);
-            timerP2P = new Timer(checador.CheckStatus, autoEvento, 0, intervaloTimer);
+            timerP2P = new System.Threading.Timer(checador.CheckStatus, autoEvento, intervaloTimer, intervaloTimer);
             //autoEvento.WaitOne();
             //liberar e reiniciar o timer
             //"flag" autoevento foi alterada
@@ -49,13 +73,27 @@ namespace Physicist
         {
             timerP2P.Dispose();
             timerP2P = null;
-            if(ConexaoP2P.estadoEscutaPeer() == TaskStatus.RanToCompletion)
+            if (escutarConexao != null && escutarPeer == null)
             {
-                ConexaoP2P.tratarDados();
+                if (ConexaoP2P.estadoEscutaConexao() == TaskStatus.RanToCompletion)
+                {
+                    ConexaoP2P.aceitarPeer();
+                }
+                else
+                {
+                    ConexaoP2P.finalizarConexao();
+                }
             }
             else
             {
-                ConexaoP2P.finalizarConexao();
+                if (ConexaoP2P.estadoEscutaPeer() == TaskStatus.RanToCompletion)
+                {
+                    ConexaoP2P.tratarDados();
+                }
+                else
+                {
+                    ConexaoP2P.finalizarConexao();
+                }
             }
         }
 
@@ -65,7 +103,7 @@ namespace Physicist
              {*/
                  
                 escutarPeer = receptorP2P.AcceptTcpClientAsync();
-                inicializarTimer();
+                inicializarTimer(2);
             /*}
             catch(Exception ex)
             {
@@ -108,6 +146,7 @@ namespace Physicist
             byte[] buffer = new byte[res];
             for (int i = 0; i < res; i++)
                 buffer[i] = meuBuffer[i];
+            ConexaoP2P.buffer = buffer;
             finalizarConexao();
             Controlador.tratarDados();
         }
@@ -115,7 +154,7 @@ namespace Physicist
         {
             get
             {
-                return buffer;
+                return ConexaoP2P.buffer;
             }
         }
 
@@ -154,6 +193,8 @@ namespace Physicist
         public static void finalizarConexao() {
             try
             {
+                if (escutarConexao != null)
+                    escutarConexao.Dispose();
                 if (escutarPeer != null)
                     escutarPeer.Dispose();
                 if (emissorP2P != null)
@@ -213,6 +254,10 @@ namespace Physicist
         public static TaskStatus estadoEscutaPeer()
         {
             return ConexaoP2P.escutarPeer.Status;
+        }
+        public static TaskStatus estadoEscutaConexao()
+        {
+            return ConexaoP2P.escutarConexao.Status;
         }
         public ConexaoP2P(IPAddress IP)
         {
