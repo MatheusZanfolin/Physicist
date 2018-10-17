@@ -14,6 +14,7 @@ namespace Physicist
     {
         public static Task interpretarDesenhaveis;
         public static Task receberDesenhaveis;
+        public static Task controlarSemaforo;
         public static bool flagFimRecebimento = false;
         public static bool flagFimInterpretacao = false;
         public static bool flagFimSimulacao = false;
@@ -38,14 +39,49 @@ namespace Physicist
             //throw new Exception("Timer Peer to Peer acabou!");
 
         }
+        private void finalizarTimer(bool ehInterpretacao)
+        {
+            timerDesenhaveis.Dispose();
+            timerDesenhaveis = null;
+            if (ehInterpretacao)
+            {
+                if(Form2.estadoInterpretacao() == TaskStatus.RanToCompletion)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+                if(Form2.estadoRecebimento() == TaskStatus.RanToCompletion)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+        }
+        private static TaskStatus estadoInterpretacao()
+        {
+            return interpretarDesenhaveis.Status;
+        }
+        private static TaskStatus estadoRecebimento()
+        {
+            return receberDesenhaveis.Status;
+        }
         private void Form2_Load(object sender, EventArgs e)
         {
             Action<object> interpretacao = (object obj) =>
             {
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
-                while (!flagFimInterpretacao)
-                {
+                //inicializarTimer(5);
+                
                     try
                     {
                         Desenhavel desenhavel = DesenhavelRepositorio.obter();
@@ -58,16 +94,17 @@ namespace Physicist
                         //achouCon = false;
                         flagFimInterpretacao = true;
                     }
-                }
+
                 semaforoDesenhaveis.Release();
+                //semaforoDesenhaveis.Release();
 
             };
             Action<object> recebimento = (object obj) =>
             {
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
-                while (!flagFimRecebimento)
-                {
+                //inicializarTimer(4);*/
+                
                     try
                     {
                         //Desenhavel desenhavel = DesenhavelRepositorio.obter();
@@ -80,17 +117,48 @@ namespace Physicist
                         //achouCon = false;
                         Application.DoEvents();
                     }
-                }
                 semaforoDesenhaveis.Release();
+                
+                //semaforoDesenhaveis.Release();
+            };
+            Action<object> controleSemaforo = (object obj) =>
+            {
+                administrarSemaforo();
             };
             semaforoDesenhaveis = new Semaphore(0, 1);
             interpretarDesenhaveis = new Task(interpretacao, "interpretarDesenhaveis");
             receberDesenhaveis = new Task(recebimento, "receberDesenhaveis");
+            controlarSemaforo = new Task(controleSemaforo, "controlarSemaforo");
             interpretarDesenhaveis.Start();
-            receberDesenhaveis.Start();
+            //receberDesenhaveis.Start();
             semaforoDesenhaveis.Release();
-            while()
-            inicializarTimer(5);
+            administrarSemaforo.Start();
+            
+        }
+        private void administrarSemaforo()
+        {
+
+            while (!flagFimSimulacao)
+            {
+                if (flagFimInterpretacao) {
+                    finalizarTimer(true);
+                    receberDesenhaveis.Start();
+                }
+                if(flagFimRecebimento)
+                {
+                    finalizarTimer(false);
+                    interpretarDesenhaveis.Start();
+                }
+                    
+                /*0 -   broadcasting
+          1 -   respostaBroadcasting
+          2 -   escutarPeer
+          3 -   escutarCon
+          4 -   receberDesenhaveis
+          5 -   interpretarDesenhaveis
+             */
+
+            }
         }
         private void interpretarDesenhavel(Desenhavel aInterpretar)
         {
