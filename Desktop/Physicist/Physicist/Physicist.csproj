@@ -49,6 +49,7 @@
     <Compile Include="ConexaoP2P.cs" />
     <Compile Include="Controlador.cs" />
     <Compile Include="Desenhavel.cs" />
+    <Compile Include="DesenhavelRepositorio.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

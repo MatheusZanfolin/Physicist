@@ -75,7 +75,7 @@ namespace Physicist
                 {
                     finalizarRespostaBroadcasting();
 
-                    ConexaoP2P.inicializarPeer();
+                    ConexaoP2P.inicializarPeer(3);
                 }
                 else
                 {

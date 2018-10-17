@@ -21,7 +21,8 @@ namespace Physicist
         private static int numElementosListaForm = 0;
         private static System.Windows.Forms.Timer timerLista;
         private static bool flagSairTimer;
-        private static List<Desenhavel> listaDesenhaveis;
+        //private static DesenhavelRepositorio repDes = null;
+       
         public frmPrincipal()
         {
             InitializeComponent();
@@ -84,7 +85,8 @@ namespace Physicist
         {
             if (ehPossivelCancelarResposta)
             {
-                atualizarForm();
+                if(repDes!= null)
+                    atualizarForm();
                 meuControlador.finalizarRespostaBroadcasting();
                 ehPossivelCancelar = false;
                 btnConectar.Text = "Conectar com esse dispositivo";
@@ -126,9 +128,9 @@ namespace Physicist
                 buffer[i] = buf[i];
             MessageBox.Show("Tratando dados");
             //pegar conjuntos de 33 em 33 bytes
-            listaDesenhaveis = new List<Desenhavel>();
-            for(int i=0; i< buf.length; i = i = i+33){
-                Desenhavel itemBuffer;
+            //repDes = new DesenhavelRepositorio();
+            for(int i=0; i< buf.Length; i = i = i+33){
+                Desenhavel itemBuffer = null;
                 /*byte[] xRel        = new byte[8];
                 for(i=1;i<xRel.Length;i++){
                     xRel[i] = buf[i];
@@ -162,7 +164,7 @@ namespace Physicist
                     //flag para reta = 127
                     itemBuffer = new Reta(xRel, yRel, larguraRel, alturaRel);
                 }
-                listaDesenhaveis.add(itemBuffer);
+                DesenhavelRepositorio.armazenar(itemBuffer);
             }
             
         }
@@ -183,7 +185,9 @@ namespace Physicist
         }
         private void atualizarForm()
         {
-
+            Form2 novoform = new Form2();
+            novoform.Show();
+            //CHAMAR Form2
         }
         private void inserirNaLista()
         {

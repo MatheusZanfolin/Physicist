@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Physicist
 {
-    class Reta
+    class Reta : Desenhavel
     {
         private double xRelCentro;
         private double yRelCentro;

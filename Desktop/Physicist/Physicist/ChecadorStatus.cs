@@ -15,6 +15,8 @@ namespace Physicist
           1 -   respostaBroadcasting
           2 -   escutarPeer
           3 -   escutarCon
+          4 -   receberDesenhaveis
+          5 -   interpretarDesenhaveis
              */
         public ChecadorStatus(int ind)
         {
@@ -33,6 +35,12 @@ namespace Physicist
                 case 3:
                     this.tarefaAnalisar = ConexaoP2P.escutarConexao;
                     break;
+                case 4:
+                    this.tarefaAnalisar = Form2.receberDesenhaveis;
+                    break;
+                case 5:
+                    this.tarefaAnalisar = Form2.interpretarDesenhaveis;
+                    break;
             }   
         }
         //esse método é chamado pelo delegado do timer
@@ -44,8 +52,12 @@ namespace Physicist
             {
                 if (indTarefa < 2)
                     Peer.finalizarTimer();
-                else
+                if(indTarefa>=2 && indTarefa < 5)
                     ConexaoP2P.finalizarTimer();
+                if (indTarefa == 5)
+                    Form2.flagFimRecebimento = true;
+                if (indTarefa == 6)
+                    Form2.flagFimInterpretacao = true;
             }
 
         }

@@ -28,7 +28,7 @@ namespace Physicist
         private static byte[] buffer;
         //private const string msgReq = "Requisitando";
         //precisamos fazer um "protocolo" para interpretar os dados recebidos
-        public static void inicializarPeer()
+        public static void inicializarPeer(int indTarefa)
         {
 
             receptorP2P = new TcpListener(meuIP, portaP2PDesktop);
@@ -53,7 +53,8 @@ namespace Physicist
             };
             escutarConexao = new Task(action, "escutarConexao");
             escutarConexao.Start();
-            inicializarTimer(3);
+
+            inicializarTimer(indTarefa);
             // aceitarPeer();
         }
         public static void inicializarTimer(int indTarefa)
