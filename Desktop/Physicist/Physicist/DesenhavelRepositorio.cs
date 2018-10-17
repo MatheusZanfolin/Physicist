@@ -27,5 +27,9 @@ namespace Physicist
                 throw new Exception("Fila vazia!");
             return DesenhavelRepositorio.filaDesenhaveis.Dequeue();
         }
+        public static bool estaVazio()
+        {
+            return (DesenhavelRepositorio.filaDesenhaveis == null || DesenhavelRepositorio.filaDesenhaveis.Count < 1);
+        }
     }
 }

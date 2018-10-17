@@ -132,12 +132,12 @@ namespace Physicist
             interpretarDesenhaveis.Start();
             //receberDesenhaveis.Start();
             semaforoDesenhaveis.Release();
-            administrarSemaforo.Start();
+            controlarSemaforo.Start();
             
         }
         private void administrarSemaforo()
         {
-
+            //predict de erro aqui
             while (!flagFimSimulacao)
             {
                 if (flagFimInterpretacao) {

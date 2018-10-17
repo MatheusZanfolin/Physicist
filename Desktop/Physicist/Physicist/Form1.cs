@@ -22,7 +22,9 @@ namespace Physicist
         private static System.Windows.Forms.Timer timerLista;
         private static bool flagSairTimer;
         //private static DesenhavelRepositorio repDes = null;
-       
+        //private const byte flagImagem = 0x00;
+        private const byte flagReta = 0xFE;
+        private const byte flagFim = 0xFF;
         public frmPrincipal()
         {
             InitializeComponent();
@@ -85,7 +87,7 @@ namespace Physicist
         {
             if (ehPossivelCancelarResposta)
             {
-                if(repDes!= null)
+                if(!DesenhavelRepositorio.estaVazio())
                     atualizarForm();
                 meuControlador.finalizarRespostaBroadcasting();
                 ehPossivelCancelar = false;
@@ -148,20 +150,21 @@ namespace Physicist
                     alturaRel[i] = buf[i];
                 }
                 i = 0;*/
-                double xRel = BitConverter.ToDouble(buf, 1);
-                double yRel = BitConverter.ToDouble(buf, 9);
-                double larguraRel = BitConverter.ToDouble(buf, 17);
-                double alturaRel = BitConverter.ToDouble(buf, 25);
-                if(buf[i] == 0x00){
-                    //flag para imagem = 00
-                    itemBuffer = new Imagem(xRel, yRel, larguraRel, alturaRel);
+                double xRel = BitConverter.ToDouble(buf, i+1);
+                double yRel = BitConverter.ToDouble(buf, i+9);
+                double larguraRel = BitConverter.ToDouble(buf, i+17);
+                double alturaRel = BitConverter.ToDouble(buf, i+25);
+                if(buf[i] != flagFim && buf[i] != flagReta){
+                    //flag para imagem 
+                    int indice = (int)(buf[i]);
+                    itemBuffer = new Imagem(indice, xRel, yRel, larguraRel, alturaRel);
                 }
-                if(buf[i] == 0xFF){
+                if(buf[i] == flagFim){
                     //flag para FIM = 255
                     return;
                 }
-                if(buf[i] == 0x7F){
-                    //flag para reta = 127
+                if(buf[i] == flagReta){
+                    //flag para reta = 254
                     itemBuffer = new Reta(xRel, yRel, larguraRel, alturaRel);
                 }
                 DesenhavelRepositorio.armazenar(itemBuffer);

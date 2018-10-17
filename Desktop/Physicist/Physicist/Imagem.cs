@@ -8,16 +8,25 @@ namespace Physicist
 {
     class Imagem : Desenhavel
     {
+        private int indice;
         private double xRelCentro;
         private double yRelCentro;
         private double larguraRel;
         private double alturaRel;
-        public Imagem(double x, double y, double largura, double altura)
+        public Imagem(int indiceImg,double x, double y, double largura, double altura)
         {
+            this.indice = indiceImg;
             this.xRelCentro = x;
             this.yRelCentro = y;
             this.larguraRel = largura;
             this.alturaRel = altura;
+        }
+        public int Indice
+        {
+            get
+            {
+                return this.indice;
+            }
         }
         public double XRelCentro {
             get
