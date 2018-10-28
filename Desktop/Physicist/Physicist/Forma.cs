@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,16 +8,22 @@ using System.Threading.Tasks;
 
 namespace Physicist
 {
-    class Imagem : Desenhavel
+    class Forma : Desenhavel
     {
         private int indice;
         private double xRelCentro;
         private double yRelCentro;
         private double larguraRel;
         private double alturaRel;
-        public Imagem(int indiceImg,double x, double y, double largura, double altura)
+        private TipoForma tipo;
+        public enum TipoForma{
+            Reta,
+            Circunferencia
+        }
+        public Forma(int indiceForma, double x, double y, double largura, double altura)
         {
-            this.indice = indiceImg;
+            this.indice = indiceForma;
+            this.tipo = (TipoForma) indiceForma;
             this.xRelCentro = x;
             this.yRelCentro = y;
             this.larguraRel = largura;
@@ -28,7 +36,15 @@ namespace Physicist
                 return this.indice;
             }
         }
-        public double XRelCentro {
+        public TipoForma Tipo
+        {
+            get
+            {
+                return this.tipo;
+            }
+        } 
+        public double XRelCentro
+        {
             get
             {
                 return this.xRelCentro;
@@ -60,7 +76,7 @@ namespace Physicist
         }
         public override bool Equals(object obj)
         {
-            return this.indice == ((Imagem)obj).indice;
+            return this.indice == ((Forma)obj).indice;
         }
     }
 }

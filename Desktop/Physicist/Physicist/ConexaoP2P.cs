@@ -149,7 +149,8 @@ namespace Physicist
                 buffer[i] = meuBuffer[i];
             ConexaoP2P.buffer = buffer;
             finalizarConexao();
-            Controlador.tratarDados();
+            ControladorDesenhavel.tratarDados();
+
         }
         public static byte[] Buffer
         {
@@ -239,7 +240,7 @@ namespace Physicist
             IPEndPoint ipAchado = peers[0].IPConectando;
             Peer novoPeer = new Peer(ipAchado);
             peers.Add(novoPeer);
-            Controlador.tratarBroadcast();
+            ControladorConexao.tratarBroadcast();
                
                    // throw new Exception("Caso aparentemente impossível!");
                     //caso aparentemente impossível

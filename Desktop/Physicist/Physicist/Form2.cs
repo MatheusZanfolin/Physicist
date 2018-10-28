@@ -19,7 +19,15 @@ namespace Physicist
         public static bool flagFimInterpretacao = false;
         public static bool flagFimSimulacao = false;
         private System.Threading.Timer timerDesenhaveis;
+        private System.Threading.Timer timerSemaforo;
         private const int intervaloTimer = 17;
+        private const double taxaProporcaoAltura = 0.5;
+        private const double taxaProporcaoLargura = 0.5;
+        private const int espessura = 5;
+        private Color corReta = Color.Yellow;
+        private Color corCircunferencia = Color.Black;
+        Pen caneta;
+        Graphics g;
         public Semaphore semaforoDesenhaveis;
         public Form2()
         {
@@ -39,7 +47,7 @@ namespace Physicist
             //throw new Exception("Timer Peer to Peer acabou!");
 
         }
-        private void finalizarTimer(bool ehInterpretacao)
+        private void finalizarTimer(bool ehSemaforo)
         {
             timerDesenhaveis.Dispose();
             timerDesenhaveis = null;
@@ -76,6 +84,7 @@ namespace Physicist
         }
         private void Form2_Load(object sender, EventArgs e)
         {
+            g = CreateGraphics();
             Action<object> interpretacao = (object obj) =>
             {
                 //bool flagFim = false;
@@ -84,9 +93,11 @@ namespace Physicist
                 
                     try
                     {
-                        Desenhavel desenhavel = DesenhavelRepositorio.obter();
-                        interpretarDesenhavel(desenhavel);
-
+                        while (!DesenhavelRepositorio.estaVazio())
+                        {
+                            Desenhavel desenhavel = DesenhavelRepositorio.obter();
+                            interpretarDesenhavel(desenhavel);
+                        }
                         //achouCon = true;
                     }
                     catch (Exception ex)
@@ -107,10 +118,10 @@ namespace Physicist
                 
                     try
                     {
-                        //Desenhavel desenhavel = DesenhavelRepositorio.obter();
-                        //interpretarDesenhavel(desenhavel);
-
-                        //achouCon = true;
+                        ConexaoP2P.inicializarPeer(4);
+                        //esse método já recebe e adiciona na
+                        //classe DesenhavelRepositorio
+                        
                     }
                     catch (Exception ex)
                     {
@@ -133,7 +144,7 @@ namespace Physicist
             //receberDesenhaveis.Start();
             semaforoDesenhaveis.Release();
             controlarSemaforo.Start();
-            
+            finalizarTimer(true);
         }
         private void administrarSemaforo()
         {
@@ -141,13 +152,19 @@ namespace Physicist
             while (!flagFimSimulacao)
             {
                 if (flagFimInterpretacao) {
-                    finalizarTimer(true);
+                    
+                    finalizarTimer(false);
+                    inicializarTimer(5);
                     receberDesenhaveis.Start();
+                    
                 }
                 if(flagFimRecebimento)
                 {
+                    
                     finalizarTimer(false);
+                    inicializarTimer(4);
                     interpretarDesenhaveis.Start();
+                    
                 }
                     
                 /*0 -   broadcasting
@@ -159,10 +176,45 @@ namespace Physicist
              */
 
             }
+            
         }
         private void interpretarDesenhavel(Desenhavel aInterpretar)
         {
+            //this.width => largura da janela
+            //this.length => altura da janela
+            //** espessura e cor
+            double xC = 0, yC = 0, largura = 0, altura = 0;
+            xC = aInterpretar.XRelCentro;
+            yC = aInterpretar.YRelCentro;
+            largura = aInterpretar.LarguraRel;
+            altura = aInterpretar.AlturaRel;
+            if(aInterpretar.GetType() == typeof(Imagem))
+            {
+                Imagem imagemAInterpretar = (Imagem)aInterpretar;
+            }
+            if(aInterpretar.GetType() == typeof(Forma))
+            {
+                Forma formaAInterpretar = (Forma)aInterpretar;
+                
+                switch (formaAInterpretar.Tipo)
+                {
+                    case Forma.TipoForma.Reta:
+                        caneta = new Pen(corReta, espessura);
+                        double x1=0, y1=0, x2=0, y2=0;
+                        x1 = xC - (largura / 2);
+                        y1 = yC - (altura / 2);
+                        x2 = x1 + largura;
+                        y2 = y1 + altura;
 
+                        break;
+                    case Forma.TipoForma.Circunferencia:
+                        caneta = new Pen(corCircunferencia, espessura);
+                        largura *= taxaProporcaoLargura;
+                        altura *= taxaProporcaoAltura;
+                        g.DrawEllipse(caneta, )
+                        break;
+                }
+            }
         }
     }
 }

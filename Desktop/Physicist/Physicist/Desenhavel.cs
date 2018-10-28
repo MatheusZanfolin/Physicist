@@ -16,7 +16,8 @@ taxa de proporção largura
 
 dados de cada imagem
 flagReta	(1 byte)
-
+indice(4 bytes)
+qtdIguais(4bytes)
 se não é reta (imagem)
 xRelCentro	(8 bytes)double
 yRelCentro	(8 bytes)
@@ -50,11 +51,13 @@ buffer[2048]
             this.larguraRel = largura;
             this.alturaRel = altura;
         }*/
+        int Indice { get; }
         double XRelCentro { get; }
         double YRelCentro{ get; }
         double AlturaRel{ get; }
         double LarguraRel{ get; }
-            
+        bool Equals(object obj);
+
         }
     }
 }

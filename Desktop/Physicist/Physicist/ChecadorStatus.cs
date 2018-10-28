@@ -17,6 +17,7 @@ namespace Physicist
           3 -   escutarCon
           4 -   receberDesenhaveis
           5 -   interpretarDesenhaveis
+          6 -   semaforoDesenhaveis
              */
         public ChecadorStatus(int ind)
         {
@@ -41,6 +42,9 @@ namespace Physicist
                 case 5:
                     this.tarefaAnalisar = Form2.interpretarDesenhaveis;
                     break;
+                case 6:
+                    this.tarefaAnalisar = Form2.controlarSemaforo;
+                    break;
             }   
         }
         //esse método é chamado pelo delegado do timer
@@ -52,12 +56,17 @@ namespace Physicist
             {
                 if (indTarefa < 2)
                     Peer.finalizarTimer();
-                if(indTarefa>=2 && indTarefa < 5)
+                if(indTarefa>=2 && indTarefa < 4)
                     ConexaoP2P.finalizarTimer();
-                if (indTarefa == 5)
+                if (indTarefa == 4)
+                {
                     Form2.flagFimRecebimento = true;
-                if (indTarefa == 6)
+                    ConexaoP2P.finalizarTimer();
+                }
+                if (indTarefa == 5)
                     Form2.flagFimInterpretacao = true;
+                if (indTarefa == 6)
+                    Form2.flagFimSimulacao = true;
             }
 
         }

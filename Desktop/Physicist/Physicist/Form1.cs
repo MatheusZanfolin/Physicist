@@ -15,22 +15,22 @@ namespace Physicist
     {
         bool ehPossivelCancelar = false;
         bool ehPossivelCancelarResposta= false;
-        private static Controlador meuControlador;
+        private static ControladorConexao meuControlador;
         private static List<Peer> listaDispositivos = new List<Peer>();
         private static byte[] buffer;
         private static int numElementosListaForm = 0;
-        private static System.Windows.Forms.Timer timerLista;
+        //private static System.Windows.Forms.Timer timerLista;
         private static bool flagSairTimer;
+       
         //private static DesenhavelRepositorio repDes = null;
         //private const byte flagImagem = 0x00;
-        private const byte flagReta = 0xFE;
-        private const byte flagFim = 0xFF;
+  
         public frmPrincipal()
         {
             InitializeComponent();
             
         }
-        private static void TimerEventProcessor(Object myObject,
+        /*private static void TimerEventProcessor(Object myObject,
                                             EventArgs myEventArgs)
         {
             timerLista.Stop();
@@ -54,7 +54,7 @@ namespace Physicist
             timerLista.Tick += new EventHandler(TimerEventProcessor);
             timerLista.Interval = 1000;
             timerLista.Start();
-        }
+        }*/
         private void btnListar_Click(object sender, EventArgs e)
         {
             if (ehPossivelCancelar)
@@ -70,15 +70,7 @@ namespace Physicist
                 meuControlador.inicializarBroadcasting();
                 procurarDispositivos();
                 meuControlador.finalizarBroadcasting();
-                /*inicializarTimer();
-                while (!flagSairTimer)
-                    Application.DoEvents();
-                if (flagSairTimer)
-                    inserirNaLista();*/
-                //procurarDispositivos é async
-                //inserirNaLista();
-                //Thread.Sleep(1000);
-                
+              
 
             }
         }
@@ -112,65 +104,8 @@ namespace Physicist
             {*/
                 meuControlador.responderBroadcasting();
            
-            /*}
-            catch(Exception ex)
-            {
-                if(ex.Message == "D")
-                {
-                    this.interpretarBuffer(meuControlador.Buffer);
-                    //interpretar o buffer
-                }
-            }*/
         }
-        public static void interpretarBuffer(byte[] buf)
-        {
-            // enfileirar dados
-            buffer = new byte[buf.Length];
-            for (int i = 0; i < buf.Length; i++)
-                buffer[i] = buf[i];
-            MessageBox.Show("Tratando dados");
-            //pegar conjuntos de 33 em 33 bytes
-            //repDes = new DesenhavelRepositorio();
-            for(int i=0; i< buf.Length; i = i = i+33){
-                Desenhavel itemBuffer = null;
-                /*byte[] xRel        = new byte[8];
-                for(i=1;i<xRel.Length;i++){
-                    xRel[i] = buf[i];
-                }
-                byte[] yRel        = new byte[8];
-                for(;i<yRel.Length;i++){
-                    yRel[i] = buf[i];
-                }
-                byte[] larguraRel  = new byte[8];
-                for(;i<larguraRel.Length;i++){
-                    larguraRel[i] = buf[i];
-                }
-                byte[] alturaRel   = new byte[8];
-                for(;i<alturaRel.Length;i++){
-                    alturaRel[i] = buf[i];
-                }
-                i = 0;*/
-                double xRel = BitConverter.ToDouble(buf, i+1);
-                double yRel = BitConverter.ToDouble(buf, i+9);
-                double larguraRel = BitConverter.ToDouble(buf, i+17);
-                double alturaRel = BitConverter.ToDouble(buf, i+25);
-                if(buf[i] != flagFim && buf[i] != flagReta){
-                    //flag para imagem 
-                    int indice = (int)(buf[i]);
-                    itemBuffer = new Imagem(indice, xRel, yRel, larguraRel, alturaRel);
-                }
-                if(buf[i] == flagFim){
-                    //flag para FIM = 255
-                    return;
-                }
-                if(buf[i] == flagReta){
-                    //flag para reta = 254
-                    itemBuffer = new Reta(xRel, yRel, larguraRel, alturaRel);
-                }
-                DesenhavelRepositorio.armazenar(itemBuffer);
-            }
-            
-        }
+       
         private async void procurarDispositivos()
         {
 		    //try{
@@ -202,7 +137,7 @@ namespace Physicist
             }
         }
         public static void listarDispositivos() {
-            Peer achado = Controlador.PeerAchado;
+            Peer achado = ControladorConexao.PeerAchado;
             listaDispositivos.Add(achado);
             
         }
@@ -210,7 +145,7 @@ namespace Physicist
         private void frmPrincipal_Load(object sender, EventArgs e)
         {
             
-            meuControlador = new Controlador();
+            meuControlador = new ControladorConexao();
 
         }
     }
