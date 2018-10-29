@@ -58,6 +58,6 @@ buffer[2048]
         double LarguraRel{ get; }
         bool Equals(object obj);
 
-        }
+        
     }
 }

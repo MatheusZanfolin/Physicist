@@ -123,8 +123,9 @@ namespace Physicist
         }
         private void atualizarForm()
         {
-            Form2 novoform = new Form2();
-            novoform.Show();
+            //Form2 novoform = new Form2();
+            //novoform.Show();
+            MessageBox.Show("Recebeu o TCP");
             //CHAMAR Form2
         }
         private void inserirNaLista()

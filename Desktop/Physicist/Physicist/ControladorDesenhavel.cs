@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Physicist
 {
@@ -24,6 +25,8 @@ namespace Physicist
             //MessageBox.Show("Tratando dados");
             //pegar conjuntos de 41 em 41 bytes
             //repDes = new DesenhavelRepositorio();
+            //throw new Exception("a");
+            //MessageBox.Show("Recebeu TCP");
             for (int i = 0; i < buf.Length - 40; i = i + 41)
             {
                 Desenhavel itemBuffer = null;
@@ -53,6 +56,7 @@ namespace Physicist
                 }
                 DesenhavelRepositorio.armazenar(itemBuffer, qtdDesenhaveis);
                 DesenhavelRepositorio.armazenar(itemBuffer);
+                
             }
 
         }
