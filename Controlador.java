@@ -1,11 +1,17 @@
-public class Controlador(){
-	private ConexaoP2P conexao;
-	private Peer peerAchado;
+import java.net.*;
+public class Controlador{
+	private static ConexaoP2P conexao;
+	private static Peer peerAchado;
 	private byte[] buffer;
 	public Controlador(){
-		this.conexao = new ConexaoP2P(InetAddress.getLocalHost().getHostAddress());
+		try{
+			this.conexao = new ConexaoP2P(InetAddress.getByName(InetAddress.getLocalHost().getHostAddress()));
+		}
+		catch(Exception ex){
+			System.out.println("Placa de rede do próprio dispositivo desconhecida");
+		}
 	}
-	public void inicializarBroascasting(){
+	public void inicializarBroadcasting(){
 		this.conexao.inicializarBroadcasting();
 	}
 	public void enviar(){
@@ -16,8 +22,8 @@ public class Controlador(){
 		//dentro daqui vc chamará um método que acontecerá depois de	enviar dados
 		Main.depoisEnviar();
 	}
-	public void finalizarBroascasting(){
-		this.conexao.finalizarBroadcasting();	
+	public void finalizarBroadcasting(){
+		this.conexao.finalizarBroadcasting();
 	}
 	public void inicializarEscuta(){
 		this.conexao.inicializarEscuta();
@@ -26,7 +32,7 @@ public class Controlador(){
 		this.conexao.receber();
 	}
 	public static void depoisEscuta(){
-		this.peerAchado = this.conexao.getUltimoPeer();
+		peerAchado = conexao.getUltimoPeer();
 		//dentro daqui vc chamará um método que acontecerá depois de receber dados
 		Main.depoisEscuta();
 	}
@@ -36,5 +42,29 @@ public class Controlador(){
 	public Peer getPeerAchado(){
 		return this.peerAchado;
 	}
-	
+	public void inicializarTCP(){
+        byte[] dados = new byte[1];
+        dados[0] = 0xFF;//flag para parar
+        //a simulação
+		this.conexao.inicializarPeer(dados);
+	}
+    public void inicializarTCP(Desenhavel[] infos){
+        int bytesDesenhavel = 41;
+        byte[] dados = new byte[infos.length * bytesDesenhavel];
+        for(int i=0;i<infos.length;i++){
+            byte[] paraBytes = infos[i].converteBytes();
+            for(int j=0;j<paraBytes.length;j++){
+                dados[i+j] = paraBytes[j];
+            }
+        }
+        this.conexao.inicializarPeer(dados);
+    }
+	public void enviarTCP(){
+        
+		this.conexao.enviarTCP();
+	}
+	public static void depoisEnviarTCP(){
+		Main.depoisEnviarTCP();
+	}
+
 }

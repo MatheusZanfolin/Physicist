@@ -1,48 +1,66 @@
-Ôªøpublic class ChecadorStatus extends TimerTask{
+import java.util.*;
+import java.lang.Thread.State;
+public class ChecadorStatus extends TimerTask{
 	private Thread threadControlada;
-	private Thread.Status status;
-	public getStatus(){
-		return this.status;
+	private static Thread.State status;
+	public Thread.State getStatus(){
+		return status;
 	}
 	public ChecadorStatus(Thread threadControlada){
 		this.threadControlada = threadControlada;
 	}
 	public void run(){
 		if(ehParaParar(threadControlada.getState())){
-			if(threadControlada.equals(escuta))
-				depoisEscuta();
-			if(threadControlada.equals(broadcasting))	
-				depoisEnviar();
+			if(threadControlada.equals(Peer.escuta)){
+				try{
+					Peer.depoisEscuta();
+				}
+				catch(Exception ex){
+					System.out.println("Erro depois de escutar");
+				}
+			}
+			if(threadControlada.equals(Peer.broadcasting)){
+				try{
+					Peer.depoisEnviar();
+				}
+				catch(Exception ex){
+					System.out.println("Erro depois de enviar");
+				}
+			}
+			if(threadControlada.equals(ConexaoP2P.emissao)){
+				try{
+					ConexaoP2P.depoisEnviarTCP():
+				}
+				catch(Exception ex){
+					System.out.println("Erro depois de enviar TCP");
+				}
+			}
 		}
 	}
-	private boolean ehParaParar(Thread.State estadoAtual){
-		this.status = estadoAtual;
+	public static boolean ehParaParar(Thread.State estadoAtual){
+		status = estadoAtual;
 		switch(estadoAtual){
-			case Thread.State.NEW:
-			//A thread n√£o come√ßou ainda
+			case NEW:
+			//A thread n„o comeÁou ainda
 				return false;
-			break;
-			case Thread.State.RUNNABLE:
-			//se est√° executando nesse momento na m√°quina virtual Java
+			case RUNNABLE:
+			//se est· executando nesse momento na m·quina virtual Java
 				return false;
-			break;
-			case Thread.State.BLOCKED:
-			//est√° bloqueada esperando por um "monitor lock "
+			case BLOCKED:
+			//est· bloqueada esperando por um "monitor lock "
 				return false;
-			break;
-			case Thread.State.WAITING:
-			//esperando indefinitivamente por outra thread que est√° fazendo uma a√ß√£o determinada
+			case WAITING:
+			//esperando indefinitivamente por outra thread que est· fazendo uma aÁ„o determinada
 				return false;
-			break;
-			case Thread.State.TIMED_WAITING:
-			//esperando outra thread fazer uma 
+			case TIMED_WAITING:
+			//esperando outra thread fazer uma
 			//"action for up to a specified waiting time"
 				return false;
-			break;
-			case Thread.State.TERMINATED:
+			case TERMINATED:
 			//morreu
 				return true;
-			break;
+			default:
+				return true;
 		}
 	}
 }
