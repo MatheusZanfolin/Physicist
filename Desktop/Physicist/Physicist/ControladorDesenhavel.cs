@@ -43,6 +43,7 @@ namespace Physicist
                 if (buf[i] == flagFim)
                 {
                     //flag para FIM = 255
+                    Form2.flagFimSimulacao = true;
                     return;
                 }
                 if (buf[i] == flagForma)

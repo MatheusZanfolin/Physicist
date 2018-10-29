@@ -10,23 +10,40 @@ namespace Physicist
     {
         private static Queue<Desenhavel> filaDesenhaveis;
         private static List<Desenhavel> desenhaveisFrame;
-
+        private static bool primeiro = false;
         /*public DesenhavelRepositorio()
         {
             DesenhavelRepositorio.filaDesenhaveis = new Queue<Desenhavel>();
         }*/
         public static void armazenar(Desenhavel aInserir, int repeticoes)
         {
+            DesenhavelRepositorio.primeiro = false;
             if(DesenhavelRepositorio.desenhaveisFrame == null)
             {
                 DesenhavelRepositorio.desenhaveisFrame = new List<Desenhavel>();
+                DesenhavelRepositorio.primeiro = true;
             }
-            if (DesenhavelRepositorio.desenhaveisFrame.Exists(x => x.Indice == aInserir.Indice)
+            if (DesenhavelRepositorio.desenhaveisFrame.Exists(x => x.Indice == aInserir.Indice))
                 return;//já está inserida a qtd de imagens desse mesmo
                        //tipo nesse frame
             for(int i = 0; i < repeticoes; i++)
             {
                 DesenhavelRepositorio.desenhaveisFrame.Add(aInserir);
+            }
+        }
+        public static bool isUltimo()
+        {
+            return DesenhavelRepositorio.desenhaveisFrame == null || DesenhavelRepositorio.desenhaveisFrame.Count < 1;
+        }
+        public static bool Primeiro
+        {
+            get
+            {
+                return DesenhavelRepositorio.primeiro;
+            }
+            set
+            {
+                DesenhavelRepositorio.primeiro = value;
             }
         }
         public static void armazenar(Desenhavel aInserir)
@@ -37,7 +54,8 @@ namespace Physicist
             }
             DesenhavelRepositorio.filaDesenhaveis.Enqueue(aInserir);
             DesenhavelRepositorio.desenhaveisFrame.Remove(aInserir);
-
+            if (DesenhavelRepositorio.desenhaveisFrame.Count < 1)
+                DesenhavelRepositorio.desenhaveisFrame = null;
         }
         public static Desenhavel obter()
         {

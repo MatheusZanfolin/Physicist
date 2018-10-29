@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Physicist
 {
@@ -13,6 +14,7 @@ namespace Physicist
         private double yRelCentro;
         private double larguraRel;
         private double alturaRel;
+        
         public Imagem(int indiceImg,double x, double y, double largura, double altura)
         {
             this.indice = indiceImg;
@@ -20,6 +22,15 @@ namespace Physicist
             this.yRelCentro = y;
             this.larguraRel = largura;
             this.alturaRel = altura;
+        }
+        public Image imagem()
+        {
+            String nomeArquivo = getArquivoPorIndice();
+            return Image.FromFile(nomeArquivo);
+        }
+        private String getArquivoPorIndice()
+        {
+            return ""+(this.indice).ToString() + ".png";
         }
         public int Indice
         {

@@ -24,8 +24,10 @@ namespace Physicist
         private const double taxaProporcaoAltura = 0.5;
         private const double taxaProporcaoLargura = 0.5;
         private const int espessura = 5;
+        private static float alturaTotal;
+        private static float larguraTotal;
         private Color corReta = Color.Yellow;
-        private Color corCircunferencia = Color.Black;
+        private Color corElipse = Color.Black;
         Pen caneta;
         Graphics g;
         public Semaphore semaforoDesenhaveis;
@@ -51,27 +53,11 @@ namespace Physicist
         {
             timerDesenhaveis.Dispose();
             timerDesenhaveis = null;
-            if (ehInterpretacao)
+            if (ehSemaforo)
             {
-                if(Form2.estadoInterpretacao() == TaskStatus.RanToCompletion)
-                {
-
-                }
-                else
-                {
-
-                }
-            }
-            else
-            {
-                if(Form2.estadoRecebimento() == TaskStatus.RanToCompletion)
-                {
-
-                }
-                else
-                {
-
-                }
+                timerSemaforo.Dispose();
+                timerSemaforo = null;
+                
             }
         }
         private static TaskStatus estadoInterpretacao()
@@ -125,8 +111,8 @@ namespace Physicist
                     }
                     catch (Exception ex)
                     {
-                        //achouCon = false;
-                        Application.DoEvents();
+                    //achouCon = false;
+                        flagFimRecebimento = true;
                     }
                 semaforoDesenhaveis.Release();
                 
@@ -144,7 +130,7 @@ namespace Physicist
             //receberDesenhaveis.Start();
             semaforoDesenhaveis.Release();
             controlarSemaforo.Start();
-            finalizarTimer(true);
+            //finalizarTimer(true);
         }
         private void administrarSemaforo()
         {
@@ -173,6 +159,7 @@ namespace Physicist
           3 -   escutarCon
           4 -   receberDesenhaveis
           5 -   interpretarDesenhaveis
+          6 -   semaforoDesenhaveis
              */
 
             }
@@ -183,14 +170,30 @@ namespace Physicist
             //this.width => largura da janela
             //this.length => altura da janela
             //** espessura e cor
+            if (DesenhavelRepositorio.Primeiro)//significa que esse é o primeiro Frame
+            {
+                g = CreateGraphics();//resetar os gráficos
+                DesenhavelRepositorio.Primeiro = false;
+            }
+
+            alturaTotal = this.Height;
+            larguraTotal = this.Width;
             double xC = 0, yC = 0, largura = 0, altura = 0;
-            xC = aInterpretar.XRelCentro;
-            yC = aInterpretar.YRelCentro;
-            largura = aInterpretar.LarguraRel;
-            altura = aInterpretar.AlturaRel;
+            xC = aInterpretar.XRelCentro*larguraTotal;
+            yC = aInterpretar.YRelCentro*alturaTotal;
+            largura = aInterpretar.LarguraRel*larguraTotal;
+            altura = aInterpretar.AlturaRel*alturaTotal;
             if(aInterpretar.GetType() == typeof(Imagem))
             {
                 Imagem imagemAInterpretar = (Imagem)aInterpretar;
+                Image imagemInterpretada = imagemAInterpretar.imagem();
+                double x1 = 0, y1 = 0;
+                largura *= taxaProporcaoLargura;
+                altura *= taxaProporcaoAltura;
+                x1 = xC - (largura / 2);
+                y1 = yC - (altura / 2);
+                g.DrawImage(imagemInterpretada, Convert.ToInt32(x1), Convert.ToInt32(y1),
+                    Convert.ToInt32(largura), Convert.ToInt32(altura));
             }
             if(aInterpretar.GetType() == typeof(Forma))
             {
@@ -205,13 +208,13 @@ namespace Physicist
                         y1 = yC - (altura / 2);
                         x2 = x1 + largura;
                         y2 = y1 + altura;
-
+                        g.DrawLine(caneta, (float)x1, (float)y1,(float) x2,(float) y2);
                         break;
-                    case Forma.TipoForma.Circunferencia:
-                        caneta = new Pen(corCircunferencia, espessura);
+                    case Forma.TipoForma.Elipse:
+                        caneta = new Pen(corElipse, espessura);
                         largura *= taxaProporcaoLargura;
                         altura *= taxaProporcaoAltura;
-                        g.DrawEllipse(caneta, )
+                        g.DrawEllipse(caneta, (float)xC, (float)yC, (float)largura, (float)altura);
                         break;
                 }
             }
