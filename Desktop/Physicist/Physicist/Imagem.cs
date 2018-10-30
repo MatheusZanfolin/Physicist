@@ -14,7 +14,16 @@ namespace Physicist
         private double yRelCentro;
         private double larguraRel;
         private double alturaRel;
-        
+        /*
+        0 - lápis 
+        1 - lápis invertido
+        2 - espelho
+        3 - espelho convexo
+        4 - espelho côncavo
+        5 - lente divergente
+        6 - lente convergente
+        7 - arraste-me
+        */
         public Imagem(int indiceImg,double x, double y, double largura, double altura)
         {
             this.indice = indiceImg;
@@ -30,7 +39,7 @@ namespace Physicist
         }
         private String getArquivoPorIndice()
         {
-            return ""+(this.indice).ToString() + ".png";
+            return "imagens/"+(this.indice).ToString() + ".png";
         }
         public int Indice
         {

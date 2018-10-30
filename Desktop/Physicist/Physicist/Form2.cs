@@ -28,6 +28,7 @@ namespace Physicist
         private static float larguraTotal;
         private Color corReta = Color.Yellow;
         private Color corElipse = Color.Black;
+        private Color corTracejado = Color.Gray;
         Pen caneta;
         Graphics g;
         public Semaphore semaforoDesenhaveis;
@@ -215,6 +216,17 @@ namespace Physicist
                         largura *= taxaProporcaoLargura;
                         altura *= taxaProporcaoAltura;
                         g.DrawEllipse(caneta, (float)xC, (float)yC, (float)largura, (float)altura);
+                        break;
+                    case Forma.TipoForma.Tracejado:
+                        caneta = new Pen(corTracejado, espessura);
+                        float[] padraoTracos = {1,1};
+                        caneta.DashPattern = padraoTracos;
+                        double x1=0, y1=0, x2=0, y2=0;
+                        x1 = xC - (largura / 2);
+                        y1 = yC - (altura / 2);
+                        x2 = x1 + largura;
+                        y2 = y1 + altura;
+                        g.DrawLine(caneta, (float)x1, (float)y1,(float) x2,(float) y2);
                         break;
                 }
             }
