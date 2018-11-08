@@ -236,8 +236,15 @@ namespace Physicist
                 if (emissorResposta != null)
                 {
                     emissorResposta.Close();
+                    
                     //servidorBroadcast.DropMulticastGroup(endMulticast);
                    // servidorBroadcast.Dispose();
+                }
+                if (servidorBroadcast != null)
+                {
+                    servidorBroadcast.DropMulticastGroup(endMulticast);
+                    servidorBroadcast.Dispose();
+                    servidorBroadcast = null;
                 }
                 if (timer != null)
                     timer.Dispose();

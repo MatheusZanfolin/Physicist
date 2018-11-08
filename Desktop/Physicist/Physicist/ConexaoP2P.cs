@@ -172,11 +172,11 @@ namespace Physicist
 		    }*/
 	    }
        // public static void depois
-        public async void responderBroadcasting()
+        public async void responderBroadcasting(int indice)
         {
             /*try
             {*/
-                peers[0].enviar();
+                peers[indice].enviar();
             /*}
             catch(Exception ex)
             {

@@ -28,22 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnListar = new System.Windows.Forms.Button();
             this.lsbDispositivos = new System.Windows.Forms.ListBox();
             this.btnConectar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.btnReiniciar = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
-            // btnListar
-            // 
-            this.btnListar.Location = new System.Drawing.Point(12, 58);
-            this.btnListar.Name = "btnListar";
-            this.btnListar.Size = new System.Drawing.Size(113, 23);
-            this.btnListar.TabIndex = 0;
-            this.btnListar.Text = "Buscar dispositivos";
-            this.btnListar.UseVisualStyleBackColor = true;
-            this.btnListar.Click += new System.EventHandler(this.btnListar_Click);
             // 
             // lsbDispositivos
             // 
@@ -61,6 +51,7 @@
             this.btnConectar.TabIndex = 2;
             this.btnConectar.Text = "Conectar com esse dispositivo";
             this.btnConectar.UseVisualStyleBackColor = true;
+            this.btnConectar.Visible = false;
             this.btnConectar.Click += new System.EventHandler(this.btnConectar_Click);
             // 
             // label1
@@ -71,6 +62,7 @@
             this.label1.Size = new System.Drawing.Size(40, 13);
             this.label1.TabIndex = 3;
             this.label1.Text = "Status:";
+            this.label1.Visible = false;
             // 
             // lblStatus
             // 
@@ -80,17 +72,28 @@
             this.lblStatus.Size = new System.Drawing.Size(50, 13);
             this.lblStatus.TabIndex = 4;
             this.lblStatus.Text = "Iniciando";
+            this.lblStatus.Visible = false;
+            // 
+            // btnReiniciar
+            // 
+            this.btnReiniciar.Location = new System.Drawing.Point(15, 58);
+            this.btnReiniciar.Name = "btnReiniciar";
+            this.btnReiniciar.Size = new System.Drawing.Size(75, 23);
+            this.btnReiniciar.TabIndex = 5;
+            this.btnReiniciar.Text = "Reiniciar";
+            this.btnReiniciar.UseVisualStyleBackColor = true;
+            this.btnReiniciar.Click += new System.EventHandler(this.btnReiniciar_Click);
             // 
             // frmPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(596, 402);
+            this.Controls.Add(this.btnReiniciar);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnConectar);
             this.Controls.Add(this.lsbDispositivos);
-            this.Controls.Add(this.btnListar);
             this.Name = "frmPrincipal";
             this.Text = "Physicist";
             this.Load += new System.EventHandler(this.frmPrincipal_Load);
@@ -100,12 +103,11 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button btnListar;
         private System.Windows.Forms.ListBox lsbDispositivos;
         private System.Windows.Forms.Button btnConectar;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Button btnReiniciar;
     }
 }
 

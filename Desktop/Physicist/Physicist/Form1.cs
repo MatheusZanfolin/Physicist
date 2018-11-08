@@ -13,8 +13,10 @@ namespace Physicist
 {
     public partial class frmPrincipal : Form
     {
-        bool ehPossivelCancelar = false;
-        bool ehPossivelCancelarResposta= false;
+        bool primeiraEscuta = true;
+        Task obtencao = null;
+        bool escutando = true;
+        public static bool novoPeer = false;
         private static ControladorConexao meuControlador;
         private static List<Peer> listaDispositivos = new List<Peer>();
         private static byte[] buffer;
@@ -30,69 +32,19 @@ namespace Physicist
             InitializeComponent();
             
         }
-        /*private static void TimerEventProcessor(Object myObject,
-                                            EventArgs myEventArgs)
-        {
-            timerLista.Stop();
-
-            // Displays a message box asking whether to continue running the timer.
-            if (listaDispositivos.Count != numElementosListaForm)
-            {
-                // Restarts the timer and increments the counter.
-                
-                timerLista.Enabled = true;
-            }
-            else
-            {
-                // Stops the timer.
-                flagSairTimer = true;
-            }
-        }
-        private void inicializarTimer()
-        {
-            timerLista = new System.Windows.Forms.Timer();
-            timerLista.Tick += new EventHandler(TimerEventProcessor);
-            timerLista.Interval = 1000;
-            timerLista.Start();
-        }*/
-        private void btnListar_Click(object sender, EventArgs e)
-        {
-            if (ehPossivelCancelar)
-            {
-                inserirNaLista();
-                meuControlador.finalizarBroadcasting();
-                ehPossivelCancelar = false;
-                btnListar.Text = "Buscar Dispositivos";
-            }
-            else {
-                ehPossivelCancelar = true;
-                btnListar.Text = "Verificar Busca";
-                meuControlador.inicializarBroadcasting();
-                procurarDispositivos();
-                meuControlador.finalizarBroadcasting();
-              
-
-            }
-        }
+        
 
         private void btnConectar_Click(object sender, EventArgs e)
         {
-            if (ehPossivelCancelarResposta)
-            {
+            escutando = false;
                 if(!DesenhavelRepositorio.estaVazio())
                     atualizarForm();
-                meuControlador.finalizarRespostaBroadcasting();
-                ehPossivelCancelar = false;
-                btnConectar.Text = "Conectar com esse dispositivo";
-            }
-            else
-            {
-                ehPossivelCancelar = true;
-                btnConectar.Text = "Verificar resposta";
-                meuControlador.inicializarRespostaBroadcasting();
-                responderPeer(lsbDispositivos.SelectedIndex);
-                meuControlador.finalizarRespostaBroadcasting();
-                //.. esperar a resposta
+            ehPossivelCancelarResposta = true;
+            btnConectar.Text = "Verificar resposta";
+            meuControlador.inicializarRespostaBroadcasting();
+            responderPeer(lsbDispositivos.SelectedIndex);
+            meuControlador.finalizarRespostaBroadcasting();
+            //.. esperar a resposta
                 //responder peer é async
                 
             }
@@ -100,26 +52,14 @@ namespace Physicist
         }
         private async void responderPeer(int indice)
         {
-           /* try
-            {*/
-                meuControlador.responderBroadcasting();
+           meuControlador.responderBroadcasting(indice);
            
         }
        
         private async void procurarDispositivos()
         {
-		    //try{
-                meuControlador.testarBroadcasting();
-		    /*}
-		    catch(Exception ex){
-			    if(ex.Message == "B"){
-				    
-			    }
-			    else{
-				    MessageBox.Show("Busca cancelada!");
-			    }	
-		    }*/
-
+            meuControlador.testarBroadcasting();
+		 
         }
         private void atualizarForm()
         {
@@ -146,8 +86,61 @@ namespace Physicist
         private void frmPrincipal_Load(object sender, EventArgs e)
         {
             
-            meuControlador = new ControladorConexao();
+            //    btnListar.Text = "Verificar Busca";
+            obterPeers();
+        }
+        private void obterPeers()
+        {
+            btnConectar.Visible = false;
+            
+            if(primeiraEscuta)
+                meuControlador = new ControladorConexao();
+            escutando = true;
+            Action<object> obterPeers = (object obj) =>
+            {
+                bool receber = true;
 
+                while (escutando)
+                {
+                    if (!novoPeer)
+                    {
+                        if (primeiraEscuta)
+                        {
+                            meuControlador.inicializarBroadcasting();
+                            primeiraEscuta = false;
+                        }
+                        if (receber)
+                        {
+                            procurarDispositivos();
+                            meuControlador.finalizarBroadcasting();
+                            receber = false;
+                        }
+                        
+                    }
+                    else
+                    {
+                        listarDispositivos();
+                        inserirNaLista();
+                        btnConectar.Visible = true;
+                        novoPeer = false;
+                        receber = true;
+                    }
+                    
+                }
+            };
+            obtencao = new Task(obterPeers, "obtenção de Peers");
+            obtencao.Start();
+        }
+        private void btnReiniciar_Click(object sender, EventArgs e)
+        {
+            if (obtencao != null)
+            {
+                escutando = false;
+                //obtencao.Dispose();
+
+            }
+            obtencao = null;
+            obterPeers();
         }
     }
 }

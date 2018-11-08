@@ -24,3 +24,14 @@ C:\Users\u16191\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug
 C:\Users\u16191\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.exe
 C:\Users\u16191\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.pdb
 C:\Users\u16191\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.Form2.resources
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.csprojAssemblyReference.cache
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.frmPrincipal.resources
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.Form2.resources
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.Properties.Resources.resources
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.csproj.GenerateResource.cache
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.csproj.CoreCompileInputs.cache
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.exe
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\obj\Debug\Physicist.pdb
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\bin\Debug\Physicist.exe.config
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\bin\Debug\Physicist.exe
+C:\Users\rafae\Downloads\Physicist-master\Desktop\Physicist\Physicist\bin\Debug\Physicist.pdb

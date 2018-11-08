@@ -78,9 +78,9 @@ namespace Physicist
 			    }
 		    }*/
 	    }
-        public async void responderBroadcasting()
+        public async void responderBroadcasting(int indice)
         {
-            conexao.responderBroadcasting();                              
+            conexao.responderBroadcasting(indice);                              
         }
         public static Peer PeerAchado {
             get{
@@ -90,7 +90,7 @@ namespace Physicist
         public static void tratarBroadcast() {
             //conexao.tratarBroadcast();
             peerAchado = ConexaoP2P.ultimoPeer();
-            frmPrincipal.listarDispositivos();
+            frmPrincipal.novoPeer = true;
         }
         
         

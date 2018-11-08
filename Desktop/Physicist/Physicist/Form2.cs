@@ -221,7 +221,7 @@ namespace Physicist
                         caneta = new Pen(corTracejado, espessura);
                         float[] padraoTracos = {1,1};
                         caneta.DashPattern = padraoTracos;
-                        double x1=0, y1=0, x2=0, y2=0;
+                        //double x1=0, y1=0, x2=0, y2=0;
                         x1 = xC - (largura / 2);
                         y1 = yC - (altura / 2);
                         x2 = x1 + largura;
