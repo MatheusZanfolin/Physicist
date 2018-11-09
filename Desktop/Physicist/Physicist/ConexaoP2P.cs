@@ -72,8 +72,12 @@ namespace Physicist
         }
         public static void finalizarTimer()
         {
-            timerP2P.Dispose();
-            timerP2P = null;
+            try
+            { 
+                timerP2P.Dispose();
+                timerP2P = null;
+            }
+            catch { }
             if (escutarConexao != null && escutarPeer == null)
             {
                 if (ConexaoP2P.estadoEscutaConexao() == TaskStatus.RanToCompletion)
@@ -224,7 +228,7 @@ namespace Physicist
         }
         public void inicializarRespostaBroadcasting(int indice)
         {
-            peers[0].inicializarRespostaBroadcasting(peers[indice].IPEndPoint);
+            peers[0].inicializarRespostaBroadcasting(peers[indice+1].IPEndPoint);
         }
         public static async void tratarBroadcast()
         {

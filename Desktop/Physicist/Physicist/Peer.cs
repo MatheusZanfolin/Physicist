@@ -62,8 +62,12 @@ namespace Physicist
 	        throw new Exception("Timer Peer acabou!");*/
         }
         public static void finalizarTimer() {
-            timer.Dispose();
-            timer = null;
+            try
+            {
+                timer.Dispose();
+                timer = null;
+            }
+            catch{ }
             if (broadcasting != null && respostaBroadcasting == null)
             {
                 if (estadoBroadcasting() == TaskStatus.RanToCompletion)
@@ -178,15 +182,27 @@ namespace Physicist
         }
         public void inicializarBroadcasting()
         {//   236.0.0.0
-            if (this.receptorAtribuido)
-                return;
             
-                servidorBroadcast = new UdpClient(/*new IPEndPoint(new IPAddress(0xEC000000), portaBroadcast)*/);
-                //servidorBroadcast.EnableBroadcast = true;//pode enviar e/ou receber broadcast
-                //servidorBroadcast.MulticastLoopback = true;
-                //servidorBroadcast.ExclusiveAddressUse = true;
 
-                //uma mensagem será enviada para o dispositivo que fez um multicast
+            if (this.receptorAtribuido)
+            {
+                try
+                {
+                    servidorBroadcast.Close();
+                    servidorBroadcast.DropMulticastGroup(endMulticast);
+                    servidorBroadcast.Dispose();
+                    servidorBroadcast = null;
+                }
+                catch(Exception ex)
+                {
+                    servidorBroadcast = null;
+                    broadcasting = null;
+                }
+            }
+                
+            
+                servidorBroadcast = new UdpClient();
+                
 
                 servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
                 this.meuEnd = new IPEndPoint(IPAddress.Any, portaBroadcast);
@@ -202,8 +218,11 @@ namespace Physicist
         {
             try
             {
-                if(broadcasting!=null)
+                if (broadcasting != null)
+                {
                     broadcasting.Dispose();
+                    broadcasting = null;
+                }
                 if (servidorBroadcast != null)
                 {
                     servidorBroadcast.Close();
@@ -258,6 +277,7 @@ namespace Physicist
         {
             respostaBroadcasting.Dispose();
             broadcasting.Dispose();
+
             timer.Dispose();
             servidorBroadcast.DropMulticastGroup(endMulticast);
             servidorBroadcast.Dispose();

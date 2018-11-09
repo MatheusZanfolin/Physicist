@@ -78,7 +78,9 @@ namespace Physicist
             {
                 lsbDispositivos.Items.Add(listaDispositivos.Last().ToString());
                 numElementosListaForm++;
+                btnConectar.Visible = true;
             }
+            
         }
         public static void listarDispositivos() {
             Peer achado = ControladorConexao.PeerAchado;
@@ -100,24 +102,22 @@ namespace Physicist
                 {
                     if (!novoPeer)
                     {
-                        if (primeiraEscuta)
-                        {
-                            meuControlador.inicializarBroadcasting();
-                            primeiraEscuta = false;
-                        }
                         if (receber)
                         {
+                            meuControlador.inicializarBroadcasting();
+                           
                             procurarDispositivos();
-                            meuControlador.finalizarBroadcasting();
+                            
                             receber = false;
                         }
                         
                     }
                     else
                     {
+                        meuControlador.finalizarBroadcasting();
                         listarDispositivos();
-                        inserirNaLista();
-                        btnConectar.Visible = true;
+                        
+                       
                         novoPeer = false;
                         receber = true;
                     }
@@ -137,6 +137,11 @@ namespace Physicist
             }
             obtencao = null;
             obterPeers();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            inserirNaLista();
         }
     }
 }
