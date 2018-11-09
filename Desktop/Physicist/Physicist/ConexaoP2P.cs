@@ -172,19 +172,10 @@ namespace Physicist
 		    }*/
 	    }
        // public static void depois
-        public async void responderBroadcasting(int indice)
+        public async void responderBroadcasting()
         {
-            /*try
-            {*/
-                peers[indice].enviar();
-            /*}
-            catch(Exception ex)
-            {
-                if (ex.Message == "C")
-                    throw new Exception("C");
-                else
-                    throw new Exception("Resposta ao Broadcasting falhou!");
-            }*/
+            peers[0].enviar();
+           
         }
 	    public static Peer ultimoPeer(){
 		    if(peers.Count != 0)
@@ -231,9 +222,9 @@ namespace Physicist
             // receptorP2P.Stop();
             Peer.finalizarRespostaBroadcasting();
         }
-        public void inicializarRespostaBroadcasting()
+        public void inicializarRespostaBroadcasting(int indice)
         {
-            peers[0].inicializarRespostaBroadcasting();
+            peers[0].inicializarRespostaBroadcasting(peers[indice].IPEndPoint);
         }
         public static async void tratarBroadcast()
         {
@@ -272,10 +263,6 @@ namespace Physicist
             conectadoP2P = false;
 
         }
-        /*public int acharIndicePeer(String ip)
-        {
-
-            IPAddress esseIp = new IPEndPoint()
-        }*/
+        
     }
 }

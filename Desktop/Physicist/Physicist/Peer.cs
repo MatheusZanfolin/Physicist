@@ -32,6 +32,13 @@ namespace Physicist
         {
             return this.IP.ToString();
         }
+        public IPEndPoint IPEndPoint
+        {
+            get
+            {
+                return new IPEndPoint(IP, portaEnviar);
+            }
+        }
         public IPEndPoint IPConectando{
             get
             {
@@ -169,11 +176,6 @@ namespace Physicist
         {
             return respostaBroadcasting.Status;
         }
-       /* public void responderPeers() {
-            var infoResp = Encoding.ASCII.GetBytes("Respondendo");
-            //Não sei se vou usar Send ou SendAsync
-
-        }*/
         public void inicializarBroadcasting()
         {//   236.0.0.0
             if (this.receptorAtribuido)
@@ -188,7 +190,6 @@ namespace Physicist
 
                 servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
                 this.meuEnd = new IPEndPoint(IPAddress.Any, portaBroadcast);
-                //servidorBroadcast.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 servidorBroadcast.Client.Bind(meuEnd);
                 //servidorBroadcast.
                 servidorBroadcast.JoinMulticastGroup(endMulticast);
@@ -214,11 +215,12 @@ namespace Physicist
                  }
             catch {}
         }
-        public void inicializarRespostaBroadcasting()
+        public void inicializarRespostaBroadcasting(IPEndPoint aConectar)
         {
+            Peer.iPConectando = aConectar;
            /* servidorBroadcast.Dispose();
             servidorBroadcast = null;*/
-            this.IPConectando.Port = portaEnviar;
+            Peer.iPConectando.Port = portaEnviar;
             emissorResposta = new UdpClient();
             emissorResposta.DontFragment = true;
             emissorResposta.Connect(IPConectando);
@@ -252,7 +254,6 @@ namespace Physicist
             catch { }
         }
 
-        //construtor para peers remotos
         public void Dispose()
         {
             respostaBroadcasting.Dispose();
@@ -264,6 +265,7 @@ namespace Physicist
             
         }
 
+        //construtor para peers remotos
         public Peer(IPEndPoint ipRemoto)
         {
             if (ipRemoto == null)

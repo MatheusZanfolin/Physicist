@@ -39,20 +39,23 @@ namespace Physicist
             escutando = false;
                 if(!DesenhavelRepositorio.estaVazio())
                     atualizarForm();
-            ehPossivelCancelarResposta = true;
             btnConectar.Text = "Verificar resposta";
-            meuControlador.inicializarRespostaBroadcasting();
-            responderPeer(lsbDispositivos.SelectedIndex);
+            meuControlador.inicializarRespostaBroadcasting(lsbDispositivos.SelectedIndex);
+            responderPeer();
             meuControlador.finalizarRespostaBroadcasting();
             //.. esperar a resposta
                 //responder peer é async
                 
-            }
-
         }
-        private async void responderPeer(int indice)
+
+        private void frmPrincipal_Load(object sender, EventArgs e)
         {
-           meuControlador.responderBroadcasting(indice);
+            obterPeers();
+        }
+    
+        private async void responderPeer()
+        {
+           meuControlador.responderBroadcasting();
            
         }
        
@@ -81,13 +84,6 @@ namespace Physicist
             Peer achado = ControladorConexao.PeerAchado;
             listaDispositivos.Add(achado);
             
-        }
-
-        private void frmPrincipal_Load(object sender, EventArgs e)
-        {
-            
-            //    btnListar.Text = "Verificar Busca";
-            obterPeers();
         }
         private void obterPeers()
         {

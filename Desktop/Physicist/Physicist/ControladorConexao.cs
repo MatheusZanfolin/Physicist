@@ -49,38 +49,18 @@ namespace Physicist
         {
             conexao.finalizarRespostaBroadcasting();
         }
-        public void inicializarRespostaBroadcasting()
+        public void inicializarRespostaBroadcasting(int indice)
         {
-            conexao.inicializarRespostaBroadcasting();
+            conexao.inicializarRespostaBroadcasting(indice);
         }
         public async void testarBroadcasting()
         {
-		    //try{
                 conexao.testarBroadcasting();
-        	/*}
-		   catch(Exception ex){
-			    if(ex.Message == "A"){
-				    try{
-					//    this.tratarBroadcast();
-				    }
-				    catch(Exception e){
-					    if(e.Message == "B"){
-						    this.peerAchado = this.conexao.ultimoPeer();
-                            throw new Exception("B");
-					    }
-					    else{
-						    throw new Exception("Caso esperado de ser impossível!");	
-					    }
-				    }
-			    }
-			    else{
-				    throw new Exception("Busca por dispositivos não deu certo!");
-			    }
-		    }*/
+        	
 	    }
-        public async void responderBroadcasting(int indice)
+        public async void responderBroadcasting()
         {
-            conexao.responderBroadcasting(indice);                              
+            conexao.responderBroadcasting();                              
         }
         public static Peer PeerAchado {
             get{
