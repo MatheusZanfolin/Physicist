@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Physicist
 {
@@ -54,6 +55,7 @@ namespace Physicist
             
             if (ehParaParar(tarefaAnalisar.Status))
             {
+                MessageBox.Show("Task parou!");
                 if (indTarefa < 2)
                     Peer.finalizarTimer();
                 if(indTarefa>=2 && indTarefa < 4)

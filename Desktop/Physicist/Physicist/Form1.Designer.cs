@@ -83,6 +83,7 @@
             this.btnReiniciar.TabIndex = 5;
             this.btnReiniciar.Text = "Reiniciar";
             this.btnReiniciar.UseVisualStyleBackColor = true;
+            this.btnReiniciar.Click += new System.EventHandler(this.btnReiniciar_Click_1);
             // 
             // button1
             // 

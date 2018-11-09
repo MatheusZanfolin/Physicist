@@ -201,15 +201,15 @@ namespace Physicist
             }
                 
             
-                servidorBroadcast = new UdpClient();
-                
-
-                servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
-                this.meuEnd = new IPEndPoint(IPAddress.Any, portaBroadcast);
-                servidorBroadcast.Client.Bind(meuEnd);
-                //servidorBroadcast.
-                servidorBroadcast.JoinMulticastGroup(endMulticast);
-                this.receptorAtribuido = true;
+            servidorBroadcast = new UdpClient();
+            
+            servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
+               //this.meuEnd = new IPEndPoint(IPAddress.Any, portaBroadcast);
+            this.meuEnd = new IPEndPoint(IP, portaBroadcast);
+            servidorBroadcast.Client.Bind(meuEnd);
+            servidorBroadcast.EnableBroadcast = true;
+            servidorBroadcast.JoinMulticastGroup(endMulticast);
+            this.receptorAtribuido = true;
             
            
 

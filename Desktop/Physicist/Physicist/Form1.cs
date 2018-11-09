@@ -110,6 +110,10 @@ namespace Physicist
                             
                             receber = false;
                         }
+                        else
+                        {
+                            Thread.Sleep(2000);
+                        }
                         
                     }
                     else
@@ -127,7 +131,14 @@ namespace Physicist
             obtencao = new Task(obterPeers, "obtenção de Peers");
             obtencao.Start();
         }
-        private void btnReiniciar_Click(object sender, EventArgs e)
+        
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            inserirNaLista();
+        }
+
+        private void btnReiniciar_Click_1(object sender, EventArgs e)
         {
             if (obtencao != null)
             {
@@ -137,11 +148,6 @@ namespace Physicist
             }
             obtencao = null;
             obterPeers();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            inserirNaLista();
         }
     }
 }
