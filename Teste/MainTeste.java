@@ -1,30 +1,30 @@
 public class MainTeste{
 	private static Controlador meuControlador;
 	public static void main(String[] args){
-	meuControlador = new Controlador();
-	System.out.println("Começando a tratar broadcasting..");
-	meuControlador.inicializarEscuta();
-	System.out.println("Escutando broadcasting..");
-	meuControlador.receber();
+		System.out.println("Peer 1: Aguardando requisição...");
+
+		meuControlador = new Controlador();
+		meuControlador.inicializarEscuta();
+		meuControlador.receber();
 	}
 	public static void depoisEnviar(){
-		System.out.println("Enviado!!");
+
 		//meuControlador.finalizarBroadcasting();
 	}
 	public static void depoisEscuta(){
 		PeerTeste achado = meuControlador.getPeerAchado();
-		System.out.println(achado.getIP());
-		System.out.println("Recebido!!");
-		//meuControlador.finalizarEscuta();
+
+		System.out.println("Peer 1: Requisição recebida!");
+
 		try{
 			Thread.sleep(1000);
 		}
 		catch(Exception ex){
-			System.out.println("Erro ao fazer a Thread dormir");
+			System.out.println("Peer 1: Erro inesperado :(");
 		}
-		System.out.println("Enviando resposta!");
+
+		System.out.println("Peer 1: Enviando resposta ao peer com IP " + achado.getIP().getHostAddress());
 		meuControlador.inicializarBroadcasting();
-		System.out.println("Enviando....");
 		meuControlador.enviar();
 	}
 }

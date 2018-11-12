@@ -92,11 +92,11 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 	public void enviar(){
 		/*//por enquanto vou deixar síncrono
 		mcastEnviar.send(pacoteBroadcast);*/
-		System.out.println("Thread de enviar começando");
-		System.out.println(""+new String(this.pacoteEnviar.getData()));
+		//System.out.println("Thread de enviar começando");
+		//System.out.println(""+new String(this.pacoteEnviar.getData()));
 
-		System.out.println("IP: "+this.pacoteEnviar.getAddress());
-		System.out.println("Porta: "+this.pacoteEnviar.getPort());
+		//System.out.println("IP: "+this.pacoteEnviar.getAddress());
+		System.out.println("Peer 1: Redirecionando pacote pela porta " + this.pacoteEnviar.getPort());
 		broadcasting.start();
 		temporizador.schedule(checador, 0, 1000);
 		//      		     			inicial delay periodo
@@ -207,7 +207,7 @@ https://docs.oracle.com/javase/9/docs/api/java/lang/doc-files/threadPrimitiveDep
 	}
 	public static void depoisEscuta()throws Exception{
 		State comoAcabou = checador.getStatus();
-		System.out.println(comoAcabou.toString());
+		//System.out.println(comoAcabou.toString());
 		try{
 			mcastReceber.setTimeToLive(PeerTeste.ttlPadrao);
 		}
