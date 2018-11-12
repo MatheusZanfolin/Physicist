@@ -12,8 +12,8 @@ namespace Physicist
     {
         int indTarefa;
         Task tarefaAnalisar;
-        /*0 -   broadcasting
-          1 -   respostaBroadcasting
+        /*0 -   Multicasting
+          1 -   respostaMulticasting
           2 -   escutarPeer
           3 -   escutarCon
           4 -   receberDesenhaveis
@@ -26,10 +26,10 @@ namespace Physicist
             switch (ind)
             {
                 case 0:
-                    this.tarefaAnalisar = Peer.broadcasting;
+                    this.tarefaAnalisar = Peer.Multicasting;
                     break;
                 case 1:
-                    this.tarefaAnalisar = Peer.respostaBroadcasting;
+                    this.tarefaAnalisar = Peer.respostaMulticasting;
                     break;
                 case 2:
                     this.tarefaAnalisar = ConexaoP2P.escutarPeer;

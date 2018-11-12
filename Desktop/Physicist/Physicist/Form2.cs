@@ -154,8 +154,8 @@ namespace Physicist
                     
                 }
                     
-                /*0 -   broadcasting
-          1 -   respostaBroadcasting
+                /*0 -   Multicasting
+          1 -   respostaMulticasting
           2 -   escutarPeer
           3 -   escutarCon
           4 -   receberDesenhaveis

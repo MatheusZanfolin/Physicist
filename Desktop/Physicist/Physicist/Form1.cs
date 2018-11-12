@@ -40,9 +40,9 @@ namespace Physicist
                 if(!DesenhavelRepositorio.estaVazio())
                     atualizarForm();
             btnConectar.Text = "Verificar resposta";
-            meuControlador.inicializarRespostaBroadcasting(lsbDispositivos.SelectedIndex);
+            meuControlador.inicializarRespostaMulticasting(lsbDispositivos.SelectedIndex);
             responderPeer();
-            meuControlador.finalizarRespostaBroadcasting();
+            meuControlador.finalizarRespostaMulticasting();
             //.. esperar a resposta
                 //responder peer é async
                 
@@ -55,13 +55,13 @@ namespace Physicist
     
         private async void responderPeer()
         {
-           meuControlador.responderBroadcasting();
+           meuControlador.responderMulticasting();
            
         }
        
         private async void procurarDispositivos()
         {
-            meuControlador.testarBroadcasting();
+            meuControlador.testarMulticasting();
 		 
         }
         private void atualizarForm()
@@ -104,7 +104,7 @@ namespace Physicist
                     {
                         if (receber)
                         {
-                            meuControlador.inicializarBroadcasting();
+                            meuControlador.inicializarMulticasting();
                            
                             procurarDispositivos();
                             
@@ -118,7 +118,7 @@ namespace Physicist
                     }
                     else
                     {
-                        meuControlador.finalizarBroadcasting();
+                        meuControlador.finalizarMulticasting();
                         listarDispositivos();
                         
                        

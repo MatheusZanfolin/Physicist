@@ -13,9 +13,9 @@ namespace Physicist
     {
         const int intervaloTimer = 1000;
         private static System.Threading.Timer timer;
-        public static Task<UdpReceiveResult> broadcasting;
-        public static Task<int> respostaBroadcasting;
-        private const int portaBroadcast = 1639;
+        public static Task<UdpReceiveResult> Multicasting;
+        public static Task<int> respostaMulticasting;
+        private const int portaMulticast = 1639;
         private const int portaEnviar = 1729;
         private const string msgReq = "Requisitando";
         private const string msgResp = "Respondendo";
@@ -24,7 +24,7 @@ namespace Physicist
         private static byte[] msgRespBytes = (byte[])Encoding.ASCII.GetBytes(msgResp);
         private IPAddress IP;
         private IPEndPoint meuEnd;
-        static UdpClient servidorBroadcast;
+        static UdpClient servidorMulticast;
         static UdpClient emissorResposta;
         String nome;
         private static IPEndPoint iPConectando;
@@ -48,8 +48,8 @@ namespace Physicist
         }
         private void inicializarTimer(int indTarefa)
         {//não tenho ctz se ele é async ou não
-            //indTarefa = 0 => broadcasting
-            //indTarefa = 1 => respostaBroadcasting
+            //indTarefa = 0 => Multicasting
+            //indTarefa = 1 => respostaMulticasting
             //estado inicial falso, ficará true caso chegar no estado callback
             var autoEvento = new AutoResetEvent(false);
             var checador = new ChecadorStatus(indTarefa);
@@ -68,35 +68,35 @@ namespace Physicist
                 timer = null;
             }
             catch{ }
-            if (broadcasting != null && respostaBroadcasting == null)
+            if (Multicasting != null && respostaMulticasting == null)
             {
-                if (estadoBroadcasting() == TaskStatus.RanToCompletion)
+                if (estadoMulticasting() == TaskStatus.RanToCompletion)
                 {
-                    tratarBroadcast();
+                    tratarMulticast();
                 }
                 else
                 {
-                    finalizarBroadcasting();
+                    finalizarMulticasting();
                 }
                         
             }
-            if(respostaBroadcasting != null)
+            if(respostaMulticasting != null)
             {
-                if (estadoRespostaBroadcasting() == TaskStatus.RanToCompletion)
+                if (estadoRespostaMulticasting() == TaskStatus.RanToCompletion)
                 {
-                    finalizarRespostaBroadcasting();
+                    finalizarRespostaMulticasting();
 
                     ConexaoP2P.inicializarPeer(3);
                 }
                 else
                 {
                 
-                    finalizarRespostaBroadcasting();
+                    finalizarRespostaMulticasting();
                 }
             }
         }
 
-        private static void tratarBroadcast() {
+        private static void tratarMulticast() {
             //timer.Dispose();
             //não sei se isso deve ser realmente assíncrono
             IPEndPoint IPQuemMandou;
@@ -104,19 +104,19 @@ namespace Physicist
             //CancellationToken token = new CancellationToken(true);
 
             //receber();
-            //byte[] datagrama = servidorBroadcast.ReceiveAsync(/*ref IPQuemMandou*/);
-            req = broadcasting.Result;
+            //byte[] datagrama = servidorMulticast.ReceiveAsync(/*ref IPQuemMandou*/);
+            req = Multicasting.Result;
             string requisição = Encoding.ASCII.GetString(req.Buffer);
             IPQuemMandou = req.RemoteEndPoint;
 
-            finalizarBroadcasting();
+            finalizarMulticasting();
             if (!requisição.Equals("Requisitando"))
             {
                 //throw new SocketException("Ataque vírus!!!");
                 throw new Exception("Esperava por requisição \" Requisitando\", porém achou \" "+ requisição +" \" !");
             }
             iPConectando = IPQuemMandou;
-            ConexaoP2P.tratarBroadcast();
+            ConexaoP2P.tratarMulticast();
 	        //throw new Exception("B");
         }
         
@@ -124,7 +124,7 @@ namespace Physicist
         {
             /*try
             {*/
-                broadcasting = (servidorBroadcast.ReceiveAsync());
+                Multicasting = (servidorMulticast.ReceiveAsync());
                 inicializarTimer(0);
             
             /*}
@@ -138,15 +138,15 @@ namespace Physicist
         {
             /*try
             {*/
-                respostaBroadcasting = (emissorResposta.SendAsync(Peer.msgRespBytes, Peer.msgRespBytes.Length));
+                respostaMulticasting = (emissorResposta.SendAsync(Peer.msgRespBytes, Peer.msgRespBytes.Length));
                 inicializarTimer(1);
             /*}
             catch (Exception ex)//ObjectDisposedException pode ser tbm
             {
-                switch (estadoRespostaBroadcasting())
+                switch (estadoRespostaMulticasting())
                 {
                     case TaskStatus.Faulted:
-                        this.finalizarRespostaBroadcasting();
+                        this.finalizarRespostaMulticasting();
                         throw new Exception("Caso aparentemente impossível!");
                         break;
                     case TaskStatus.RanToCompletion:
@@ -156,31 +156,31 @@ namespace Physicist
                         throw new Exception("C");
                         break;
                     case TaskStatus.WaitingForChildrenToComplete:
-                        this.finalizarRespostaBroadcasting();
+                        this.finalizarRespostaMulticasting();
                         throw new Exception("Comportamento inesperado da Task");
                         break;
                     case TaskStatus.Canceled:
 
-                        this.finalizarRespostaBroadcasting();
+                        this.finalizarRespostaMulticasting();
                         throw new Exception("Task mal inicializada!");
                         break;
                     default:
-                        this.finalizarRespostaBroadcasting();
+                        this.finalizarRespostaMulticasting();
                         throw new Exception("Comportamento insesperado do Timer");
 
                 }
 
             }*/
         }
-        public static TaskStatus estadoBroadcasting()
+        public static TaskStatus estadoMulticasting()
         {
-            return broadcasting.Status;
+            return Multicasting.Status;
         }
-        public static TaskStatus estadoRespostaBroadcasting()
+        public static TaskStatus estadoRespostaMulticasting()
         {
-            return respostaBroadcasting.Status;
+            return respostaMulticasting.Status;
         }
-        public void inicializarBroadcasting()
+        public void inicializarMulticasting()
         {//   236.0.0.0
             
 
@@ -188,84 +188,84 @@ namespace Physicist
             {
                 try
                 {
-                    servidorBroadcast.Close();
-                    servidorBroadcast.DropMulticastGroup(endMulticast);
-                    servidorBroadcast.Dispose();
-                    servidorBroadcast = null;
+                    servidorMulticast.Close();
+                    servidorMulticast.DropMulticastGroup(endMulticast);
+                    servidorMulticast.Dispose();
+                    servidorMulticast = null;
                 }
                 catch(Exception ex)
                 {
-                    servidorBroadcast = null;
-                    broadcasting = null;
+                    servidorMulticast = null;
+                    Multicasting = null;
                 }
             }
                 
             
-            servidorBroadcast = new UdpClient();
+            servidorMulticast = new UdpClient();
             
-            servidorBroadcast.DontFragment = true;//não quero que fragmente os pacotes
-               //this.meuEnd = new IPEndPoint(IPAddress.Any, portaBroadcast);
-            this.meuEnd = new IPEndPoint(IP, portaBroadcast);
-            servidorBroadcast.Client.Bind(meuEnd);
-            servidorBroadcast.EnableBroadcast = true;
-            servidorBroadcast.JoinMulticastGroup(endMulticast);
+            servidorMulticast.DontFragment = true;//não quero que fragmente os pacotes
+               //this.meuEnd = new IPEndPoint(IPAddress.Any, portaMulticast);
+            this.meuEnd = new IPEndPoint(IP, portaMulticast);
+            servidorMulticast.Client.Bind(meuEnd);
+            servidorMulticast.EnableMulticast = true;
+            servidorMulticast.JoinMulticastGroup(endMulticast);
             this.receptorAtribuido = true;
             
            
 
         }
-        public static void finalizarBroadcasting()
+        public static void finalizarMulticasting()
         {
             try
             {
-                if (broadcasting != null)
+                if (Multicasting != null)
                 {
-                    broadcasting.Dispose();
-                    broadcasting = null;
+                    Multicasting.Dispose();
+                    Multicasting = null;
                 }
-                if (servidorBroadcast != null)
+                if (servidorMulticast != null)
                 {
-                    servidorBroadcast.Close();
-                    //servidorBroadcast.DropMulticastGroup(endMulticast);
-                    // servidorBroadcast.Dispose();
+                    servidorMulticast.Close();
+                    //servidorMulticast.DropMulticastGroup(endMulticast);
+                    // servidorMulticast.Dispose();
                 }
                 if (timer != null)
 			        timer.Dispose();
                  }
             catch {}
         }
-        public void inicializarRespostaBroadcasting(IPEndPoint aConectar)
+        public void inicializarRespostaMulticasting(IPEndPoint aConectar)
         {
             Peer.iPConectando = aConectar;
-           /* servidorBroadcast.Dispose();
-            servidorBroadcast = null;*/
+           /* servidorMulticast.Dispose();
+            servidorMulticast = null;*/
             Peer.iPConectando.Port = portaEnviar;
             emissorResposta = new UdpClient();
             emissorResposta.DontFragment = true;
             emissorResposta.Connect(IPConectando);
-            emissorResposta.EnableBroadcast = false;//pode enviar e/ou receber broadcast
+            emissorResposta.EnableMulticast = false;//pode enviar e/ou receber Multicast
             emissorResposta.MulticastLoopback = true;
             //uma mensagem será enviada para o dispositivo que fez um multicast
 
         }
-        public static void finalizarRespostaBroadcasting()
+        public static void finalizarRespostaMulticasting()
         {
             try
             {
-                if (respostaBroadcasting != null)
-                    respostaBroadcasting.Dispose();
+                if (respostaMulticasting != null)
+                    respostaMulticasting.Dispose();
                 if (emissorResposta != null)
                 {
                     emissorResposta.Close();
                     
-                    //servidorBroadcast.DropMulticastGroup(endMulticast);
-                   // servidorBroadcast.Dispose();
+                    //servidorMulticast.DropMulticastGroup(endMulticast);
+                   // servidorMulticast.Dispose();
                 }
-                if (servidorBroadcast != null)
+                if (servidorMulticast != null)
                 {
-                    servidorBroadcast.DropMulticastGroup(endMulticast);
-                    servidorBroadcast.Dispose();
-                    servidorBroadcast = null;
+                    servidorMulticast.DropMulticastGroup(endMulticast);
+                    servidorMulticast.Dispose();
+                    servidorMulticast = null;
                 }
                 if (timer != null)
                     timer.Dispose();
@@ -275,12 +275,12 @@ namespace Physicist
 
         public void Dispose()
         {
-            respostaBroadcasting.Dispose();
-            broadcasting.Dispose();
+            respostaMulticasting.Dispose();
+            Multicasting.Dispose();
 
             timer.Dispose();
-            servidorBroadcast.DropMulticastGroup(endMulticast);
-            servidorBroadcast.Dispose();
+            servidorMulticast.DropMulticastGroup(endMulticast);
+            servidorMulticast.Dispose();
             emissorResposta.Dispose();
             
         }

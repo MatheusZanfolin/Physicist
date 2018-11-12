@@ -121,7 +121,7 @@ namespace Physicist
                     case TaskStatus.RanToCompletion:
                         //deu tudo certo!!!
                         //não dar dispose!!
-                        //tratar Broadcasting!
+                        //tratar Multicasting!
                         throw new Exception("D");
                         break;
                     case TaskStatus.WaitingForChildrenToComplete:
@@ -164,7 +164,7 @@ namespace Physicist
             }
         }
 
-        public async void testarBroadcasting() {
+        public async void testarMulticasting() {
             //try{
 			    peers[0].receber();
         	/*}
@@ -172,11 +172,11 @@ namespace Physicist
 			    if(ex.Message == "A")
 				    throw new Exception("A");
 			    else
-				    throw new Exception("Broadcasting falhou!");	
+				    throw new Exception("Multicasting falhou!");	
 		    }*/
 	    }
        // public static void depois
-        public async void responderBroadcasting()
+        public async void responderMulticasting()
         {
             peers[0].enviar();
            
@@ -209,44 +209,44 @@ namespace Physicist
             }
             catch { }
         }
-        public void finalizarBroadcasting()
+        public void finalizarMulticasting()
         {
 
             // receptorP2P.Stop();
-            Peer.finalizarBroadcasting();
+            Peer.finalizarMulticasting();
             
         }
-        public void inicializarBroadcasting()
+        public void inicializarMulticasting()
         {
-            peers[0].inicializarBroadcasting();
+            peers[0].inicializarMulticasting();
         }
-        public void finalizarRespostaBroadcasting()
+        public void finalizarRespostaMulticasting()
         {
-            //peers[0].finalizarRespostaBroadcasting();
+            //peers[0].finalizarRespostaMulticasting();
             // receptorP2P.Stop();
-            Peer.finalizarRespostaBroadcasting();
+            Peer.finalizarRespostaMulticasting();
         }
-        public void inicializarRespostaBroadcasting(int indice)
+        public void inicializarRespostaMulticasting(int indice)
         {
-            peers[0].inicializarRespostaBroadcasting(peers[indice+1].IPEndPoint);
+            peers[0].inicializarRespostaMulticasting(peers[indice+1].IPEndPoint);
         }
-        public static async void tratarBroadcast()
+        public static async void tratarMulticast()
         {
             IPEndPoint ipAchado = peers[0].IPConectando;
             Peer novoPeer = new Peer(ipAchado);
             peers.Add(novoPeer);
-            ControladorConexao.tratarBroadcast();
+            ControladorConexao.tratarMulticast();
                
                    // throw new Exception("Caso aparentemente impossível!");
                     //caso aparentemente impossível
         } 
-        public TaskStatus estadoBroadcasting()
+        public TaskStatus estadoMulticasting()
         {
-            return Peer.estadoBroadcasting();
+            return Peer.estadoMulticasting();
         }
-        public TaskStatus estadoRespostaBroadcasting()
+        public TaskStatus estadoRespostaMulticasting()
         {
-            return Peer.estadoRespostaBroadcasting();
+            return Peer.estadoRespostaMulticasting();
         }
         public static TaskStatus estadoEscutaPeer()
         {

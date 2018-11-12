@@ -37,38 +37,38 @@ namespace Physicist
         {
 
         }
-        public void finalizarBroadcasting()
+        public void finalizarMulticasting()
         {
-            conexao.finalizarBroadcasting();
+            conexao.finalizarMulticasting();
         }
-        public void inicializarBroadcasting()
+        public void inicializarMulticasting()
         {
-            conexao.inicializarBroadcasting();
+            conexao.inicializarMulticasting();
         }
-        public void finalizarRespostaBroadcasting()
+        public void finalizarRespostaMulticasting()
         {
-            conexao.finalizarRespostaBroadcasting();
+            conexao.finalizarRespostaMulticasting();
         }
-        public void inicializarRespostaBroadcasting(int indice)
+        public void inicializarRespostaMulticasting(int indice)
         {
-            conexao.inicializarRespostaBroadcasting(indice);
+            conexao.inicializarRespostaMulticasting(indice);
         }
-        public async void testarBroadcasting()
+        public async void testarMulticasting()
         {
-                conexao.testarBroadcasting();
+                conexao.testarMulticasting();
         	
 	    }
-        public async void responderBroadcasting()
+        public async void responderMulticasting()
         {
-            conexao.responderBroadcasting();                              
+            conexao.responderMulticasting();                              
         }
         public static Peer PeerAchado {
             get{
                 return peerAchado;
             }
         }
-        public static void tratarBroadcast() {
-            //conexao.tratarBroadcast();
+        public static void tratarMulticast() {
+            //conexao.tratarMulticast();
             peerAchado = ConexaoP2P.ultimoPeer();
             frmPrincipal.novoPeer = true;
         }
