@@ -77,7 +77,9 @@ namespace Physicist
                 timerP2P.Dispose();
                 timerP2P = null;
             }
-            catch { }
+            catch {
+                timerP2P = null;
+            }
             if (escutarConexao != null && escutarPeer == null)
             {
                 if (ConexaoP2P.estadoEscutaConexao() == TaskStatus.RanToCompletion)

@@ -55,7 +55,7 @@ namespace Physicist
             
             if (ehParaParar(tarefaAnalisar.Status))
             {
-                MessageBox.Show("Task parou!");
+                MessageBox.Show("Task "+ tarefaAnalisar.Status.ToString()+" parou!");
                 if (indTarefa < 2)
                     Peer.finalizarTimer();
                 if(indTarefa>=2 && indTarefa < 4)

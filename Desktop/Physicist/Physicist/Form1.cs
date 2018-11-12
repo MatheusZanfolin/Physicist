@@ -37,8 +37,8 @@ namespace Physicist
         private void btnConectar_Click(object sender, EventArgs e)
         {
             escutando = false;
-                if(!DesenhavelRepositorio.estaVazio())
-                    atualizarForm();
+            if(!DesenhavelRepositorio.estaVazio())
+                atualizarForm();
             btnConectar.Text = "Verificar resposta";
             meuControlador.inicializarRespostaMulticasting(lsbDispositivos.SelectedIndex);
             responderPeer();

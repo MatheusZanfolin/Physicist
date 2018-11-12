@@ -188,8 +188,10 @@ namespace Physicist
             {
                 try
                 {
+
                     servidorMulticast.Close();
                     servidorMulticast.DropMulticastGroup(endMulticast);
+
                     servidorMulticast.Dispose();
                     servidorMulticast = null;
                 }
@@ -207,7 +209,7 @@ namespace Physicist
                //this.meuEnd = new IPEndPoint(IPAddress.Any, portaMulticast);
             this.meuEnd = new IPEndPoint(IP, portaMulticast);
             servidorMulticast.Client.Bind(meuEnd);
-            servidorMulticast.EnableMulticast = true;
+            servidorMulticast.EnableBroadcast = true;
             servidorMulticast.JoinMulticastGroup(endMulticast);
             this.receptorAtribuido = true;
             
@@ -243,7 +245,7 @@ namespace Physicist
             emissorResposta = new UdpClient();
             emissorResposta.DontFragment = true;
             emissorResposta.Connect(IPConectando);
-            emissorResposta.EnableMulticast = false;//pode enviar e/ou receber Multicast
+            emissorResposta.EnableBroadcast = false;//pode enviar e/ou receber Multicast
             emissorResposta.MulticastLoopback = true;
             //uma mensagem será enviada para o dispositivo que fez um multicast
 
