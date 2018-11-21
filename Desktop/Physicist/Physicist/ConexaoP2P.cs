@@ -37,6 +37,7 @@ namespace Physicist
             Action<object> action = (object obj) =>
             {
                 bool achouCon = false;
+                MessageBox.Show("Escutando conexões!");
                 while (!achouCon)
                 {
                     try
@@ -49,7 +50,7 @@ namespace Physicist
                         achouCon = false;
                     }
                 }
-                 
+                MessageBox.Show("Conexão deu bom!");
             };
             escutarConexao = new Task(action, "escutarConexao");
             escutarConexao.Start();
@@ -80,10 +81,22 @@ namespace Physicist
             catch {
                 timerP2P = null;
             }
+            
             if (escutarConexao != null && escutarPeer == null)
             {
+                
                 if (ConexaoP2P.estadoEscutaConexao() == TaskStatus.RanToCompletion)
                 {
+                    try
+                    {
+                        escutarConexao.Dispose();
+                        escutarConexao = null;
+                    }
+                    catch
+                    {
+                        escutarConexao = null;
+                    }
+                    MessageBox.Show("Aceitando Peer!");
                     ConexaoP2P.aceitarPeer();
                 }
                 else
@@ -95,7 +108,17 @@ namespace Physicist
             {
                 if (ConexaoP2P.estadoEscutaPeer() == TaskStatus.RanToCompletion)
                 {
+                    MessageBox.Show("Tratando dados!");
                     ConexaoP2P.tratarDados();
+                    try
+                    {
+                        escutarPeer.Dispose();
+                        escutarPeer = null;
+                    }
+                    catch
+                    {
+                        escutarPeer = null;
+                    }
                 }
                 else
                 {

@@ -255,7 +255,17 @@ namespace Physicist
             try
             {
                 if (respostaMulticasting != null)
-                    respostaMulticasting.Dispose();
+                {
+                    try
+                    {
+                        respostaMulticasting.Dispose();
+                        respostaMulticasting = null;
+                    }
+                    catch
+                    {
+                        respostaMulticasting = null;
+                    }
+                }
                 if (emissorResposta != null)
                 {
                     emissorResposta.Close();

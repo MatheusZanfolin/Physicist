@@ -23,7 +23,8 @@ namespace Physicist
         private static int numElementosListaForm = 0;
         //private static System.Windows.Forms.Timer timerLista;
         private static bool flagSairTimer;
-       
+        private static bool primeiroTCP = true;
+        public static bool flagAbrirSimulacao = false;
         //private static DesenhavelRepositorio repDes = null;
         //private const byte flagImagem = 0x00;
   
@@ -37,12 +38,17 @@ namespace Physicist
         private void btnConectar_Click(object sender, EventArgs e)
         {
             escutando = false;
-            if(!DesenhavelRepositorio.estaVazio())
+            if (flagAbrirSimulacao)
+            {
                 atualizarForm();
-            btnConectar.Text = "Verificar resposta";
-            meuControlador.inicializarRespostaMulticasting(lsbDispositivos.SelectedIndex);
-            responderPeer();
-            meuControlador.finalizarRespostaMulticasting();
+            }
+            if (primeiroTCP) { 
+                btnConectar.Text = "Verificar resposta";
+                meuControlador.inicializarRespostaMulticasting(lsbDispositivos.SelectedIndex);
+                responderPeer();
+                primeiroTCP = false;
+            }
+            //meuControlador.finalizarRespostaMulticasting();
             //.. esperar a resposta
                 //responder peer é async
                 

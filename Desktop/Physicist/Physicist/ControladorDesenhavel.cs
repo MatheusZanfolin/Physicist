@@ -11,6 +11,7 @@ namespace Physicist
     {
         private const byte flagForma = 0xFE;
         private const byte flagFim = 0xFF;
+        private const byte flagInicio = 0xFD;
         public static void tratarDados()
         {
             //byte[] buffer = ;
@@ -29,6 +30,17 @@ namespace Physicist
             //MessageBox.Show("Recebeu TCP");
             for (int i = 0; i < buf.Length - 40; i = i + 41)
             {
+                if (buf[i] == flagFim)
+                {
+                    //flag para FIM = 255
+                    Form2.flagFimSimulacao = true;
+                    return;
+                }
+                if(buf[i] == flagInicio)
+                {
+                    frmPrincipal.flagAbrirSimulacao = true;
+                    return;
+                }
                 Desenhavel itemBuffer = null;
                 int indice = BitConverter.ToInt32(buf, i + 1);
                 int qtdDesenhaveis = BitConverter.ToInt32(buf, i + 5);
@@ -43,12 +55,7 @@ namespace Physicist
 
                     itemBuffer = new Imagem(indice, xRel, yRel, larguraRel, alturaRel);
                 }
-                if (buf[i] == flagFim)
-                {
-                    //flag para FIM = 255
-                    Form2.flagFimSimulacao = true;
-                    return;
-                }
+               
                 if (buf[i] == flagForma)
                 {
                     //flag para forma = 254
