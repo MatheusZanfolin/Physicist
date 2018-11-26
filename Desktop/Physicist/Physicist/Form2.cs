@@ -29,6 +29,7 @@ namespace Physicist
         private Color corReta = Color.Yellow;
         private Color corElipse = Color.Black;
         private Color corTracejado = Color.Gray;
+        private Action<object> recebimento, interpretacao;
         Pen caneta;
         Graphics g;
         public Semaphore semaforoDesenhaveis;
@@ -52,7 +53,8 @@ namespace Physicist
         }
         private void finalizarTimer(bool ehSemaforo)
         {
-            timerDesenhaveis.Dispose();
+            if(timerDesenhaveis!=null)
+                timerDesenhaveis.Dispose();
             timerDesenhaveis = null;
             if (ehSemaforo)
             {
@@ -72,7 +74,7 @@ namespace Physicist
         private void Form2_Load(object sender, EventArgs e)
         {
             g = CreateGraphics();
-            Action<object> interpretacao = (object obj) =>
+            interpretacao = (object obj) =>
             {
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
@@ -80,6 +82,10 @@ namespace Physicist
                 
                     try
                     {
+                        while (DesenhavelRepositorio.estaVazio())
+                        {
+                            Thread.Sleep(8);
+                        }
                         while (!DesenhavelRepositorio.estaVazio())
                         {
                             Desenhavel desenhavel = DesenhavelRepositorio.obter();
@@ -90,14 +96,13 @@ namespace Physicist
                     catch (Exception ex)
                     {
                         //achouCon = false;
-                        flagFimInterpretacao = true;
                     }
-
+                flagFimInterpretacao = true;
                 semaforoDesenhaveis.Release();
                 //semaforoDesenhaveis.Release();
 
             };
-            Action<object> recebimento = (object obj) =>
+            recebimento = (object obj) =>
             {
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
@@ -139,19 +144,23 @@ namespace Physicist
             while (!flagFimSimulacao)
             {
                 if (flagFimInterpretacao) {
-                    
+                    flagFimInterpretacao = false;
                     finalizarTimer(false);
                     inicializarTimer(5);
+                    receberDesenhaveis = new Task(recebimento, "receberDesenhaveis");
                     receberDesenhaveis.Start();
-                    
+
+                    flagFimInterpretacao = false;
                 }
                 if(flagFimRecebimento)
                 {
-                    
                     finalizarTimer(false);
                     inicializarTimer(4);
+                    interpretarDesenhaveis = new Task(interpretacao, "interpretarDesenhaveis");
+
                     interpretarDesenhaveis.Start();
-                    
+
+                    flagFimRecebimento = false;
                 }
                     
                 /*0 -   Multicasting
