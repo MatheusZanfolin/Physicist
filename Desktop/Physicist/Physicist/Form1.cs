@@ -38,19 +38,15 @@ namespace Physicist
         private void btnConectar_Click(object sender, EventArgs e)
         {
             escutando = false;
-            if (primeiroTCP)
+            if (flagAbrirSimulacao)
             {
+                atualizarForm();
+            }
+            if (primeiroTCP) { 
                 btnConectar.Text = "Verificar resposta";
                 meuControlador.inicializarRespostaMulticasting(lsbDispositivos.SelectedIndex);
                 responderPeer();
                 primeiroTCP = false;
-            }
-            else
-            {
-                if (flagAbrirSimulacao)
-                {
-                    atualizarForm();
-                }
             }
             //meuControlador.finalizarRespostaMulticasting();
             //.. esperar a resposta
@@ -76,9 +72,9 @@ namespace Physicist
         }
         private void atualizarForm()
         {
-            Form2 novoform = new Form2();
-            novoform.Show();
-            //MessageBox.Show("Recebeu o TCP");
+            //Form2 novoform = new Form2();
+            //novoform.Show();
+            MessageBox.Show("Recebeu o TCP");
             //CHAMAR Form2
         }
         private void inserirNaLista()

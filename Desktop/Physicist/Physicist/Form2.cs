@@ -29,7 +29,6 @@ namespace Physicist
         private Color corReta = Color.Yellow;
         private Color corElipse = Color.Black;
         private Color corTracejado = Color.Gray;
-        private Action<object> recebimento, interpretacao;
         Pen caneta;
         Graphics g;
         public Semaphore semaforoDesenhaveis;
@@ -53,8 +52,7 @@ namespace Physicist
         }
         private void finalizarTimer(bool ehSemaforo)
         {
-            if(timerDesenhaveis!=null)
-                timerDesenhaveis.Dispose();
+            timerDesenhaveis.Dispose();
             timerDesenhaveis = null;
             if (ehSemaforo)
             {
@@ -74,7 +72,7 @@ namespace Physicist
         private void Form2_Load(object sender, EventArgs e)
         {
             g = CreateGraphics();
-            interpretacao = (object obj) =>
+            Action<object> interpretacao = (object obj) =>
             {
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
@@ -82,27 +80,22 @@ namespace Physicist
                 
                     try
                     {
-                        while (DesenhavelRepositorio.estaVazio())
-                        {
-                            Thread.Sleep(8);
-                        }
                         while (!DesenhavelRepositorio.estaVazio())
                         {
                             Desenhavel desenhavel = DesenhavelRepositorio.obter();
                             interpretarDesenhavel(desenhavel);
                         }
-                        //achouCon = true;
                     }
                     catch (Exception ex)
                     {
-                        //achouCon = false;
+                        flagFimInterpretacao = true;
                     }
-                flagFimInterpretacao = true;
+
                 semaforoDesenhaveis.Release();
                 //semaforoDesenhaveis.Release();
 
             };
-            recebimento = (object obj) =>
+            Action<object> recebimento = (object obj) =>
             {
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
@@ -147,19 +140,15 @@ namespace Physicist
                     flagFimInterpretacao = false;
                     finalizarTimer(false);
                     inicializarTimer(5);
-                    receberDesenhaveis = new Task(recebimento, "receberDesenhaveis");
                     receberDesenhaveis.Start();
-
                     flagFimInterpretacao = false;
                 }
                 if(flagFimRecebimento)
                 {
+                    flagFimRecebimento = false;
                     finalizarTimer(false);
                     inicializarTimer(4);
-                    interpretarDesenhaveis = new Task(interpretacao, "interpretarDesenhaveis");
-
                     interpretarDesenhaveis.Start();
-
                     flagFimRecebimento = false;
                 }
                     
@@ -228,7 +217,7 @@ namespace Physicist
                         break;
                     case Forma.TipoForma.Tracejado:
                         caneta = new Pen(corTracejado, espessura);
-                        float[] padraoTracos = {1,1};
+                        float[] padraoTracos = {20,40};//tem que ser múltiplo de 1,2
                         caneta.DashPattern = padraoTracos;
                         //double x1=0, y1=0, x2=0, y2=0;
                         x1 = xC - (largura / 2);

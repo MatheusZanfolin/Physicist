@@ -28,7 +28,7 @@ namespace Physicist
             //repDes = new DesenhavelRepositorio();
             //throw new Exception("a");
             //MessageBox.Show("Recebeu TCP");
-            for (int i = 0; i==0 || i < buf.Length - 40; i = i + 41)
+            for (int i = 0; i < buf.Length - 40; i = i + 41)
             {
                 if (buf[i] == flagFim)
                 {
