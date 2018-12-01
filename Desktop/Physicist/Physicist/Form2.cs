@@ -15,6 +15,8 @@ namespace Physicist
         public static Task interpretarDesenhaveis;
         public static Task receberDesenhaveis;
         public static Task controlarSemaforo;
+        private static Action<object> recebimento;
+        private static Action<object> interpretacao;
         public static bool flagFimRecebimento = false;
         public static bool flagFimInterpretacao = false;
         public static bool flagFimSimulacao = false;
@@ -52,7 +54,8 @@ namespace Physicist
         }
         private void finalizarTimer(bool ehSemaforo)
         {
-            timerDesenhaveis.Dispose();
+            if(timerDesenhaveis!=null)
+                timerDesenhaveis.Dispose();
             timerDesenhaveis = null;
             if (ehSemaforo)
             {
@@ -72,12 +75,15 @@ namespace Physicist
         private void Form2_Load(object sender, EventArgs e)
         {
             g = CreateGraphics();
-            Action<object> interpretacao = (object obj) =>
+            interpretacao = (object obj) =>
             {
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
                 //inicializarTimer(5);
-                
+
+                MessageBox.Show("Interpretando");
+                while (!flagFimInterpretacao)
+                {
                     try
                     {
                         while (!DesenhavelRepositorio.estaVazio())
@@ -85,34 +91,63 @@ namespace Physicist
                             Desenhavel desenhavel = DesenhavelRepositorio.obter();
                             interpretarDesenhavel(desenhavel);
                         }
+                        flagFimInterpretacao = true;
                     }
                     catch (Exception ex)
                     {
                         flagFimInterpretacao = true;
                     }
-
+                }
                 semaforoDesenhaveis.Release();
                 //semaforoDesenhaveis.Release();
 
             };
-            Action<object> recebimento = (object obj) =>
+            recebimento = (object obj) =>
             {
+                bool estaEscutando = false;
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
                 //inicializarTimer(4);*/
-                
+                MessageBox.Show("Escutando");
+                while (!flagFimRecebimento)
+                {
                     try
                     {
-                        ConexaoP2P.inicializarPeer(4);
+                        if (!estaEscutando)
+                        {
+                            if (!ControladorDesenhavel.Interpretando)
+                            {
+                                ConexaoP2P.tratarDados();
+                                estaEscutando = true;
+                            }
+                        }
+                        else
+                        {
+                            if (!ControladorDesenhavel.Interpretando)
+                            {
+                                ConexaoP2P.tratarDados();
+                                estaEscutando = true;
+                            }
+                            
+                        }
+
+
                         //esse método já recebe e adiciona na
                         //classe DesenhavelRepositorio
-                        
+
                     }
                     catch (Exception ex)
                     {
-                    //achouCon = false;
+                        //achouCon = false;
+
+                        ConexaoP2P.finalizarConexao();
                         flagFimRecebimento = true;
+                        estaEscutando = false;
                     }
+                }
+
+                ConexaoP2P.finalizarConexao();
+                estaEscutando = false;
                 semaforoDesenhaveis.Release();
                 
                 //semaforoDesenhaveis.Release();
@@ -122,10 +157,9 @@ namespace Physicist
                 administrarSemaforo();
             };
             semaforoDesenhaveis = new Semaphore(0, 1);
-            interpretarDesenhaveis = new Task(interpretacao, "interpretarDesenhaveis");
-            receberDesenhaveis = new Task(recebimento, "receberDesenhaveis");
             controlarSemaforo = new Task(controleSemaforo, "controlarSemaforo");
-            interpretarDesenhaveis.Start();
+            //   receberDesenhaveis.Start();
+            flagFimInterpretacao = true;
             //receberDesenhaveis.Start();
             semaforoDesenhaveis.Release();
             controlarSemaforo.Start();
@@ -136,18 +170,25 @@ namespace Physicist
             //predict de erro aqui
             while (!flagFimSimulacao)
             {
-                if (flagFimInterpretacao) {
+                if (flagFimInterpretacao && !flagFimRecebimento) {
+         
                     flagFimInterpretacao = false;
                     finalizarTimer(false);
-                    inicializarTimer(5);
+                    //receberDesenhaveis = null;
+                    receberDesenhaveis = new Task(recebimento, "receberDesenhaveis");
+
+                    inicializarTimer(4);
                     receberDesenhaveis.Start();
                     flagFimInterpretacao = false;
                 }
-                if(flagFimRecebimento)
+                if(flagFimRecebimento && !flagFimInterpretacao)
                 {
                     flagFimRecebimento = false;
                     finalizarTimer(false);
-                    inicializarTimer(4);
+                    //interpretarDesenhaveis = null;
+                    interpretarDesenhaveis = new Task(interpretacao, "interpretarDesenhaveis");
+
+                    inicializarTimer(5);
                     interpretarDesenhaveis.Start();
                     flagFimRecebimento = false;
                 }

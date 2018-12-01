@@ -26,6 +26,7 @@ namespace Physicist
         //const int indTarefa = 2;
         private static System.Threading.Timer timerP2P;
         private static byte[] buffer;
+        private static NetworkStream canalRede = null;
         //private const string msgReq = "Requisitando";
         //precisamos fazer um "protocolo" para interpretar os dados recebidos
         public static void inicializarPeer(int indTarefa)
@@ -37,7 +38,7 @@ namespace Physicist
             Action<object> action = (object obj) =>
             {
                 bool achouCon = false;
-                MessageBox.Show("Escutando conexões!");
+                //MessageBox.Show("Escutando conexões!");
                 while (!achouCon)
                 {
                     try
@@ -47,10 +48,11 @@ namespace Physicist
                     }
                     catch(Exception ex)
                     {
+                        MessageBox.Show(ex.Message);
                         achouCon = false;
                     }
                 }
-                MessageBox.Show("Conexão deu bom!");
+                //MessageBox.Show("Conexão deu bom!");
             };
             escutarConexao = new Task(action, "escutarConexao");
             escutarConexao.Start();
@@ -96,7 +98,7 @@ namespace Physicist
                     {
                         escutarConexao = null;
                     }
-                    MessageBox.Show("Aceitando Peer!");
+                   // MessageBox.Show("Aceitando Peer!");
                     ConexaoP2P.aceitarPeer();
                 }
                 else
@@ -108,7 +110,7 @@ namespace Physicist
             {
                 if (ConexaoP2P.estadoEscutaPeer() == TaskStatus.RanToCompletion)
                 {
-                    MessageBox.Show("Tratando dados!");
+                    //MessageBox.Show("Tratando dados!");
                     ConexaoP2P.tratarDados();
                     try
                     {
@@ -167,18 +169,24 @@ namespace Physicist
         public static async void tratarDados()
         {
             //sla como faço isso por enquanto
-            emissorP2P = escutarPeer.Result;
-            NetworkStream stream = emissorP2P.GetStream();
+            if (canalRede == null)
+            {
+                emissorP2P = escutarPeer.Result;
+                canalRede =emissorP2P.GetStream();
+            }
             byte[] meuBuffer = new byte[2048];
-            int res = await stream.ReadAsync(meuBuffer, 0, 2048);
+            int res = await canalRede.ReadAsync(meuBuffer, 0, 2048);
             if (res < 0)
                 throw new Exception("Leitura de Buffer não deu certo!");
-            byte[] buffer = new byte[res];
-            for (int i = 0; i < res; i++)
-                buffer[i] = meuBuffer[i];
-            ConexaoP2P.buffer = buffer;
-            finalizarConexao();
-            ControladorDesenhavel.tratarDados();
+            if (res != 0)
+            {
+                byte[] buffer = new byte[res];
+                for (int i = 0; i < res; i++)
+                    buffer[i] = meuBuffer[i];
+                ConexaoP2P.buffer = buffer;
+                finalizarConexao();
+                ControladorDesenhavel.tratarDados();
+            }
 
         }
         public static byte[] Buffer
@@ -221,12 +229,12 @@ namespace Physicist
                     escutarPeer.Dispose();
                 if (emissorP2P != null)
                 {
-                    emissorP2P.Close();
+                //    emissorP2P.Close();
                     //emissorP2P = null;
                 }
                 if (receptorP2P != null)
                 {
-                    receptorP2P.Stop();
+                 //   receptorP2P.Stop();
                     //receptorP2P = null;
                 }
                 if (timerP2P != null)

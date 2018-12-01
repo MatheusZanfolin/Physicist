@@ -61,10 +61,8 @@ namespace Physicist
                 if(indTarefa>=2 && indTarefa < 4)
                     ConexaoP2P.finalizarTimer();
                 if (indTarefa == 4)
-                {
                     Form2.flagFimRecebimento = true;
-                    ConexaoP2P.finalizarTimer();
-                }
+                
                 if (indTarefa == 5)
                     Form2.flagFimInterpretacao = true;
                 if (indTarefa == 6)

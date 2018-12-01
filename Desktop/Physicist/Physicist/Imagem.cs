@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.IO;
 
 namespace Physicist
 {
@@ -34,12 +35,14 @@ namespace Physicist
         }
         public Image imagem()
         {
-            String nomeArquivo = getArquivoPorIndice();
+            string nomeArquivo = getArquivoPorIndice();
             return Image.FromFile(nomeArquivo);
         }
-        private String getArquivoPorIndice()
+        private string getArquivoPorIndice()
         {
-            return "imagens/"+(this.indice).ToString() + ".png";
+            string pastaAtual = Directory.GetCurrentDirectory();
+            pastaAtual += @"\..\..";
+            return pastaAtual + @"\imagens\"+(this.indice).ToString() + ".png";
         }
         public int Indice
         {
