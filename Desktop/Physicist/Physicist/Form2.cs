@@ -23,7 +23,7 @@ namespace Physicist
         private System.Threading.Timer timerDesenhaveis;
         private System.Threading.Timer timerSemaforo;
         private const int intervaloTimer = 17;
-        private const double taxaProporcaoAltura = 0.5;
+        private const double taxaProporcaoAltura = 1;
         private const double taxaProporcaoLargura = 0.5;
         private const int espessura = 5;
         private static float alturaTotal;
@@ -32,7 +32,7 @@ namespace Physicist
         private Color corElipse = Color.Black;
         private Color corTracejado = Color.Gray;
         Pen caneta;
-        Graphics g;
+        Graphics g = null;
         public Semaphore semaforoDesenhaveis;
         public Form2()
         {
@@ -74,31 +74,30 @@ namespace Physicist
         }
         private void Form2_Load(object sender, EventArgs e)
         {
-            g = CreateGraphics();
             interpretacao = (object obj) =>
             {
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
                 //inicializarTimer(5);
 
-                MessageBox.Show("Interpretando");
-                while (!flagFimInterpretacao)
-                {
-                    try
+                //MessageBox.Show("Interpretando");
+                    if (!DesenhavelRepositorio.estaVazio())
                     {
-                        while (!DesenhavelRepositorio.estaVazio())
-                        {
-                            Desenhavel desenhavel = DesenhavelRepositorio.obter();
+                        g = CreateGraphics();//resetar os gráficos
+                        Invalidate();
+                        Desenhavel desenhavel = DesenhavelRepositorio.obter();
+                        if(desenhavel!=null)
                             interpretarDesenhavel(desenhavel);
+                        while (!DesenhavelRepositorio.Primeiro)//significa que esse é o primeiro desenhável
+                        {
+                            desenhavel = DesenhavelRepositorio.obter();
+
+                            if (desenhavel != null)
+                                interpretarDesenhavel(desenhavel);
                         }
-                        flagFimInterpretacao = true;
+                            
                     }
-                    catch (Exception ex)
-                    {
-                        flagFimInterpretacao = true;
-                    }
-                }
-                semaforoDesenhaveis.Release();
+               semaforoDesenhaveis.Release();
                 //semaforoDesenhaveis.Release();
 
             };
@@ -108,47 +107,20 @@ namespace Physicist
                 //bool flagFim = false;
                 semaforoDesenhaveis.WaitOne();
                 //inicializarTimer(4);*/
-                MessageBox.Show("Escutando");
-                while (!flagFimRecebimento)
+                //MessageBox.Show("Escutando");
+                        
+                if (!ControladorDesenhavel.Interpretando)
                 {
-                    try
-                    {
-                        if (!estaEscutando)
-                        {
-                            if (!ControladorDesenhavel.Interpretando)
-                            {
-                                ConexaoP2P.tratarDados();
-                                estaEscutando = true;
-                            }
-                        }
-                        else
-                        {
-                            if (!ControladorDesenhavel.Interpretando)
-                            {
-                                ConexaoP2P.tratarDados();
-                                estaEscutando = true;
-                            }
-                            
-                        }
-
-
-                        //esse método já recebe e adiciona na
-                        //classe DesenhavelRepositorio
-
-                    }
-                    catch (Exception ex)
-                    {
-                        //achouCon = false;
-
-                        ConexaoP2P.finalizarConexao();
-                        flagFimRecebimento = true;
-                        estaEscutando = false;
-                    }
+                    ConexaoP2P.tratarDados();
+                    estaEscutando = true;
                 }
+                        
+                        
+                //esse método já recebe e adiciona na
+                //classe DesenhavelRepositorio
 
-                ConexaoP2P.finalizarConexao();
-                estaEscutando = false;
-                semaforoDesenhaveis.Release();
+                   
+                 semaforoDesenhaveis.Release();
                 
                 //semaforoDesenhaveis.Release();
             };
@@ -170,28 +142,17 @@ namespace Physicist
             //predict de erro aqui
             while (!flagFimSimulacao)
             {
-                if (flagFimInterpretacao && !flagFimRecebimento) {
-         
-                    flagFimInterpretacao = false;
-                    finalizarTimer(false);
-                    //receberDesenhaveis = null;
-                    receberDesenhaveis = new Task(recebimento, "receberDesenhaveis");
+                //receberDesenhaveis = null;
+                receberDesenhaveis = new Task(recebimento, "receberDesenhaveis");
 
-                    inicializarTimer(4);
-                    receberDesenhaveis.Start();
-                    flagFimInterpretacao = false;
-                }
-                if(flagFimRecebimento && !flagFimInterpretacao)
-                {
-                    flagFimRecebimento = false;
-                    finalizarTimer(false);
-                    //interpretarDesenhaveis = null;
-                    interpretarDesenhaveis = new Task(interpretacao, "interpretarDesenhaveis");
+                //inicializarTimer(4);
+                receberDesenhaveis.Start();
+                interpretarDesenhaveis = new Task(interpretacao, "interpretarDesenhaveis");
 
-                    inicializarTimer(5);
-                    interpretarDesenhaveis.Start();
-                    flagFimRecebimento = false;
-                }
+                //inicializarTimer(5);
+                interpretarDesenhaveis.Start();
+                Thread.Sleep(17);   
+            }
                     
                 /*0 -   Multicasting
           1 -   respostaMulticasting
@@ -202,7 +163,7 @@ namespace Physicist
           6 -   semaforoDesenhaveis
              */
 
-            }
+            
             
         }
         private void interpretarDesenhavel(Desenhavel aInterpretar)
@@ -210,11 +171,7 @@ namespace Physicist
             //this.width => largura da janela
             //this.length => altura da janela
             //** espessura e cor
-            if (DesenhavelRepositorio.Primeiro)//significa que esse é o primeiro Frame
-            {
-                g = CreateGraphics();//resetar os gráficos
-                DesenhavelRepositorio.Primeiro = false;
-            }
+            
 
             alturaTotal = this.Height;
             larguraTotal = this.Width;
@@ -227,13 +184,16 @@ namespace Physicist
             {
                 Imagem imagemAInterpretar = (Imagem)aInterpretar;
                 Image imagemInterpretada = imagemAInterpretar.imagem();
-                double x1 = 0, y1 = 0;
-                largura *= taxaProporcaoLargura;
-                altura *= taxaProporcaoAltura;
-                x1 = xC - (largura / 2);
-                y1 = yC - (altura / 2);
-                g.DrawImage(imagemInterpretada, Convert.ToInt32(x1), Convert.ToInt32(y1),
-                    Convert.ToInt32(largura), Convert.ToInt32(altura));
+                if (imagemInterpretada != null)
+                {
+                    double x1 = 0, y1 = 0;
+                    largura *= taxaProporcaoLargura;
+                    altura *= taxaProporcaoAltura;
+                    x1 = xC - (largura / 2);
+                    y1 = yC - (altura / 2);
+                    g.DrawImage(imagemInterpretada, Convert.ToInt32(x1), Convert.ToInt32(y1),
+                        Convert.ToInt32(largura), Convert.ToInt32(altura));
+                }
             }
             if(aInterpretar.GetType() == typeof(Forma))
             {

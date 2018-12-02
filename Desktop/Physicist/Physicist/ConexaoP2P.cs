@@ -180,6 +180,9 @@ namespace Physicist
                 throw new Exception("Leitura de Buffer não deu certo!");
             if (res != 0)
             {
+                if (ControladorDesenhavel.Interpretando)
+                    return;
+                
                 byte[] buffer = new byte[res];
                 for (int i = 0; i < res; i++)
                     buffer[i] = meuBuffer[i];

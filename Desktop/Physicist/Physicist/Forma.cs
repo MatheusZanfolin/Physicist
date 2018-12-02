@@ -77,7 +77,15 @@ namespace Physicist
         }
         public override bool Equals(object obj)
         {
-            return this.indice == ((Forma)obj).indice;
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (obj.GetType() != this.GetType())
+                return false;
+            Forma im = (Forma)obj;
+
+            return this.indice == im.indice;
         }
     }
 }

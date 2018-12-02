@@ -10,58 +10,116 @@ namespace Physicist
     {
         private static Queue<Desenhavel> filaDesenhaveis;
         private static List<Desenhavel> desenhaveisFrame;
-        private static bool primeiro = false;
+        private static List<int> frames = new List<int>();
+        private static int numObtencoes;
         /*public DesenhavelRepositorio()
         {
             DesenhavelRepositorio.filaDesenhaveis = new Queue<Desenhavel>();
         }*/
         public static void armazenar(Desenhavel aInserir, int repeticoes)
         {
-            DesenhavelRepositorio.primeiro = false;
-            if(DesenhavelRepositorio.desenhaveisFrame == null)
+            try
             {
-                DesenhavelRepositorio.desenhaveisFrame = new List<Desenhavel>();
-                DesenhavelRepositorio.primeiro = true;
+                if (DesenhavelRepositorio.desenhaveisFrame == null)
+                {
+                    DesenhavelRepositorio.desenhaveisFrame = new List<Desenhavel>();
+                }
+                if (DesenhavelRepositorio.desenhaveisFrame.Exists(x => x.Indice == aInserir.Indice))
+                    return;//já está inserida a qtd de imagens desse mesmo
+                           //tipo nesse frame
+
+                for (int i = 0; i < repeticoes; i++)
+                {
+                    DesenhavelRepositorio.desenhaveisFrame.Add(aInserir);
+                }
             }
-            if (DesenhavelRepositorio.desenhaveisFrame.Exists(x => x.Indice == aInserir.Indice))
-                return;//já está inserida a qtd de imagens desse mesmo
-                       //tipo nesse frame
-            for(int i = 0; i < repeticoes; i++)
+            catch
             {
-                DesenhavelRepositorio.desenhaveisFrame.Add(aInserir);
+
             }
         }
         public static bool isUltimo()
         {
-            return DesenhavelRepositorio.desenhaveisFrame == null || DesenhavelRepositorio.desenhaveisFrame.Count < 1;
+            try
+            {
+                return DesenhavelRepositorio.desenhaveisFrame == null || DesenhavelRepositorio.desenhaveisFrame.Count < 1;
+            }
+            catch
+            {
+
+
+            }
+            return false;
         }
         public static bool Primeiro
         {
             get
             {
-                return DesenhavelRepositorio.primeiro;
+                try
+                {
+                    int somatoria = 0;
+                    if (somatoria == numObtencoes)
+                        return true;
+                    for (int i = 0; i < frames.Count; i++)
+                    {
+                        somatoria += frames[i];
+                        if (somatoria == numObtencoes)
+                        {
+                            for(int j = 0; j <= i; j++)
+                            {
+                                frames.RemoveAt(0);
+                            }
+                            numObtencoes = 0;
+                            return true;
+                        }
+                            
+                    }
+                    
+                }
+                catch
+                {
+
+                }
+                return false;
             }
-            set
-            {
-                DesenhavelRepositorio.primeiro = value;
-            }
+            
         }
         public static void armazenar(Desenhavel aInserir)
         {
-            if (DesenhavelRepositorio.filaDesenhaveis == null)
+            try
             {
-                DesenhavelRepositorio.filaDesenhaveis = new Queue<Desenhavel>();
+                if (DesenhavelRepositorio.filaDesenhaveis == null)
+                {
+                    DesenhavelRepositorio.filaDesenhaveis = new Queue<Desenhavel>();
+                }
+
+                DesenhavelRepositorio.filaDesenhaveis.Enqueue(aInserir);
+                DesenhavelRepositorio.desenhaveisFrame.Remove(aInserir);
+                if (DesenhavelRepositorio.desenhaveisFrame.Count < 1)
+                {
+                    DesenhavelRepositorio.desenhaveisFrame = null;
+                    DesenhavelRepositorio.frames.Add(DesenhavelRepositorio.filaDesenhaveis.Count);
+                }
             }
-            DesenhavelRepositorio.filaDesenhaveis.Enqueue(aInserir);
-            DesenhavelRepositorio.desenhaveisFrame.Remove(aInserir);
-            if (DesenhavelRepositorio.desenhaveisFrame.Count < 1)
-                DesenhavelRepositorio.desenhaveisFrame = null;
+            catch
+            {
+
+            }
         }
         public static Desenhavel obter()
         {
-            if (DesenhavelRepositorio.filaDesenhaveis == null || DesenhavelRepositorio.filaDesenhaveis.Count < 1)
-                throw new Exception("Fila vazia!");
-            return DesenhavelRepositorio.filaDesenhaveis.Dequeue();
+            try
+            {
+                if (DesenhavelRepositorio.filaDesenhaveis == null || DesenhavelRepositorio.filaDesenhaveis.Count < 1)
+                    throw new Exception("Fila vazia!");
+                DesenhavelRepositorio.numObtencoes++;
+                return DesenhavelRepositorio.filaDesenhaveis.Dequeue();
+            }
+            catch
+            {
+
+            }
+            return null;
         }
         public static bool estaVazio()
         {

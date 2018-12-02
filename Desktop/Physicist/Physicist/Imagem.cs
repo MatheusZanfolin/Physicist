@@ -36,13 +36,20 @@ namespace Physicist
         public Image imagem()
         {
             string nomeArquivo = getArquivoPorIndice();
-            return Image.FromFile(nomeArquivo);
+            if (nomeArquivo != "")
+                return Image.FromFile(nomeArquivo);
+            else
+                return null;
         }
         private string getArquivoPorIndice()
         {
             string pastaAtual = Directory.GetCurrentDirectory();
             pastaAtual += @"\..\..";
-            return pastaAtual + @"\imagens\"+(this.indice).ToString() + ".png";
+            if (this.indice > -1 && this.indice < 7)
+
+                return pastaAtual + @"\imagens\" + (this.indice).ToString() + ".png";
+            else
+                return "";
         }
         public int Indice
         {
@@ -83,7 +90,15 @@ namespace Physicist
         }
         public override bool Equals(object obj)
         {
-            return this.indice == ((Imagem)obj).indice;
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (obj.GetType() != this.GetType())
+                return false;
+            Imagem im = (Imagem)obj;
+
+            return this.indice == im.indice;
         }
     }
 }

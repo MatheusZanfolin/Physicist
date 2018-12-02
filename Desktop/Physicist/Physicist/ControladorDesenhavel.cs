@@ -29,11 +29,7 @@ namespace Physicist
                 ControladorDesenhavel.interpretarBuffer(ConexaoP2P.Buffer);
                 
             }
-            else
-            {
-               /* Thread.Sleep(17);
-                tratarDados();*/
-            }
+            
 
         }
         private static byte[] inverter (byte[] buffer, int comeco, int fim)
