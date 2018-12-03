@@ -37,11 +37,14 @@ namespace Physicist
             byte[] resultado = new byte[fim - comeco];
             for(int i = comeco; i < fim; i++)
             {
-                byte atual = buffer[fim + comeco - 1 - i];
-                /*if (atual < 128)
-                    atual = (byte)~atual;
-                */
-                resultado[i - comeco] = atual;
+                if (buffer.Length > fim + comeco - 1 - i)
+                {
+                    byte atual = buffer[fim + comeco - 1 - i];
+                    /*if (atual < 128)
+                        atual = (byte)~atual;
+                    */
+                    resultado[i - comeco] = atual;
+                }
             }
             return resultado;
         }

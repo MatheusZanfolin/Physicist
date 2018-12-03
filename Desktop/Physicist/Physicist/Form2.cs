@@ -74,6 +74,7 @@ namespace Physicist
         }
         private void Form2_Load(object sender, EventArgs e)
         {
+            
             interpretacao = (object obj) =>
             {
                 //bool flagFim = false;
@@ -81,10 +82,18 @@ namespace Physicist
                 //inicializarTimer(5);
 
                 //MessageBox.Show("Interpretando");
-                    if (!DesenhavelRepositorio.estaVazio())
+                    while (!DesenhavelRepositorio.estaVazio())
                     {
-                        g = CreateGraphics();//resetar os gráficos
-                        Invalidate();
+                        try
+                        {
+                            g = CreateGraphics();//resetar os gráficos
+
+                        }
+                        catch
+                        {
+
+                        } 
+                        
                         Desenhavel desenhavel = DesenhavelRepositorio.obter();
                         if(desenhavel!=null)
                             interpretarDesenhavel(desenhavel);
@@ -95,8 +104,9 @@ namespace Physicist
                             if (desenhavel != null)
                                 interpretarDesenhavel(desenhavel);
                         }
-                            
-                    }
+                        Invalidate();
+
+                }
                semaforoDesenhaveis.Release();
                 //semaforoDesenhaveis.Release();
 
@@ -151,7 +161,7 @@ namespace Physicist
 
                 //inicializarTimer(5);
                 interpretarDesenhaveis.Start();
-                Thread.Sleep(17);   
+                //Thread.Sleep(17);   
             }
                     
                 /*0 -   Multicasting
@@ -198,18 +208,25 @@ namespace Physicist
             if(aInterpretar.GetType() == typeof(Forma))
             {
                 Forma formaAInterpretar = (Forma)aInterpretar;
-                
+                double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+
                 switch (formaAInterpretar.Tipo)
                 {
                     case Forma.TipoForma.Reta:
-                        caneta = new Pen(corReta, espessura);
-                        double x1=0, y1=0, x2=0, y2=0;
-                        x1 = xC - (largura / 2);
-                        y1 = yC - (altura / 2);
-                        x2 = x1 + largura;
-                        y2 = y1 + altura;
-                        g.DrawLine(caneta, (float)x1, (float)y1,(float) x2,(float) y2);
-                        break;
+                        try
+                        {
+                            caneta = new Pen(corReta, espessura);
+                            x1 = xC - (largura / 2);
+                            y1 = yC - (altura / 2);
+                            x2 = x1 + largura;
+                            y2 = y1 + altura;
+                            g.DrawLine(caneta, (float)x1, (float)y1, (float)x2, (float)y2);
+                        }
+                        catch
+                        {
+
+                        }
+                            break;
                     case Forma.TipoForma.Elipse:
                         caneta = new Pen(corElipse, espessura);
                         largura *= taxaProporcaoLargura;
