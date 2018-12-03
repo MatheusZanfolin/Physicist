@@ -19,7 +19,8 @@ namespace Physicist
         public enum TipoForma{
             Reta,
             Elipse,
-            Tracejado
+            Prolongamento,
+            Refratado
         }
         public Forma(int indiceForma, double x, double y, double largura, double altura)
         {

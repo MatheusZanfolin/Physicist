@@ -182,7 +182,7 @@ namespace Physicist
             {
                 if (ControladorDesenhavel.Interpretando)
                     return;
-                
+               // DesenhavelRepositorio.limpar();
                 byte[] buffer = new byte[res];
                 for (int i = 0; i < res; i++)
                     buffer[i] = meuBuffer[i];
@@ -269,7 +269,8 @@ namespace Physicist
         public static async void tratarMulticast()
         {
             IPEndPoint ipAchado = peers[0].IPConectando;
-            Peer novoPeer = new Peer(ipAchado);
+            String nomeAchado = peers[0].NomeConectando;
+            Peer novoPeer = new Peer(ipAchado, nomeAchado);
             peers.Add(novoPeer);
             ControladorConexao.tratarMulticast();
                

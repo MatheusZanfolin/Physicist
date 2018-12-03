@@ -60,7 +60,8 @@ namespace Physicist
                     int somatoria = 0;
                     if (somatoria == numObtencoes)
                         return true;
-                    for (int i = 0; i < frames.Count; i++)
+                    int numFrames = frames.Count;
+                    for (int i = 0; i < numFrames; i++)
                     {
                         somatoria += frames[i];
                         if (somatoria == numObtencoes)
@@ -124,6 +125,18 @@ namespace Physicist
         public static bool estaVazio()
         {
             return (DesenhavelRepositorio.filaDesenhaveis == null || DesenhavelRepositorio.filaDesenhaveis.Count < 1);
+        }
+        public static int qtosElementos()
+        {
+            if (DesenhavelRepositorio.filaDesenhaveis == null)
+                return -1;
+            return DesenhavelRepositorio.filaDesenhaveis.Count;
+        }
+        public static void limpar()
+        {
+            desenhaveisFrame = null;
+            //frames = null;
+            filaDesenhaveis = null;
         }
     }
 }

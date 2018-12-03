@@ -26,11 +26,12 @@ namespace Physicist
         private IPEndPoint meuEnd;
         static UdpClient servidorMulticast;
         static UdpClient emissorResposta;
-        String nome;
+        private String nome;
+        private static String nomeConectando;
         private static IPEndPoint iPConectando;
         public String ToString()
         {
-            return this.IP.ToString();
+            return this.nome.ToString();
         }
         public IPEndPoint IPEndPoint
         {
@@ -45,6 +46,13 @@ namespace Physicist
                 return iPConectando;
             }
             
+        }
+        public String NomeConectando
+        {
+            get
+            {
+                return nomeConectando;
+            }
         }
         private void inicializarTimer(int indTarefa)
         {//não tenho ctz se ele é async ou não
@@ -107,15 +115,18 @@ namespace Physicist
             //byte[] datagrama = servidorMulticast.ReceiveAsync(/*ref IPQuemMandou*/);
             req = Multicasting.Result;
             string requisição = Encoding.ASCII.GetString(req.Buffer);
+            string nome = requisição.Substring(msgReq.Length);
+            requisição = requisição.Substring(0, msgReq.Length);
             IPQuemMandou = req.RemoteEndPoint;
 
             finalizarMulticasting();
-            if (!requisição.Equals("Requisitando"))
+            if (!requisição.Equals(msgReq))
             {
                 //throw new SocketException("Ataque vírus!!!");
                 throw new Exception("Esperava por requisição \" Requisitando\", porém achou \" "+ requisição +" \" !");
             }
             iPConectando = IPQuemMandou;
+            nomeConectando = nome;
             ConexaoP2P.tratarMulticast();
 	        //throw new Exception("B");
         }
@@ -303,6 +314,14 @@ namespace Physicist
             if (ipRemoto == null)
                 throw new ArgumentNullException("IP remoto nulo");
             this.IP = ipRemoto.Address;
+        }
+        //construtor para peers remotos
+        public Peer(IPEndPoint ipRemoto, String nome)
+        {
+            if (ipRemoto == null)
+                throw new ArgumentNullException("IP remoto nulo");
+            this.IP = ipRemoto.Address;
+            this.nome = nome;
         }
         //construtor para próprio peer(localhost)
         public Peer(IPAddress meuIP) {

@@ -28,20 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.lblDesenhaveis = new System.Windows.Forms.Label();
             this.SuspendLayout();
+            // 
+            // lblDesenhaveis
+            // 
+            this.lblDesenhaveis.AutoSize = true;
+            this.lblDesenhaveis.Location = new System.Drawing.Point(341, 13);
+            this.lblDesenhaveis.Name = "lblDesenhaveis";
+            this.lblDesenhaveis.Size = new System.Drawing.Size(0, 13);
+            this.lblDesenhaveis.TabIndex = 0;
             // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(855, 588);
+            this.Controls.Add(this.lblDesenhaveis);
             this.Name = "Form2";
             this.Text = "Physicist - Simulação";
             this.Load += new System.EventHandler(this.Form2_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Label lblDesenhaveis;
     }
 }

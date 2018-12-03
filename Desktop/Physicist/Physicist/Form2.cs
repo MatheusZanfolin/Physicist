@@ -26,11 +26,14 @@ namespace Physicist
         private const double taxaProporcaoAltura = 1;
         private const double taxaProporcaoLargura = 0.5;
         private const int espessura = 5;
+        private const int espessuraRefratado = 4;
+        private const int espessuraProlongamento = 4;
+
         private static float alturaTotal;
         private static float larguraTotal;
         private Color corReta = Color.Yellow;
         private Color corElipse = Color.Black;
-        private Color corTracejado = Color.Gray;
+        private Color corTracejado = Color.Yellow;
         Pen caneta;
         Graphics g = null;
         public Semaphore semaforoDesenhaveis;
@@ -82,10 +85,11 @@ namespace Physicist
                 //inicializarTimer(5);
 
                 //MessageBox.Show("Interpretando");
-                    while (!DesenhavelRepositorio.estaVazio())
+                    if (!DesenhavelRepositorio.estaVazio())
                     {
                         try
                         {
+                            Invalidate();
                             g = CreateGraphics();//resetar os gráficos
 
                         }
@@ -97,18 +101,26 @@ namespace Physicist
                         Desenhavel desenhavel = DesenhavelRepositorio.obter();
                         if(desenhavel!=null)
                             interpretarDesenhavel(desenhavel);
+                        caneta = new Pen(Color.Gray, 5);
+                        float[] padrao = { 3, 6 };
+                        caneta.DashPattern = padrao;
+                        g.DrawLine(caneta, 0, this.Height / 2, this.Width, this.Height / 2);
                         while (!DesenhavelRepositorio.Primeiro)//significa que esse é o primeiro desenhável
                         {
                             desenhavel = DesenhavelRepositorio.obter();
-
                             if (desenhavel != null)
                                 interpretarDesenhavel(desenhavel);
                         }
-                        Invalidate();
-
+                        //DesenhavelRepositorio.limpar();
+                        
+                    
                 }
                semaforoDesenhaveis.Release();
                 //semaforoDesenhaveis.Release();
+                receberDesenhaveis = new Task(recebimento, "receberDesenhaveis");
+
+                //inicializarTimer(4);
+                receberDesenhaveis.Start();
 
             };
             recebimento = (object obj) =>
@@ -118,20 +130,24 @@ namespace Physicist
                 semaforoDesenhaveis.WaitOne();
                 //inicializarTimer(4);*/
                 //MessageBox.Show("Escutando");
-                        
+                DesenhavelRepositorio.limpar();
                 if (!ControladorDesenhavel.Interpretando)
                 {
                     ConexaoP2P.tratarDados();
                     estaEscutando = true;
                 }
-                        
-                        
+
+
                 //esse método já recebe e adiciona na
                 //classe DesenhavelRepositorio
 
-                   
-                 semaforoDesenhaveis.Release();
-                
+
+                semaforoDesenhaveis.Release();
+                interpretarDesenhaveis = new Task(interpretacao, "interpretarDesenhaveis");
+
+                //inicializarTimer(5);
+                interpretarDesenhaveis.Start();
+
                 //semaforoDesenhaveis.Release();
             };
             Action<object> controleSemaforo = (object obj) =>
@@ -150,17 +166,13 @@ namespace Physicist
         private void administrarSemaforo()
         {
             //predict de erro aqui
-            while (!flagFimSimulacao)
+            if (!flagFimSimulacao)
             {
                 //receberDesenhaveis = null;
                 receberDesenhaveis = new Task(recebimento, "receberDesenhaveis");
 
                 //inicializarTimer(4);
                 receberDesenhaveis.Start();
-                interpretarDesenhaveis = new Task(interpretacao, "interpretarDesenhaveis");
-
-                //inicializarTimer(5);
-                interpretarDesenhaveis.Start();
                 //Thread.Sleep(17);   
             }
                     
@@ -233,16 +245,38 @@ namespace Physicist
                         altura *= taxaProporcaoAltura;
                         g.DrawEllipse(caneta, (float)xC, (float)yC, (float)largura, (float)altura);
                         break;
-                    case Forma.TipoForma.Tracejado:
-                        caneta = new Pen(corTracejado, espessura);
-                        float[] padraoTracos = {20,40};//tem que ser múltiplo de 1,2
-                        caneta.DashPattern = padraoTracos;
-                        //double x1=0, y1=0, x2=0, y2=0;
-                        x1 = xC - (largura / 2);
-                        y1 = yC - (altura / 2);
-                        x2 = x1 + largura;
-                        y2 = y1 + altura;
-                        g.DrawLine(caneta, (float)x1, (float)y1,(float) x2,(float) y2);
+                    case Forma.TipoForma.Refratado:
+                        try
+                        {
+                            caneta = new Pen(corTracejado, espessuraRefratado);
+                            x1 = xC - (largura / 2);
+                            y1 = yC - (altura / 2);
+                            x2 = x1 + largura;
+                            y2 = y1 + altura;
+                            g.DrawLine(caneta, (float)x1, (float)y1, (float)x2, (float)y2);
+                        }
+                        catch
+                        {
+
+                        }
+                        break;
+                    case Forma.TipoForma.Prolongamento:
+                        try
+                        {
+                            caneta = new Pen(corReta, espessuraProlongamento);
+                            float[] padraoTracos = {1,2 };//tem que ser múltiplo de 1,2
+                            caneta.DashPattern = padraoTracos;
+                            //double x1=0, y1=0, x2=0, y2=0;
+                            x1 = xC - (largura / 2);
+                            y1 = yC - (altura / 2);
+                            x2 = x1 + largura;
+                            y2 = y1 + altura;
+                            g.DrawLine(caneta, (float)x1, (float)y1, (float)x2, (float)y2);
+                        }
+                        catch
+                        {
+
+                        }
                         break;
                 }
             }
